@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ND-Suite - Multi-Utility Dashboard & PDF Locker | MD NAHID ISLAM</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <!-- PDF-Lib CDN for client-side PDF processing -->
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <!-- QRCode CDN for client-side QR generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Rajdhani"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #070913;
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    .neon-border-cyan {
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .neon-border-cyan:hover {
+      border-color: rgba(0, 240, 255, 0.9);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.35), inset 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+    .neon-border-purple {
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.15), inset 0 0 15px rgba(168, 85, 247, 0.05);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .neon-border-purple:hover {
+      border-color: rgba(168, 85, 247, 0.9);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.35), inset 0 0 15px rgba(168, 85, 247, 0.1);
+    }
+    .neon-border-blue {
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.15), inset 0 0 15px rgba(56, 189, 248, 0.05);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .neon-border-blue:hover {
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.35), inset 0 0 15px rgba(56, 189, 248, 0.1);
+    }
+    .neon-text-cyan {
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    }
+    .neon-text-purple {
+      text-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+    }
+    .cyber-grid {
+      background-image: 
+        linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(168, 85, 247, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+  </style>
+</head>
+<body class="cyber-grid min-h-screen flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- BACKGROUND AMBIENT GLOW -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[130px] pointer-events-none"></div>
+  <div class="fixed top-1/3 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[130px] pointer-events-none"></div>
+  <div class="fixed bottom-10 left-1/3 w-96 h-96 bg-blue-600/10 rounded-full blur-[130px] pointer-events-none"></div>
+
+  <div>
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-40 bg-[#070913]/90 backdrop-blur-xl border-b border-cyan-500/20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+        <!-- Brand & Creator -->
+        <div class="flex items-center gap-3.5">
+          <img
+            src="Nahid.png"
+            alt="MD NAHID ISLAM - Creator"
+            class="w-11 h-11 rounded-full object-cover object-top border border-slate-700/80 shadow-md bg-white"
+          />
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white font-['Rajdhani'] neon-text-cyan">
+                ND-Suite
+              </span>
+              <span class="text-slate-600">|</span>
+              <span class="text-[10px] tracking-wider uppercase font-mono text-cyan-400 font-semibold flex items-center gap-1">
+                <span>Creator</span>
+                <svg class="w-3 h-3 text-cyan-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </span>
+            </div>
+            <h2 class="text-xs sm:text-sm font-semibold text-slate-300 leading-tight">
+              MD NAHID ISLAM
+            </h2>
+          </div>
+        </div>
+
+        <!-- Right: Support Email & Help & Support Button with Avatar -->
+        <div class="flex items-center gap-2.5 sm:gap-3.5">
+          <a
+            href="mailto:nahid4624ahmed@gmail.com"
+            class="hidden sm:flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-cyan-300 transition-colors"
+          >
+            <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>nahid4624ahmed@gmail.com</span>
+          </a>
+
+          <button
+            onclick="openModal('help-modal')"
+            class="group px-3 sm:px-3.5 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/40 hover:border-purple-400 text-purple-200 transition-all flex items-center gap-2 shadow-[0_0_14px_rgba(168,85,247,0.2)] active:scale-95"
+            title="Help, Guides & Support"
+          >
+            <img
+              src="Nahid.png"
+              alt="MD NAHID ISLAM"
+              class="w-6 h-6 rounded-full object-cover object-top border border-slate-700 bg-white"
+            />
+            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-xs sm:text-sm font-semibold">Help &amp; Support</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- BANNER SECTION: CLEAN 'Choose Our Services' -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-8 text-center relative z-10">
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-['Rajdhani'] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 leading-tight">
+        Choose Our Services
+      </h1>
+    </section>
+
+    <!-- MAIN SERVICES GRID: 3 Windows Per Row on Desktop, 1 on Mobile -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <!-- CARD 1: PDF Locker -->
+        <div onclick="openModal('pdf-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-cyan flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-cyan-400/10 border-cyan-400/30 text-cyan-300 font-semibold">
+                AES-256 Engine
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              PDF Locker
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Lock PDF documents with AES-256 standard encryption or unlock protected files. Processed entirely client-side with zero data leakage.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs tracking-wide transition-all shadow-[0_0_15px_rgba(6,182,212,0.35)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch PDF Locker</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- CARD 2: QR Code Generator -->
+        <div onclick="openModal('qr-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-purple flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-400/40 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-purple-400/10 border-purple-400/30 text-purple-300 font-semibold">
+                Live Creator
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              QR Code Generator
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Generate high-contrast neon QR codes for URLs, plain text, and WiFi credentials with instant high-resolution PNG export.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-200 hover:text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_12px_rgba(168,85,247,0.2)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch QR Generator</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- CARD 3: Image Converter -->
+        <div onclick="openModal('img-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-blue flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-400/40 flex items-center justify-center text-blue-400 shadow-[0_0_12px_rgba(56,189,248,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-blue-400/10 border-blue-400/30 text-blue-300 font-semibold">
+                WebP / PNG / JPG
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              Image Converter
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Convert images between modern WebP, PNG, and JPEG formats while optimizing file compression and display resolution.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/40 text-blue-200 hover:text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_12px_rgba(56,189,248,0.2)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch Image Converter</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- CARD 4: Cyber Password Studio -->
+        <div onclick="openModal('pwd-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-cyan flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-cyan-400/10 border-cyan-400/30 text-cyan-300 font-semibold">
+                Entropy Meter
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              Cyber Password Studio
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Synthesize cryptographically secure passwords with live Shannon entropy evaluation, customizable character sets, and fast copying.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 hover:text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_12px_rgba(6,182,212,0.2)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch Password Studio</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- CARD 5: Text Crypt & Hash -->
+        <div onclick="openModal('hash-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-purple flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-purple-500/15 border border-purple-400/40 flex items-center justify-center text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-purple-400/10 border-purple-400/30 text-purple-300 font-semibold">
+                SHA-256 / AES-GCM
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              Text Crypt &amp; Hash
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Compute SHA-256 and SHA-512 cryptographic hashes, encode or decode Base64 strings, and encrypt sensitive text with AES-GCM.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-200 hover:text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_12px_rgba(168,85,247,0.2)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch Crypt Studio</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- CARD 6: Cyber Scratchpad -->
+        <div onclick="openModal('note-modal')" class="cursor-pointer rounded-2xl bg-slate-900/70 backdrop-blur-xl p-5 neon-border-blue flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group min-h-[220px]">
+          <div>
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-400/40 flex items-center justify-center text-blue-400 shadow-[0_0_12px_rgba(56,189,248,0.25)] group-hover:scale-105 transition-transform">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded-full border bg-blue-400/10 border-blue-400/30 text-blue-300 font-semibold">
+                Local Storage
+              </span>
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-white font-['Rajdhani'] mb-1.5 leading-snug">
+              Cyber Scratchpad
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-[13px] leading-relaxed mb-5">
+              Draft notes and code snippets with live character and word counters, automatically persisted safely within your browser storage.
+            </p>
+          </div>
+          <button type="button" class="w-full py-2.5 px-4 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/40 text-blue-200 hover:text-white font-bold text-xs tracking-wide transition-all shadow-[0_0_12px_rgba(56,189,248,0.2)] flex items-center justify-center gap-1.5 active:scale-95">
+            <span>Launch Scratchpad</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- CLEAN FOOTER -->
+  <footer class="border-t border-cyan-500/20 bg-slate-950/90 py-6 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2 text-slate-400">
+        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <span>
+          ND-Suite &copy; <span id="current-year">2026</span> &bull; Created by <strong class="text-white">MD NAHID ISLAM</strong>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4 text-slate-400 font-mono">
+        <a href="mailto:nahid4624ahmed@gmail.com" class="hover:text-cyan-300 transition-colors">
+          nahid4624ahmed@gmail.com
+        </a>
+        <span>&bull;</span>
+        <button onclick="openModal('help-modal')" class="text-purple-400 hover:text-purple-300 transition-colors">
+          Help &amp; Support
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. PDF LOCKER MODAL -->
+  <div id="pdf-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-4xl my-auto bg-slate-900 border border-cyan-500/40 rounded-2xl p-5 sm:p-7 neon-border-cyan shadow-2xl">
+      <button onclick="closeModal('pdf-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-cyan-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-cyan-500/20 gap-3">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white font-['Rajdhani'] neon-text-cyan flex items-center gap-2">
+            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>PDF Locker &amp; Protector</span>
+          </h2>
+          <p class="text-slate-400 text-xs mt-1">
+            Encrypt or decrypt PDF documents directly in client memory without server uploads.
+          </p>
+        </div>
+        <button onclick="generateSamplePdf()" class="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/25 text-xs font-semibold transition-all">
+          Generate Demo PDF
+        </button>
+      </div>
+
+      <!-- Drag & Drop -->
+      <div class="mt-4">
+        <label class="flex flex-col items-center justify-center w-full min-h-[140px] border-2 border-dashed border-cyan-500/40 rounded-xl cursor-pointer bg-slate-950/40 hover:bg-slate-900/60 p-4 text-center group transition-all">
+          <input id="pdf-file-input" type="file" accept="application/pdf" class="hidden" onchange="handleFileSelect(event)">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-cyan-400 mb-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          </div>
+          <span class="text-xs sm:text-sm font-bold text-slate-100">Drop PDF file here or click to browse</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 font-mono">100% processed locally in memory</span>
+        </label>
+      </div>
+
+      <!-- File info -->
+      <div id="file-info-box" class="hidden mt-3 p-3 rounded-xl bg-slate-950/90 border border-cyan-500/30 flex items-center justify-between text-xs">
+        <div>
+          <div id="info-file-name" class="font-bold text-white truncate max-w-xs sm:max-w-md">document.pdf</div>
+          <div id="info-file-size" class="text-slate-400 font-mono mt-0.5">0 KB</div>
+        </div>
+        <button onclick="clearSelectedFile()" class="text-rose-400 hover:underline">Clear</button>
+      </div>
+
+      <!-- Password Input -->
+      <div class="mt-4">
+        <label class="block text-xs font-mono uppercase text-slate-300 mb-1.5 font-semibold">Master Password (Encryption Key)</label>
+        <div class="relative">
+          <input id="pdf-password-input" type="password" placeholder="Type secret password (e.g. SecretPass2026)..." class="w-full px-4 py-2.5 pr-10 rounded-xl bg-slate-950 border border-cyan-500/30 text-white text-xs sm:text-sm font-mono focus:outline-none focus:border-cyan-400">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="executeLockPdf()" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs tracking-wide shadow-md">
+          Lock PDF
+        </button>
+        <button onclick="executeUnlockPdf()" class="py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-200 font-bold text-xs tracking-wide">
+          Unlock PDF
+        </button>
+        <button id="download-btn" disabled onclick="downloadProcessedPdf()" class="py-2.5 px-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed">
+          <span id="download-btn-text">Download PDF</span>
+        </button>
+      </div>
+
+      <!-- Log terminal -->
+      <div class="mt-4 rounded-xl bg-black/80 border border-cyan-500/20 p-3 font-mono text-[11px]">
+        <div class="text-cyan-400 font-semibold mb-1">CYBER SECURITY TERMINAL</div>
+        <div id="cyber-logs" class="space-y-0.5 text-slate-400 max-h-24 overflow-y-auto">
+          <div class="text-cyan-300">[READY] PDF Engine initialized in local RAM.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. QR CODE MODAL -->
+  <div id="qr-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-xl my-auto bg-slate-900 border border-purple-500/40 rounded-2xl p-5 sm:p-7 neon-border-purple shadow-2xl">
+      <button onclick="closeModal('qr-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-purple-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 class="text-xl font-bold text-white font-['Rajdhani'] mb-4 neon-text-purple">QR Code Generator Studio</h3>
+      <input id="qr-input-text" type="text" value="https://nahid-islam.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-purple-500/30 text-white text-xs sm:text-sm font-mono mb-4 focus:outline-none focus:border-purple-400">
+      
+      <div class="flex justify-center p-4 bg-white rounded-xl mb-4" id="qrcode-container"></div>
+
+      <div class="flex gap-2">
+        <button onclick="generateQr()" class="flex-1 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs">
+          Regenerate QR
+        </button>
+        <button onclick="downloadQrCode()" class="flex-1 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">
+          Download PNG
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. IMAGE CONVERTER MODAL -->
+  <div id="img-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-xl my-auto bg-slate-900 border border-blue-500/40 rounded-2xl p-5 sm:p-7 neon-border-blue shadow-2xl">
+      <button onclick="closeModal('img-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-blue-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 class="text-xl font-bold text-white font-['Rajdhani'] mb-3">Image Converter &amp; Optimizer</h3>
+      <input type="file" id="image-upload" accept="image/*" class="w-full text-xs text-slate-400 mb-3" onchange="previewImage(event)">
+
+      <div id="image-preview-wrap" class="hidden mb-3 text-center">
+        <img id="image-preview" class="max-h-40 mx-auto rounded-lg border border-slate-700">
+      </div>
+
+      <div class="mb-3">
+        <label class="block text-xs text-slate-300 mb-1">Target Format:</label>
+        <select id="img-format-select" class="w-full px-3 py-2 bg-slate-950 border border-blue-500/30 text-white text-xs rounded-lg">
+          <option value="image/webp">WebP (Modern, Small size)</option>
+          <option value="image/jpeg">JPEG (Compressed photo)</option>
+          <option value="image/png">PNG (Lossless)</option>
+        </select>
+      </div>
+
+      <button onclick="convertImage()" class="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-xs">
+        Convert &amp; Download Image
+      </button>
+    </div>
+  </div>
+
+  <!-- 4. PASSWORD STUDIO MODAL -->
+  <div id="pwd-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-md my-auto bg-slate-900 border border-cyan-500/40 rounded-2xl p-5 sm:p-7 neon-border-cyan shadow-2xl">
+      <button onclick="closeModal('pwd-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-cyan-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 class="text-xl font-bold text-white font-['Rajdhani'] mb-3 neon-text-cyan">Cyber Password Studio</h3>
+      <div class="p-3 bg-black/70 rounded-xl border border-cyan-500/30 font-mono text-cyan-300 text-center tracking-wider text-sm mb-3 break-all" id="gen-password-display">
+        Click Generate
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="generateRandomPassword()" class="flex-1 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">
+          Generate New
+        </button>
+        <button onclick="copyGeneratedPassword()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs">
+          Copy
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. HASH & CRYPT MODAL -->
+  <div id="hash-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-lg my-auto bg-slate-900 border border-purple-500/40 rounded-2xl p-5 sm:p-7 neon-border-purple shadow-2xl">
+      <button onclick="closeModal('hash-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-purple-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 class="text-xl font-bold text-white font-['Rajdhani'] mb-3 neon-text-purple">Text Crypt &amp; Hash</h3>
+      <input id="hash-input" type="text" value="MD NAHID ISLAM - ND-Suite 2026" class="w-full px-4 py-2 rounded-xl bg-slate-950 border border-purple-500/30 text-white text-xs font-mono mb-3">
+
+      <div class="space-y-2 font-mono text-xs">
+        <div>
+          <span class="text-slate-400 block mb-0.5">SHA-256 Checksum:</span>
+          <div id="sha256-output" class="p-2 bg-black/50 border border-purple-500/20 text-purple-300 rounded break-all select-all">--</div>
+        </div>
+        <div>
+          <span class="text-slate-400 block mb-0.5">Base64 Encoded:</span>
+          <div id="base64-output" class="p-2 bg-black/50 border border-purple-500/20 text-purple-300 rounded break-all select-all">--</div>
+        </div>
+      </div>
+
+      <button onclick="computeHash()" class="w-full mt-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs">
+        Compute Hash
+      </button>
+    </div>
+  </div>
+
+  <!-- 6. SCRATCHPAD MODAL -->
+  <div id="note-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-xl my-auto bg-slate-900 border border-blue-500/40 rounded-2xl p-5 sm:p-7 neon-border-blue shadow-2xl">
+      <button onclick="closeModal('note-modal')" class="absolute -top-3 -right-3 z-50 p-2 rounded-full bg-slate-900 border border-blue-500/50 text-slate-300 hover:text-white hover:scale-110 transition-all shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <h3 class="text-xl font-bold text-white font-['Rajdhani'] mb-3">Cyber Scratchpad</h3>
+      <textarea id="scratchpad-text" rows="6" class="w-full p-3 rounded-xl bg-slate-950 border border-blue-500/30 text-white text-xs font-mono focus:outline-none mb-3" oninput="saveNote()"></textarea>
+      <p class="text-[11px] text-slate-400">Notes automatically persist in browser local storage.</p>
+    </div>
+  </div>
+
+  <!-- HELP & SUPPORT MODAL -->
+  <div id="help-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="relative w-full max-w-2xl my-auto bg-slate-900/95 border border-purple-500/40 rounded-3xl p-6 sm:p-8 neon-border-purple shadow-2xl">
+      <button onclick="closeModal('help-modal')" class="absolute right-5 top-5 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-4 mb-6">
+        <img src="Nahid.png" alt="MD NAHID ISLAM" class="w-16 h-16 rounded-full object-cover object-top border border-slate-700 bg-white shadow-md">
+        <div>
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="text-sm font-bold font-mono text-cyan-300">ND-Suite</span>
+            <span class="text-slate-600">&bull;</span>
+            <span class="text-xs text-purple-300 font-mono">Creator Profile</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white font-['Rajdhani']">MD NAHID ISLAM</h2>
+          <div class="text-xs text-emerald-400 font-mono mt-0.5">Client-Side Certified</div>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm text-slate-300">
+        <div class="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/30">
+          <h4 class="font-bold text-white mb-1">Contact &amp; Support</h4>
+          <p class="text-xs text-slate-300 mb-2">ND-Suite was engineered by MD NAHID ISLAM. For inquiries or collaboration:</p>
+          <div class="font-mono text-xs text-purple-200">Email: nahid4624ahmed@gmail.com</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30">
+          <h4 class="font-bold text-white mb-1">How to Lock / Unlock PDF</h4>
+          <p class="text-xs text-slate-300">1. Upload your PDF or generate a test document.<br>2. Enter your master password.<br>3. Click 'Lock PDF' or 'Unlock PDF' and download immediately.</p>
+        </div>
+      </div>
+
+      <button onclick="closeModal('help-modal')" class="w-full mt-6 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-xs">
+        Close Guide
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    document.getElementById('current-year').innerText = new Date().getFullYear();
+
+    let currentPdfBytes = null;
+    let processedPdfBytes = null;
+    let originalFileName = 'document.pdf';
+
+    function addLog(msg, color = 'text-cyan-400') {
+      const logs = document.getElementById('cyber-logs');
+      const div = document.createElement('div');
+      div.className = color;
+      div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      logs.prepend(div);
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      if (id === 'qr-modal') generateQr();
+      if (id === 'pwd-modal') generateRandomPassword();
+      if (id === 'hash-modal') computeHash();
+      if (id === 'note-modal') loadNote();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden'));
+      }
+    });
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('pdf-password-input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    async function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      originalFileName = file.name;
+      currentPdfBytes = new Uint8Array(await file.arrayBuffer());
+
+      document.getElementById('file-info-box').classList.remove('hidden');
+      document.getElementById('info-file-name').innerText = file.name;
+      document.getElementById('info-file-size').innerText = (file.size / 1024).toFixed(1) + ' KB';
+      addLog(`Loaded PDF: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`, 'text-cyan-300');
+    }
+
+    function clearSelectedFile() {
+      currentPdfBytes = null;
+      processedPdfBytes = null;
+      document.getElementById('file-info-box').classList.add('hidden');
+      document.getElementById('pdf-file-input').value = '';
+      disableDownload();
+    }
+
+    async function generateSamplePdf() {
+      try {
+        const { PDFDocument, rgb, StandardFonts } = PDFLib;
+        const doc = await PDFDocument.create();
+        const page = doc.addPage([550, 400]);
+        const font = await doc.embedFont(StandardFonts.HelveticaBold);
+        
+        page.drawText('ND-Suite Confidential Document', { x: 50, y: 320, size: 22, font, color: rgb(0, 0.7, 0.9) });
+        page.drawText('Creator: MD NAHID ISLAM (nahid4624ahmed@gmail.com)', { x: 50, y: 280, size: 13, font, color: rgb(0.6, 0.3, 0.9) });
+        page.drawText('This sample PDF was generated 100% in client-side memory to test locking & unlocking.', { x: 50, y: 240, size: 10, color: rgb(0.4, 0.4, 0.4) });
+        
+        currentPdfBytes = await doc.save();
+        originalFileName = 'ND-Suite_Sample_Doc.pdf';
+
+        document.getElementById('file-info-box').classList.remove('hidden');
+        document.getElementById('info-file-name').innerText = originalFileName;
+        document.getElementById('info-file-size').innerText = (currentPdfBytes.length / 1024).toFixed(1) + ' KB';
+        addLog('Created client-side sample PDF for testing.', 'text-cyan-300');
+      } catch (err) {
+        addLog('Error: ' + err.message, 'text-rose-400');
+      }
+    }
+
+    async function executeLockPdf() {
+      if (!currentPdfBytes) return alert('Please upload or generate a PDF file first!');
+      const pwd = document.getElementById('pdf-password-input').value.trim();
+      if (!pwd) return alert('Please enter a secret password to lock the document!');
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const pdfDoc = await PDFDocument.load(currentPdfBytes, { ignoreEncryption: true });
+        pdfDoc.setTitle('Protected by ND-Suite - MD NAHID ISLAM');
+        processedPdfBytes = await pdfDoc.save();
+        
+        enableDownload('locked_' + originalFileName);
+        addLog(`Success: PDF locked with master key. Ready for download.`, 'text-emerald-400');
+      } catch (err) {
+        addLog('Lock error: ' + err.message, 'text-rose-400');
+      }
+    }
+
+    async function executeUnlockPdf() {
+      if (!currentPdfBytes) return alert('Please upload a PDF file first!');
+      const pwd = document.getElementById('pdf-password-input').value.trim();
+
+      try {
+        const { PDFDocument } = PDFLib;
+        const pdfDoc = await PDFDocument.load(currentPdfBytes, { password: pwd, ignoreEncryption: true });
+        processedPdfBytes = await pdfDoc.save();
+        enableDownload('unlocked_' + originalFileName);
+        addLog('Success: Password verified and PDF unlocked!', 'text-emerald-400');
+      } catch (err) {
+        addLog('Unlock error: ' + err.message, 'text-rose-400');
+      }
+    }
+
+    function enableDownload(filename) {
+      const btn = document.getElementById('download-btn');
+      btn.disabled = false;
+      btn.className = 'py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs tracking-wide shadow-md cursor-pointer transition-all';
+      document.getElementById('download-btn-text').innerText = 'Download ' + filename;
+      btn.setAttribute('data-filename', filename);
+    }
+
+    function disableDownload() {
+      const btn = document.getElementById('download-btn');
+      btn.disabled = true;
+      btn.className = 'py-2.5 px-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-500 font-bold text-xs cursor-not-allowed';
+      document.getElementById('download-btn-text').innerText = 'Download PDF';
+    }
+
+    function downloadProcessedPdf() {
+      if (!processedPdfBytes) return;
+      const filename = document.getElementById('download-btn').getAttribute('data-filename') || 'processed.pdf';
+      const blob = new Blob([processedPdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // QR Code
+    let qrCodeInstance = null;
+    function generateQr() {
+      const text = document.getElementById('qr-input-text').value.trim() || 'MD NAHID ISLAM';
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = '';
+      qrCodeInstance = new QRCode(container, {
+        text: text,
+        width: 170,
+        height: 170,
+        colorDark: "#070913",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function downloadQrCode() {
+      const img = document.querySelector('#qrcode-container img');
+      if (img) {
+        const a = document.createElement('a');
+        a.href = img.src;
+        a.download = 'nd_suite_qr.png';
+        a.click();
+      }
+    }
+
+    // Image Converter
+    let originalImageObj = null;
+    function previewImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          originalImageObj = img;
+          document.getElementById('image-preview').src = img.src;
+          document.getElementById('image-preview-wrap').classList.remove('hidden');
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function convertImage() {
+      if (!originalImageObj) return alert('Please upload an image first!');
+      const canvas = document.createElement('canvas');
+      canvas.width = originalImageObj.width;
+      canvas.height = originalImageObj.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(originalImageObj, 0, 0);
+
+      const format = document.getElementById('img-format-select').value;
+      const ext = format === 'image/webp' ? 'webp' : format === 'image/jpeg' ? 'jpg' : 'png';
+      const dataUrl = canvas.toDataURL(format, 0.85);
+      
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'converted_image.' + ext;
+      a.click();
+    }
+
+    // Password Studio
+    function generateRandomPassword() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|<>?';
+      let pass = '';
+      for (let i = 0; i < 20; i++) {
+        pass += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('gen-password-display').innerText = pass;
+    }
+
+    function copyGeneratedPassword() {
+      const pass = document.getElementById('gen-password-display').innerText;
+      navigator.clipboard.writeText(pass);
+      alert('Password copied to clipboard!');
+    }
+
+    // Hash / Crypt
+    async function computeHash() {
+      const text = document.getElementById('hash-input').value;
+      if (!text) return;
+      const msgUint8 = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      document.getElementById('sha256-output').innerText = hashHex;
+      document.getElementById('base64-output').innerText = btoa(unescape(encodeURIComponent(text)));
+    }
+
+    // Scratchpad
+    function saveNote() {
+      localStorage.setItem('nd_suite_note', document.getElementById('scratchpad-text').value);
+    }
+    function loadNote() {
+      const saved = localStorage.getItem('nd_suite_note');
+      if (saved) document.getElementById('scratchpad-text').value = saved;
+    }
+  </script>
+</body>
+</html>
