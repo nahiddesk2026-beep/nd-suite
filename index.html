@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ND SUITE - All-in-One Digital Productivity & Utility Engine</title>
   <meta name="description" content="ND SUITE is your all-in-one digital Swiss Army Knife designed to enhance productivity and streamline daily online workflows. Developed and maintained by MD NAHID ISLAM." />
+  <meta property="og:title" content="ND SUITE - All-in-One Digital Productivity & Utility Engine" />
+  <meta property="og:description" content="All-in-one digital Swiss Army Knife with 13 client-side utility and productivity tools." />
+  <meta property="og:type" content="website" />
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,36 +15,200 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- CDNs for In-Browser Processing -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- CDNs for In-Browser Client-Side Processing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite@1.2.0/dist/pdf-encrypt-lite.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-  <!-- Complete CSS (Cyberpunk Dark Navy/Black, Cyan #00f2fe & Purple #9b51e0 Glows) -->
   <style>
-    /* অল কমপ্লিট স্টাইলস ফাইলের মধ্যে এমবেড করা */
+    :root {
+      --bg-dark: #060913;
+      --bg-darker: #04060c;
+      --bg-card: rgba(13, 19, 36, 0.75);
+      --bg-card-hover: rgba(18, 26, 50, 0.9);
+      --bg-input: rgba(8, 12, 24, 0.85);
+      --cyan: #00f2fe;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --purple: #9b51e0;
+      --purple-glow: rgba(155, 81, 224, 0.35);
+      --neon-grad: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #9b51e0 100%);
+      --neon-grad-alt: linear-gradient(135deg, #9b51e0 0%, #00f2fe 100%);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-cyan: rgba(0, 242, 254, 0.25);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(155, 81, 224, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(0, 242, 254, 0.05) 0%, transparent 50%),
+        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
+    }
+    .ambient-glow { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; filter: blur(120px); opacity: 0.45; animation: floatPulse 18s ease-in-out infinite alternate; }
+    .glow-cyan { width: 450px; height: 450px; background: radial-gradient(circle, #00f2fe 0%, transparent 70%); top: -100px; left: -80px; }
+    .glow-purple { width: 500px; height: 500px; background: radial-gradient(circle, #9b51e0 0%, transparent 70%); top: 15%; right: -120px; animation-delay: -6s; }
+    .glow-indigo { width: 450px; height: 450px; background: radial-gradient(circle, #3b82f6 0%, transparent 70%); bottom: 5%; left: 10%; animation-delay: -12s; }
+    @keyframes floatPulse { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px, 40px) scale(1.1); } 100% { transform: translate(-20px, 20px) scale(0.95); } }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-darker); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 242, 254, 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+    .app-container { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3, h4, h5 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
+    .text-gradient { background: var(--neon-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .glow-text-cyan { text-shadow: 0 0 20px rgba(0, 242, 254, 0.6), 0 0 40px rgba(0, 242, 254, 0.3); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 22px; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 0.92rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.25s ease; text-decoration: none; white-space: nowrap; }
+    .btn:active { transform: scale(0.97); }
+    .btn-neon { background: var(--neon-grad); color: #040714; box-shadow: 0 0 18px rgba(0, 242, 254, 0.45); }
+    .btn-neon:hover { box-shadow: 0 0 28px rgba(0, 242, 254, 0.75), 0 0 40px rgba(155, 81, 224, 0.4); transform: translateY(-2px); color: #040714; }
+    .btn-purple { background: var(--neon-grad-alt); color: #ffffff; box-shadow: 0 0 18px rgba(155, 81, 224, 0.45); }
+    .btn-purple:hover { box-shadow: 0 0 28px rgba(155, 81, 224, 0.75); transform: translateY(-2px); }
+    .btn-glass { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-subtle); backdrop-filter: blur(10px); }
+    .btn-glass:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 16px rgba(0, 242, 254, 0.25); }
+    .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: var(--radius-sm); }
+    .input-field { width: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 10px 14px; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 0.92rem; outline: none; transition: all 0.25s ease; }
+    .input-field:focus { border-color: var(--cyan); box-shadow: 0 0 16px rgba(0, 242, 254, 0.25); }
+    textarea.input-field { resize: vertical; min-height: 90px; }
+    select.input-field { cursor: pointer; }
+    select.input-field option { background: #090e1f; color: #f1f5f9; }
+
+    /* Header */
+    .top-header { padding: 36px 0 20px; }
+    .header-banner { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 32px 24px; background: linear-gradient(180deg, rgba(13, 20, 42, 0.85) 0%, rgba(9, 13, 28, 0.95) 100%); border: 1px solid rgba(0, 242, 254, 0.22); border-radius: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 242, 254, 0.12); }
+    .header-banner::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, transparent, #00f2fe, #9b51e0, transparent); }
+    .brand-title { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: 0.04em; margin-bottom: 6px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 12px; }
+    .brand-subtitle { font-size: 0.98rem; color: var(--text-muted); max-width: 660px; margin-bottom: 20px; }
+
+    /* Creator Profile Card */
+    .creator-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px; padding: 14px 24px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 50px; backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
+    .avatar-wrapper { width: 68px; height: 68px; flex-shrink: 0; }
+    .avatar-img { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid var(--cyan); box-shadow: 0 0 20px rgba(0, 242, 254, 0.55); background: linear-gradient(135deg, #0d1a33 0%, #170d33 100%); display: flex; align-items: center; justify-content: center; }
+    .avatar-img img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+    .creator-info { text-align: left; }
+    .creator-name { font-size: 1.2rem; font-weight: 700; color: #ffffff; letter-spacing: 0.02em; display: flex; align-items: center; gap: 8px; }
+    .creator-badge { font-size: 0.7rem; font-family: var(--font-mono); padding: 2px 8px; background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.3); color: var(--cyan); border-radius: var(--radius-full); }
+    .support-email-group { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .email-link { color: var(--cyan); font-size: 0.88rem; font-family: var(--font-mono); text-decoration: none; }
+    .email-link:hover { color: #ffffff; text-decoration: underline; }
+    .copy-email-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem; padding: 4px; }
+    .copy-email-btn:hover { color: var(--cyan); }
+
+    /* Services Header & Filter */
+    .services-header-wrap { margin: 44px 0 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; }
+    .section-title { font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; }
+    .section-title span { background: var(--neon-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .filter-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 6px; background: rgba(13, 19, 36, 0.6); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); backdrop-filter: blur(12px); }
+    .filter-tab { padding: 7px 16px; border-radius: var(--radius-full); font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.25s; white-space: nowrap; }
+    .filter-tab.active { background: var(--neon-grad); color: #040714; box-shadow: 0 0 14px rgba(0, 242, 254, 0.45); }
+    .filter-tab:hover:not(.active) { color: var(--cyan); background: rgba(0, 242, 254, 0.08); }
+    .search-box-wrap { width: 100%; max-width: 440px; position: relative; margin-top: 4px; }
+    .search-box-wrap i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--cyan); font-size: 0.9rem; }
+    .search-input { padding-left: 42px; border-radius: var(--radius-full); }
+
+    /* Services 3-Column Grid */
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
+    @media (max-width: 980px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .services-grid { grid-template-columns: 1fr; } }
+
+    .tool-card { background: var(--bg-card); border: 1px solid var(--border-cyan); border-radius: 18px; padding: 26px 22px; display: flex; flex-direction: column; position: relative; cursor: pointer; overflow: hidden; backdrop-filter: blur(16px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .tool-card:hover { transform: translateY(-6px); border-color: var(--cyan); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 242, 254, 0.25); background: var(--bg-card-hover); }
+    .tool-card-icon-wrap { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 18px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(155, 81, 224, 0.15)); border: 1px solid rgba(0, 242, 254, 0.3); color: var(--cyan); transition: all 0.3s; }
+    .tool-card:hover .tool-card-icon-wrap { transform: scale(1.08) rotate(3deg); background: var(--neon-grad); color: #040714; box-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
+    .tool-card-category { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--purple); margin-bottom: 6px; }
+    .tool-card-title { font-size: 1.22rem; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+    .tool-card-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+    .tool-card-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 12px; margin-top: auto; }
+    .tool-launch-text { font-size: 0.84rem; font-weight: 600; color: var(--cyan); display: flex; align-items: center; gap: 6px; transition: gap 0.2s; }
+    .tool-card:hover .tool-launch-text { gap: 10px; }
+    .tool-card-badge { font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-dim); }
+
+    /* SPA Workspace View */
+    .workspace-view { display: none; margin-bottom: 60px; animation: fadeIn 0.3s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .workspace-nav-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 14px 20px; background: rgba(13, 19, 36, 0.85); border: 1px solid var(--border-cyan); border-radius: var(--radius-lg); margin-bottom: 24px; backdrop-filter: blur(20px); }
+    .workspace-title-box { display: flex; align-items: center; gap: 14px; }
+    .workspace-icon-pill { width: 40px; height: 40px; border-radius: 10px; background: var(--neon-grad); color: #040714; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .workspace-heading { font-size: 1.3rem; font-weight: 700; color: #ffffff; }
+    .workspace-subheading { font-size: 0.8rem; color: var(--cyan); font-family: var(--font-mono); }
+    .tool-workspace-body { background: var(--bg-card); border: 1px solid var(--border-cyan); border-radius: 20px; padding: 28px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); }
+
+    /* Tool Tabs & Dropzone */
+    .tool-tabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px; margin-bottom: 22px; overflow-x: auto; }
+    .tool-tab-btn { padding: 8px 18px; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 0.88rem; font-weight: 600; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .tool-tab-btn.active { background: rgba(0, 242, 254, 0.12); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0, 242, 254, 0.25); }
+    .dropzone { border: 2px dashed rgba(0, 242, 254, 0.35); border-radius: 18px; padding: 36px 20px; text-align: center; background: rgba(9, 13, 28, 0.6); cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .dropzone:hover, .dropzone.dragover { border-color: var(--cyan); background: rgba(0, 242, 254, 0.06); box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); }
+    .dropzone i { font-size: 2.8rem; color: var(--cyan); }
+    .tool-controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 18px 0; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+    .checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-muted); }
+    .checkbox-wrap input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--cyan); cursor: pointer; }
+    .stat-badge { padding: 12px 16px; border-radius: 12px; background: rgba(8, 12, 24, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); display: flex; flex-direction: column; gap: 2px; }
+    .stat-badge-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+    .stat-badge-value { font-size: 1.3rem; font-weight: 700; color: #ffffff; font-family: var(--font-mono); }
+
+    /* Pomodoro Ring */
+    .timer-ring-container { position: relative; width: 260px; height: 260px; margin: 16px auto; display: flex; align-items: center; justify-content: center; }
+    .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .timer-circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.06); stroke-width: 8; }
+    .timer-circle-progress { fill: none; stroke: url(#timerGradient); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8)); }
+    .timer-time-display { position: absolute; text-align: center; }
+    .timer-clock { font-size: 3rem; font-weight: 800; font-family: var(--font-mono); color: #ffffff; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
+    .timer-status-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cyan); margin-top: 2px; }
+
+    /* Footer */
+    .site-footer { margin-top: 70px; border-top: 1px solid rgba(0, 242, 254, 0.15); background: linear-gradient(180deg, rgba(7, 10, 20, 0.4) 0%, rgba(4, 6, 12, 0.95) 100%); padding: 50px 0 30px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 36px; margin-bottom: 36px; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-title { font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .footer-desc { color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; max-width: 620px; }
+    .footer-social-links { display: flex; gap: 10px; margin-top: 18px; }
+    .social-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-muted); display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1rem; transition: all 0.25s; }
+    .social-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0, 242, 254, 0.12); box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transform: translateY(-2px); }
+    .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 0.82rem; color: var(--text-dim); }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { padding: 10px 18px; background: rgba(13, 20, 42, 0.95); border: 1px solid var(--cyan); border-radius: var(--radius-md); color: #ffffff; font-size: 0.88rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px); pointer-events: auto; }
+    .hidden-input { display: none !important; }
   </style>
 </head>
 <body>
-  <!-- Ambient Neon Spheres -->
   <div class="ambient-glow glow-cyan"></div>
   <div class="ambient-glow glow-purple"></div>
   <div class="ambient-glow glow-indigo"></div>
 
   <div class="app-container">
-    <!-- Top Banner & Creator Lockup -->
+    <!-- Header & Top Banner -->
     <header class="top-header">
       <div class="header-banner">
         <h1 class="brand-title">
-          <i class="fa-solid fa-cube text-gradient"></i>
+          <i class="fa-solid fa-cube text-gradient" style="font-size: 0.85em;"></i>
           <span class="text-gradient glow-text-cyan">ND SUITE</span>
         </h1>
-        <p class="brand-subtitle">Your all-in-one digital productivity engine & Swiss Army Knife.</p>
-        
-        <!-- Fixed Creator Profile Picture & Name -->
+        <p class="brand-subtitle">Your all-in-one digital productivity engine & Swiss Army Knife. Fast, client-side, zero installations, and privacy-focused.</p>
+
+        <!-- Fixed Creator Profile & Avatar -->
         <div class="creator-card">
           <div class="avatar-wrapper">
             <div class="avatar-img">
@@ -55,28 +222,1002 @@
             </div>
             <div class="support-email-group">
               <i class="fa-regular fa-envelope" style="color: var(--cyan); font-size: 0.85rem;"></i>
-              <a href="mailto:nahid4624ahmed@gmail.com" class="email-link" id="creator-email-text">nahid4624ahmed@gmail.com</a>
-              <button class="copy-email-btn" id="copy-email-btn" title="Copy email address">
-                <i class="fa-regular fa-copy"></i>
-              </button>
+              <a href="mailto:nahid4624ahmed@gmail.com" class="email-link">nahid4624ahmed@gmail.com</a>
+              <button class="copy-email-btn" id="copy-email-btn" title="Copy email address"><i class="fa-regular fa-copy"></i></button>
             </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Dashboard: 13 Services Grid & SPA Tool Workspaces -->
-    <main id="dashboard-view">...</main>
-    <section id="workspace-view" class="workspace-view">...</section>
+    <!-- Dashboard View -->
+    <main id="dashboard-view">
+      <section class="services-header-wrap">
+        <h2 class="section-title">Choose <span>Our Services</span></h2>
+        <div class="filter-bar">
+          <button class="filter-tab active" data-category="all">All Services (13)</button>
+          <button class="filter-tab" data-category="utility">Utility Tools</button>
+          <button class="filter-tab" data-category="converter">Converters & Calculators</button>
+          <button class="filter-tab" data-category="content">Content & Text</button>
+          <button class="filter-tab" data-category="productivity">Personal Productivity</button>
+        </div>
+        <div class="search-box-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="tool-search-input" class="input-field search-input" placeholder="Search any tool (Image Resizer, PDF Locker, Pomodoro)...">
+        </div>
+      </section>
 
-    <!-- Footer (About Our Site) -->
-    <footer class="site-footer">...</footer>
+      <!-- 13 Service Cards Grid -->
+      <section class="services-grid" id="services-grid">
+        <article class="tool-card" data-category="utility" data-tool="resizer">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-image"></i></div>
+          <div class="tool-card-category">Utility Tools</div>
+          <h3 class="tool-card-title">Image Resizer & Compressor</h3>
+          <p class="tool-card-desc">Scale custom dimensions, maintain aspect ratio, compress JPEG/PNG/WebP, and preview savings.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Client-side</span></div>
+        </article>
+
+        <article class="tool-card" data-category="utility" data-tool="pdf">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-file-pdf"></i></div>
+          <div class="tool-card-category">Utility Tools</div>
+          <h3 class="tool-card-title">PDF Locker & Utility</h3>
+          <p class="tool-card-desc">Convert images into clean PDFs and lock PDF files with genuine client-side password encryption.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Password Lock</span></div>
+        </article>
+
+        <article class="tool-card" data-category="utility" data-tool="qrcode">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-qrcode"></i></div>
+          <div class="tool-card-category">Utility Tools</div>
+          <h3 class="tool-card-title">QR Code Generator & Scanner</h3>
+          <p class="tool-card-desc">Generate custom colored QR codes with instant download, and decode QR codes from uploaded images.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">QR Engine</span></div>
+        </article>
+
+        <article class="tool-card" data-category="utility" data-tool="textcase">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-font"></i></div>
+          <div class="tool-card-category">Utility Tools</div>
+          <h3 class="tool-card-title">Text Case Converter</h3>
+          <p class="tool-card-desc">Instantly convert strings to UPPERCASE, lowercase, Title Case, Sentence Case, camelCase, and snake_case.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Text Tools</span></div>
+        </article>
+
+        <article class="tool-card" data-category="converter" data-tool="converter">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-calculator"></i></div>
+          <div class="tool-card-category">Converters & Calculators</div>
+          <h3 class="tool-card-title">Unit & Currency Converter</h3>
+          <p class="tool-card-desc">Multi-category converter for Length, Weight, Temperature, Digital Data (MB/GB/TB), and Global Currencies.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Multi-Unit</span></div>
+        </article>
+
+        <article class="tool-card" data-category="converter" data-tool="agecalc">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="tool-card-category">Converters & Calculators</div>
+          <h3 class="tool-card-title">Age & Date Calculator</h3>
+          <p class="tool-card-desc">Calculate precise age in years, months, days, total hours, and get a countdown to your next birthday.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Date Time</span></div>
+        </article>
+
+        <article class="tool-card" data-category="converter" data-tool="password">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-key"></i></div>
+          <div class="tool-card-category">Converters & Calculators</div>
+          <h3 class="tool-card-title">Password Generator</h3>
+          <p class="tool-card-desc">Create military-grade cryptographically secure passwords with custom character sets and entropy scoring.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Crypto Secure</span></div>
+        </article>
+
+        <article class="tool-card" data-category="converter" data-tool="aspectratio">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-crop-simple"></i></div>
+          <div class="tool-card-category">Converters & Calculators</div>
+          <h3 class="tool-card-title">Aspect Ratio Calculator</h3>
+          <p class="tool-card-desc">Presets for YouTube Thumbnails (16:9), Facebook Covers, Passport photos, and custom dimension scaling.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Geometry</span></div>
+        </article>
+
+        <article class="tool-card" data-category="content" data-tool="wordcounter">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-chart-simple"></i></div>
+          <div class="tool-card-category">Content & Text</div>
+          <h3 class="tool-card-title">Word & Character Counter</h3>
+          <p class="tool-card-desc">Real-time stats for words, characters (with/without spaces), sentences, paragraphs, and estimated reading time.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Analytics</span></div>
+        </article>
+
+        <article class="tool-card" data-category="content" data-tool="encoder">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-code"></i></div>
+          <div class="tool-card-category">Content & Text</div>
+          <h3 class="tool-card-title">Base64 / URL Encoder & Decoder</h3>
+          <p class="tool-card-desc">Safely encode and decode Base64 strings, binary payloads, and URI query parameters with instant copy.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Developer</span></div>
+        </article>
+
+        <article class="tool-card" data-category="content" data-tool="lorem">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-align-left"></i></div>
+          <div class="tool-card-category">Content & Text</div>
+          <h3 class="tool-card-title">Lorem Ipsum Generator</h3>
+          <p class="tool-card-desc">Generate dummy placeholder text by paragraphs, sentences, or word counts with quick copy actions.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Mock Content</span></div>
+        </article>
+
+        <article class="tool-card" data-category="productivity" data-tool="todo">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-list-check"></i></div>
+          <div class="tool-card-category">Personal Productivity</div>
+          <h3 class="tool-card-title">To-Do List & Notes</h3>
+          <p class="tool-card-desc">Interactive task board with priority badges, completion toggles, and persistent LocalStorage storage.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Offline LocalStorage</span></div>
+        </article>
+
+        <article class="tool-card" data-category="productivity" data-tool="pomodoro">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-stopwatch"></i></div>
+          <div class="tool-card-category">Personal Productivity</div>
+          <h3 class="tool-card-title">Pomodoro Focus Timer</h3>
+          <p class="tool-card-desc">Customizable intervals (25m Focus / 5m Break / 15m Long Break), glowing ring, audio alerts, and streak tracker.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Focus Clock</span></div>
+        </article>
+      </section>
+    </main>
+
+    <!-- SPA Workspace View -->
+    <section id="workspace-view" class="workspace-view">
+      <div class="workspace-nav-bar">
+        <button class="btn btn-glass btn-sm" id="back-to-dashboard-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+        <div class="workspace-title-box">
+          <div class="workspace-icon-pill" id="ws-icon-pill"><i class="fa-solid fa-cube"></i></div>
+          <div><h2 class="workspace-heading" id="ws-heading">Tool Name</h2><p class="workspace-subheading" id="ws-subheading">Category</p></div>
+        </div>
+        <select class="input-field btn-sm" id="quick-tool-select" style="max-width: 220px;">
+          <option value="resizer">Image Resizer</option>
+          <option value="pdf">PDF Locker</option>
+          <option value="qrcode">QR Generator</option>
+          <option value="textcase">Text Case</option>
+          <option value="converter">Unit Converter</option>
+          <option value="agecalc">Age Calculator</option>
+          <option value="password">Password Generator</option>
+          <option value="aspectratio">Aspect Ratio</option>
+          <option value="wordcounter">Word Counter</option>
+          <option value="encoder">Base64/URL</option>
+          <option value="lorem">Lorem Ipsum</option>
+          <option value="todo">To-Do & Notes</option>
+          <option value="pomodoro">Pomodoro Timer</option>
+        </select>
+      </div>
+
+      <div class="tool-workspace-body">
+        <!-- 1. Image Resizer -->
+        <div id="tool-pane-resizer" class="tool-pane" style="display: none;">
+          <div class="dropzone" id="img-dropzone"><i class="fa-solid fa-cloud-arrow-up"></i><h4>Click or drop image here</h4><p style="color:var(--text-muted);font-size:0.85rem">Supports JPG, PNG, WebP</p><input type="file" id="img-file-input" class="hidden-input" accept="image/*"></div>
+          <div id="img-editor-controls" style="display:none; margin-top:20px;">
+            <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
+              <div style="max-width:240px; border-radius:12px; overflow:hidden; border:1px solid var(--border-cyan);"><img id="img-preview" style="width:100%; display:block;"></div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <p>Original: <strong id="img-orig-dims">-</strong> (<span id="img-orig-size">-</span>)</p>
+                <p>Compressed: <strong id="img-new-size">-</strong> (<span id="img-savings" style="color:#10b981;">-</span>)</p>
+              </div>
+            </div>
+            <div class="tool-controls-grid">
+              <div class="form-group"><label class="form-label">Width (px)</label><input type="number" id="img-width-input" class="input-field"></div>
+              <div class="form-group"><label class="form-label">Height (px)</label><input type="number" id="img-height-input" class="input-field"></div>
+              <div class="form-group"><label class="form-label">Format</label><select id="img-format-select" class="input-field"><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+              <div class="form-group"><label class="form-label">Quality (<span id="img-quality-val">80</span>%)</label><input type="range" id="img-quality-slider" min="10" max="100" value="80"></div>
+            </div>
+            <label class="checkbox-wrap" style="margin: 12px 0;"><input type="checkbox" id="img-aspect-ratio-lock" checked> Maintain Aspect Ratio</label>
+            <div style="display:flex; gap:12px; margin-top:16px;"><button class="btn btn-neon" id="img-download-btn"><i class="fa-solid fa-download"></i> Download Image</button><button class="btn btn-glass" id="img-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change Image</button></div>
+          </div>
+        </div>
+
+        <!-- 2. PDF Locker & Utility -->
+        <div id="tool-pane-pdf" class="tool-pane" style="display: none;">
+          <div class="tool-tabs">
+            <button class="tool-tab-btn active" data-subtab="pdf-locker"><i class="fa-solid fa-lock"></i> PDF Locker (Password Protect)</button>
+            <button class="tool-tab-btn" data-subtab="img-to-pdf"><i class="fa-solid fa-images"></i> Image to PDF</button>
+          </div>
+          <!-- Subtab A: PDF Locker -->
+          <div id="subtab-pane-pdf-locker" class="subtab-pane">
+            <div class="dropzone" id="pdf-locker-dropzone"><i class="fa-solid fa-file-shield"></i><h4>Upload PDF file to Lock</h4><p style="color:var(--text-muted);font-size:0.85rem">Select any PDF file from your device</p><input type="file" id="pdf-locker-file-input" class="hidden-input" accept=".pdf,application/pdf"></div>
+            <div id="pdf-locker-controls" style="display: none; margin-top: 20px;">
+              <div style="padding:14px; border-radius:12px; background:rgba(0,242,254,0.08); border:1px solid var(--border-cyan); margin-bottom:18px;">
+                <i class="fa-solid fa-file-pdf" style="color:var(--cyan); margin-right:8px;"></i> Selected File: <strong id="pdf-locker-filename" style="color:#ffffff;">document.pdf</strong>
+              </div>
+              <div class="tool-controls-grid">
+                <div class="form-group"><label class="form-label">Set Document Open Password *</label><input type="password" id="pdf-password-input" class="input-field" placeholder="Enter password to lock PDF..."></div>
+                <div class="form-group"><label class="form-label">Confirm Password *</label><input type="password" id="pdf-password-confirm" class="input-field" placeholder="Re-enter password..."></div>
+              </div>
+              <div style="display:flex; gap:20px; margin: 14px 0;"><label class="checkbox-wrap"><input type="checkbox" id="pdf-perm-print" checked> Allow Printing</label><label class="checkbox-wrap"><input type="checkbox" id="pdf-perm-copy"> Allow Copying</label></div>
+              <div style="display:flex; gap:12px; margin-top:20px;"><button class="btn btn-purple" id="lock-pdf-btn"><i class="fa-solid fa-shield-halved"></i> Lock & Download Encrypted PDF</button><button class="btn btn-glass" id="pdf-locker-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button></div>
+            </div>
+          </div>
+          <!-- Subtab B: Image to PDF -->
+          <div id="subtab-pane-img-to-pdf" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="pdf-img-dropzone"><i class="fa-solid fa-images"></i><h4>Select multiple images to combine into PDF</h4><p style="color:var(--text-muted);font-size:0.85rem">Click or drop JPG, PNG</p><input type="file" id="pdf-img-file-input" class="hidden-input" accept="image/*" multiple></div>
+            <div id="pdf-img-list-wrap" style="display:none; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h5 style="color:#fff;">Uploaded Images (<span id="pdf-img-count">0</span>)</h5><button class="btn btn-sm btn-glass" id="pdf-img-clear-btn">Clear All</button></div>
+              <div id="pdf-img-thumbnails" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
+              <div class="tool-controls-grid">
+                <div class="form-group"><label class="form-label">Orientation</label><select id="pdf-orientation" class="input-field"><option value="p">Portrait</option><option value="l">Landscape</option></select></div>
+                <div class="form-group"><label class="form-label">Format</label><select id="pdf-format" class="input-field"><option value="a4">A4 Standard</option><option value="letter">US Letter</option></select></div>
+              </div>
+              <div style="margin:14px 0;"><label class="checkbox-wrap"><input type="checkbox" id="img-pdf-lock-toggle"> Also Password Protect this PDF</label><div id="img-pdf-pwd-wrap" style="display:none; margin-top:8px;"><input type="password" id="img-pdf-pwd-input" class="input-field" placeholder="Enter password for generated PDF..." style="max-width:320px;"></div></div>
+              <button class="btn btn-neon" id="generate-pdf-btn"><i class="fa-solid fa-file-arrow-down"></i> Generate & Download PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. QR Code Generator & Scanner -->
+        <div id="tool-pane-qrcode" class="tool-pane" style="display: none;">
+          <div class="tool-tabs"><button class="tool-tab-btn active" data-subtab="qr-generate">Generate QR</button><button class="tool-tab-btn" data-subtab="qr-scan">Scan QR from Image</button></div>
+          <div id="subtab-pane-qr-generate" class="subtab-pane">
+            <div class="tool-controls-grid">
+              <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">Text or URL to Encode</label><textarea id="qr-text-input" class="input-field" style="min-height:70px;">https://ndsuite.app</textarea></div>
+              <div class="form-group"><label class="form-label">Foreground Color</label><input type="color" id="qr-color-dark" class="input-field" value="#000000" style="height:44px; padding:2px;"></div>
+              <div class="form-group"><label class="form-label">Background Color</label><input type="color" id="qr-color-light" class="input-field" value="#ffffff" style="height:44px; padding:2px;"></div>
+              <div class="form-group"><label class="form-label">Size (<span id="qr-size-val">240</span>px)</label><input type="range" id="qr-size-slider" min="128" max="360" value="240"></div>
+            </div>
+            <div style="text-align:center; margin:20px 0;"><div id="qrcode-output"></div><div><button class="btn btn-neon" id="download-qr-btn" style="margin-top:14px;"><i class="fa-solid fa-download"></i> Download QR PNG</button></div></div>
+          </div>
+          <div id="subtab-pane-qr-scan" class="subtab-pane" style="display: none;">
+            <div class="dropzone" id="qr-scan-dropzone"><i class="fa-solid fa-camera"></i><h4>Upload QR code image to scan</h4><input type="file" id="qr-scan-file-input" class="hidden-input" accept="image/*"></div>
+            <div id="qr-scan-result-wrap" style="display:none; margin-top:20px; padding:18px; border-radius:14px; background:rgba(8,12,24,0.8); border:1px solid var(--border-cyan);">
+              <h5 style="color:var(--cyan); margin-bottom:8px;">Scanned Result:</h5>
+              <div id="qr-scan-result-text" style="font-family:var(--font-mono); word-break:break-all; font-size:1rem; margin-bottom:14px;"></div>
+              <button class="btn btn-sm btn-glass" id="qr-copy-result-btn"><i class="fa-regular fa-copy"></i> Copy Content</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Text Case Converter -->
+        <div id="tool-pane-textcase" class="tool-pane" style="display: none;">
+          <div class="form-group"><label class="form-label">Enter or paste text</label><textarea id="case-input" class="input-field" style="min-height:140px;" placeholder="Type or paste your text here..."></textarea></div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 16px 0;">
+            <button class="btn btn-sm btn-glass" data-case="upper">UPPERCASE</button>
+            <button class="btn btn-sm btn-glass" data-case="lower">lowercase</button>
+            <button class="btn btn-sm btn-glass" data-case="title">Title Case</button>
+            <button class="btn btn-sm btn-glass" data-case="sentence">Sentence case</button>
+            <button class="btn btn-sm btn-glass" data-case="camel">camelCase</button>
+            <button class="btn btn-sm btn-glass" data-case="snake">snake_case</button>
+            <button class="btn btn-sm btn-glass" data-case="kebab">kebab-case</button>
+            <button class="btn btn-sm btn-neon" id="case-copy-btn"><i class="fa-regular fa-copy"></i> Copy</button>
+            <button class="btn btn-sm btn-glass" id="case-clear-btn"><i class="fa-solid fa-trash"></i> Clear</button>
+          </div>
+        </div>
+
+        <!-- 5. Unit & Currency Converter -->
+        <div id="tool-pane-converter" class="tool-pane" style="display: none;">
+          <div class="tool-tabs">
+            <button class="tool-tab-btn active" data-conv-type="length">Length</button>
+            <button class="tool-tab-btn" data-conv-type="weight">Weight</button>
+            <button class="tool-tab-btn" data-conv-type="temp">Temperature</button>
+            <button class="tool-tab-btn" data-conv-type="data">Data Size</button>
+            <button class="tool-tab-btn" data-conv-type="currency">Currency</button>
+          </div>
+          <div class="tool-controls-grid">
+            <div class="form-group"><label class="form-label">Value</label><input type="number" id="conv-from-val" class="input-field" value="1"></div>
+            <div class="form-group"><label class="form-label">From</label><select id="conv-from-unit" class="input-field"></select></div>
+            <div class="form-group" style="align-self: flex-end;"><button class="btn btn-glass" id="conv-swap-btn" style="width: 100%;"><i class="fa-solid fa-arrows-rotate"></i> Swap</button></div>
+            <div class="form-group"><label class="form-label">To</label><select id="conv-to-unit" class="input-field"></select></div>
+          </div>
+          <div style="text-align:center; padding:24px; border-radius:16px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan); margin-top:16px;">
+            <p style="color:var(--text-muted); font-size:0.9rem;">Converted Result</p>
+            <h2 id="conv-result-display" style="font-size:2rem; color:#ffffff; font-family:var(--font-mono); margin-top:4px;">-</h2>
+          </div>
+        </div>
+
+        <!-- 6. Age & Date Calculator -->
+        <div id="tool-pane-agecalc" class="tool-pane" style="display: none;">
+          <div class="tool-controls-grid">
+            <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="age-dob-input" class="input-field"></div>
+            <div class="form-group"><label class="form-label">Calculate at Date</label><input type="date" id="age-target-input" class="input-field"></div>
+          </div>
+          <button class="btn btn-neon" id="calc-age-btn" style="margin: 12px 0;"><i class="fa-solid fa-calculator"></i> Calculate Exact Age</button>
+          <div id="age-result-wrap" style="display:none; margin-top:20px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:16px;">
+              <div class="stat-badge"><span class="stat-badge-label">Years</span><span class="stat-badge-value" id="age-res-years">0</span></div>
+              <div class="stat-badge"><span class="stat-badge-label">Months</span><span class="stat-badge-value" id="age-res-months">0</span></div>
+              <div class="stat-badge"><span class="stat-badge-label">Days</span><span class="stat-badge-value" id="age-res-days">0</span></div>
+              <div class="stat-badge"><span class="stat-badge-label">Total Days</span><span class="stat-badge-value" id="age-res-total-days">0</span></div>
+            </div>
+            <div style="padding:14px; border-radius:12px; background:rgba(0,242,254,0.06); border:1px solid var(--border-cyan); font-size:0.95rem;">
+              <i class="fa-solid fa-cake-candles" style="color:var(--cyan); margin-right:6px;"></i> Next Birthday in: <strong id="age-res-next-bday" style="color:#ffffff;">-</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Password Generator -->
+        <div id="tool-pane-password" class="tool-pane" style="display: none;">
+          <div style="position:relative; margin-bottom:20px;">
+            <input type="text" id="pwd-display" class="input-field" readonly style="font-family:var(--font-mono); font-size:1.25rem; padding-right:110px;">
+            <button class="btn btn-sm btn-neon" id="pwd-copy-btn" style="position:absolute; right:8px; top:50%; transform:translateY(-50%);"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <div class="tool-controls-grid">
+            <div class="form-group"><label class="form-label">Password Length (<span id="pwd-len-val">16</span>)</label><input type="range" id="pwd-len-slider" min="6" max="64" value="16"></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:18px; margin: 16px 0;">
+            <label class="checkbox-wrap"><input type="checkbox" id="pwd-inc-upper" checked> Uppercase (A-Z)</label>
+            <label class="checkbox-wrap"><input type="checkbox" id="pwd-inc-lower" checked> Lowercase (a-z)</label>
+            <label class="checkbox-wrap"><input type="checkbox" id="pwd-inc-num" checked> Numbers (0-9)</label>
+            <label class="checkbox-wrap"><input type="checkbox" id="pwd-inc-sym" checked> Symbols (!@#$%)</label>
+          </div>
+          <button class="btn btn-purple" id="pwd-gen-btn"><i class="fa-solid fa-arrows-rotate"></i> Generate New Password</button>
+        </div>
+
+        <!-- 8. Aspect Ratio Calculator -->
+        <div id="tool-pane-aspectratio" class="tool-pane" style="display: none;">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+            <button class="btn btn-sm btn-glass" data-ratio="16:9">YouTube 16:9</button>
+            <button class="btn btn-sm btn-glass" data-ratio="4:3">Standard 4:3</button>
+            <button class="btn btn-sm btn-glass" data-ratio="1:1">Square 1:1</button>
+            <button class="btn btn-sm btn-glass" data-ratio="9:16">Reels/TikTok 9:16</button>
+            <button class="btn btn-sm btn-glass" data-ratio="820:312">FB Cover</button>
+          </div>
+          <div class="tool-controls-grid">
+            <div class="form-group"><label class="form-label">Width (px)</label><input type="number" id="ratio-w" class="input-field" value="1920"></div>
+            <div class="form-group"><label class="form-label">Height (px)</label><input type="number" id="ratio-h" class="input-field" value="1080"></div>
+            <div class="form-group"><label class="form-label">Calculated Ratio</label><input type="text" id="ratio-result" class="input-field" readonly style="font-family:var(--font-mono);" value="16:9"></div>
+          </div>
+        </div>
+
+        <!-- 9. Word & Character Counter -->
+        <div id="tool-pane-wordcounter" class="tool-pane" style="display: none;">
+          <div class="form-group"><label class="form-label">Your Content</label><textarea id="word-input" class="input-field" style="min-height:160px;" placeholder="Type or paste text to analyze statistics..."></textarea></div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-top:16px;">
+            <div class="stat-badge"><span class="stat-badge-label">Words</span><span class="stat-badge-value" id="stat-words">0</span></div>
+            <div class="stat-badge"><span class="stat-badge-label">Characters</span><span class="stat-badge-value" id="stat-chars">0</span></div>
+            <div class="stat-badge"><span class="stat-badge-label">Without Spaces</span><span class="stat-badge-value" id="stat-nospaces">0</span></div>
+            <div class="stat-badge"><span class="stat-badge-label">Sentences</span><span class="stat-badge-value" id="stat-sentences">0</span></div>
+            <div class="stat-badge"><span class="stat-badge-label">Reading Time</span><span class="stat-badge-value" id="stat-reading" style="font-size:1.05rem;">0 min</span></div>
+          </div>
+        </div>
+
+        <!-- 10. Base64 / URL Encoder & Decoder -->
+        <div id="tool-pane-encoder" class="tool-pane" style="display: none;">
+          <div class="tool-tabs"><button class="tool-tab-btn active" data-codec="b64-encode">Base64 Encode</button><button class="tool-tab-btn" data-codec="b64-decode">Base64 Decode</button><button class="tool-tab-btn" data-codec="url-encode">URL Encode</button><button class="tool-tab-btn" data-codec="url-decode">URL Decode</button></div>
+          <div class="form-group"><label class="form-label">Input String</label><textarea id="codec-input" class="input-field" placeholder="Enter string to process..."></textarea></div>
+          <div style="display:flex; gap:10px; margin: 12px 0;"><button class="btn btn-neon btn-sm" id="codec-exec-btn">Execute</button><button class="btn btn-glass btn-sm" id="codec-copy-btn"><i class="fa-regular fa-copy"></i> Copy Output</button></div>
+          <div class="form-group"><label class="form-label">Output Result</label><textarea id="codec-output" class="input-field" readonly style="font-family:var(--font-mono);"></textarea></div>
+        </div>
+
+        <!-- 11. Lorem Ipsum Generator -->
+        <div id="tool-pane-lorem" class="tool-pane" style="display: none;">
+          <div class="tool-controls-grid">
+            <div class="form-group"><label class="form-label">Generate By</label><select id="lorem-type" class="input-field"><option value="paragraphs">Paragraphs</option><option value="sentences">Sentences</option><option value="words">Words</option></select></div>
+            <div class="form-group"><label class="form-label">Count (<span id="lorem-count-val">3</span>)</label><input type="range" id="lorem-count-slider" min="1" max="20" value="3"></div>
+          </div>
+          <div style="display:flex; gap:10px; margin: 14px 0;"><button class="btn btn-neon btn-sm" id="lorem-gen-btn">Generate</button><button class="btn btn-glass btn-sm" id="lorem-copy-btn"><i class="fa-regular fa-copy"></i> Copy Text</button></div>
+          <div class="form-group"><textarea id="lorem-output" class="input-field" style="min-height:160px;" readonly></textarea></div>
+        </div>
+
+        <!-- 12. To-Do List & Notes -->
+        <div id="tool-pane-todo" class="tool-pane" style="display: none;">
+          <div style="display:flex; gap:10px; margin-bottom:18px;">
+            <input type="text" id="todo-text-input" class="input-field" placeholder="Enter a new task..." style="flex:1;">
+            <select id="todo-priority-select" class="input-field" style="max-width:130px;"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+            <button class="btn btn-neon" id="todo-add-btn"><i class="fa-solid fa-plus"></i> Add</button>
+          </div>
+          <div id="todo-list-container"></div>
+          <div style="margin-top:28px;">
+            <h4 style="color:#ffffff; margin-bottom:8px;"><i class="fa-regular fa-note-sticky" style="color:var(--cyan);"></i> Quick Notes Scratchpad</h4>
+            <textarea id="quick-notes-input" class="input-field" style="min-height:110px;" placeholder="Type any thoughts or notes here. Automatically saved in LocalStorage..."></textarea>
+          </div>
+        </div>
+
+        <!-- 13. Pomodoro Focus Timer -->
+        <div id="tool-pane-pomodoro" class="tool-pane" style="display: none;">
+          <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
+            <button class="btn btn-sm btn-glass active-timer-mode" id="pomo-mode-focus">25m Focus</button>
+            <button class="btn btn-sm btn-glass" id="pomo-mode-short">5m Short Break</button>
+            <button class="btn btn-sm btn-glass" id="pomo-mode-long">15m Long Break</button>
+          </div>
+          <div class="timer-ring-container">
+            <svg class="timer-svg" viewBox="0 0 260 260">
+              <defs><linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00f2fe"/><stop offset="100%" stop-color="#9b51e0"/></linearGradient></defs>
+              <circle class="timer-circle-bg" cx="130" cy="130" r="110"/>
+              <circle class="timer-circle-progress" id="timer-progress-ring" cx="130" cy="130" r="110" stroke-dasharray="691.15" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-time-display"><div class="timer-clock" id="timer-display">25:00</div><div class="timer-status-label" id="timer-label">Focus Session</div></div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:12px; margin-top:20px;">
+            <button class="btn btn-neon" id="timer-start-btn" style="min-width:120px;"><i class="fa-solid fa-play"></i> Start</button>
+            <button class="btn btn-glass" id="timer-pause-btn" style="min-width:100px;" disabled><i class="fa-solid fa-pause"></i> Pause</button>
+            <button class="btn btn-glass" id="timer-reset-btn" style="min-width:100px;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          </div>
+          <p style="text-align:center; color:var(--text-muted); font-size:0.88rem; margin-top:16px;">Completed Sessions: <strong id="pomo-sessions" style="color:var(--cyan); font-family:var(--font-mono);">0</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div>
+          <h3 class="footer-title"><i class="fa-solid fa-circle-nodes text-gradient"></i> <span>About Our Site</span></h3>
+          <p class="footer-desc">ND SUITE is your all-in-one digital Swiss Army Knife designed to enhance productivity and streamline daily online workflows. Built with cutting-edge front-end technologies, ND SUITE delivers fast, secure, and privacy-focused utility tools directly inside your browser—no installations or external servers required. Developed and maintained by MD NAHID ISLAM.</p>
+          <div class="footer-social-links">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-btn" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" class="social-btn" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://telegram.org" target="_blank" rel="noopener noreferrer" class="social-btn" title="Telegram"><i class="fa-brands fa-telegram"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4 style="color:#ffffff; font-size:1.15rem; margin-bottom:12px;">Creator & Support</h4>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:8px;"><i class="fa-solid fa-user-check" style="color:var(--cyan); margin-right:6px;"></i> Lead: <strong>MD NAHID ISLAM</strong></p>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:14px;"><i class="fa-solid fa-envelope" style="color:var(--purple); margin-right:6px;"></i> <a href="mailto:nahid4624ahmed@gmail.com" class="email-link">nahid4624ahmed@gmail.com</a></p>
+          <button class="btn btn-sm btn-glass" onclick="copySupportEmail()"><i class="fa-regular fa-copy"></i> Copy Email</button>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 <strong>ND SUITE</strong>. All rights reserved. Developed and maintained by <strong>MD NAHID ISLAM</strong>.</div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem;"><span style="color:var(--cyan);">● Client-Side Encrypted</span> &bull; <span>v2.8 Production</span></div>
+      </div>
+    </footer>
   </div>
 
-  <!-- Complete Vanilla JavaScript Engine -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Vanilla JavaScript Logic -->
   <script>
-    /* Global Toast, SPA Router, Image Resizer, Guaranteed Working PDF Locker, 
-       QR Generator/Scanner, Unit Converter, Age Calc, Pomodoro & Productivity Tools */
+    function showToast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      const icon = type === 'success' ? '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i>' : type === 'error' ? '<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>' : '<i class="fa-solid fa-circle-info" style="color:var(--cyan);"></i>';
+      t.innerHTML = `${icon} <span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+    }
+
+    function copyToClipboard(text, msg = 'Copied to clipboard!') {
+      navigator.clipboard.writeText(text).then(() => showToast(msg, 'success')).catch(() => {
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        showToast(msg, 'success');
+      });
+    }
+    function copySupportEmail() { copyToClipboard('nahid4624ahmed@gmail.com', 'Support email copied!'); }
+    document.getElementById('copy-email-btn').addEventListener('click', copySupportEmail);
+
+    // Navigation & Routing
+    const dashboardView = document.getElementById('dashboard-view');
+    const workspaceView = document.getElementById('workspace-view');
+    const backBtn = document.getElementById('back-to-dashboard-btn');
+    const quickSelect = document.getElementById('quick-tool-select');
+    const wsHeading = document.getElementById('ws-heading');
+    const wsSubheading = document.getElementById('ws-subheading');
+    const wsIconPill = document.getElementById('ws-icon-pill');
+
+    const toolsMeta = {
+      resizer: { title: 'Image Resizer & Compressor', category: 'Utility Tools', icon: 'fa-image' },
+      pdf: { title: 'PDF Locker & Utility Tools', category: 'Utility Tools', icon: 'fa-file-pdf' },
+      qrcode: { title: 'QR Code Generator & Scanner', category: 'Utility Tools', icon: 'fa-qrcode' },
+      textcase: { title: 'Text Case Converter', category: 'Utility Tools', icon: 'fa-font' },
+      converter: { title: 'Unit & Currency Converter', category: 'Converters & Calculators', icon: 'fa-calculator' },
+      agecalc: { title: 'Age & Date Calculator', category: 'Converters & Calculators', icon: 'fa-calendar-days' },
+      password: { title: 'Password Generator', category: 'Converters & Calculators', icon: 'fa-key' },
+      aspectratio: { title: 'Aspect Ratio Calculator', category: 'Converters & Calculators', icon: 'fa-crop-simple' },
+      wordcounter: { title: 'Word & Character Counter', category: 'Content & Text', icon: 'fa-chart-simple' },
+      encoder: { title: 'Base64 / URL Encoder & Decoder', category: 'Content & Text', icon: 'fa-code' },
+      lorem: { title: 'Lorem Ipsum Generator', category: 'Content & Text', icon: 'fa-align-left' },
+      todo: { title: 'To-Do List & Notes', category: 'Personal Productivity', icon: 'fa-list-check' },
+      pomodoro: { title: 'Pomodoro Focus Timer', category: 'Personal Productivity', icon: 'fa-stopwatch' }
+    };
+
+    function openTool(toolKey) {
+      if (!toolsMeta[toolKey]) return;
+      const m = toolsMeta[toolKey];
+      wsHeading.textContent = m.title;
+      wsSubheading.textContent = m.category;
+      wsIconPill.innerHTML = `<i class="fa-solid ${m.icon}"></i>`;
+      quickSelect.value = toolKey;
+      document.querySelectorAll('.tool-pane').forEach(p => p.style.display = 'none');
+      const target = document.getElementById(`tool-pane-${toolKey}`);
+      if (target) target.style.display = 'block';
+      dashboardView.style.display = 'none';
+      workspaceView.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.tool-card').forEach(c => c.addEventListener('click', () => openTool(c.getAttribute('data-tool'))));
+    backBtn.addEventListener('click', () => { workspaceView.style.display = 'none'; dashboardView.style.display = 'block'; });
+    quickSelect.addEventListener('change', (e) => openTool(e.target.value));
+
+    // Dashboard Search & Filters
+    const toolSearch = document.getElementById('tool-search-input');
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    function filterCards() {
+      const q = toolSearch.value.toLowerCase().trim();
+      const activeCat = document.querySelector('.filter-tab.active').getAttribute('data-category');
+      document.querySelectorAll('.tool-card').forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const text = card.textContent.toLowerCase();
+        const matchesCat = activeCat === 'all' || cat === activeCat;
+        const matchesSearch = !q || text.includes(q);
+        card.style.display = (matchesCat && matchesSearch) ? 'flex' : 'none';
+      });
+    }
+    toolSearch.addEventListener('input', filterCards);
+    filterTabs.forEach(tab => tab.addEventListener('click', () => {
+      filterTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      filterCards();
+    }));
+
+    // Subtabs switcher
+    document.querySelectorAll('.tool-tabs').forEach(tabGroup => {
+      tabGroup.querySelectorAll('.tool-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabGroup.querySelectorAll('.tool-tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const parentPane = tabGroup.closest('.tool-pane');
+          const subtab = btn.getAttribute('data-subtab');
+          if (subtab && parentPane) {
+            parentPane.querySelectorAll('.subtab-pane').forEach(p => p.style.display = 'none');
+            const target = parentPane.querySelector(`#subtab-pane-${subtab}`);
+            if (target) target.style.display = 'block';
+          }
+        });
+      });
+    });
+
+    // 1. Image Resizer
+    const imgDropzone = document.getElementById('img-dropzone');
+    const imgFileInput = document.getElementById('img-file-input');
+    const imgControls = document.getElementById('img-editor-controls');
+    const imgW = document.getElementById('img-width-input');
+    const imgH = document.getElementById('img-height-input');
+    const imgFormat = document.getElementById('img-format-select');
+    const imgQuality = document.getElementById('img-quality-slider');
+    const imgQualityVal = document.getElementById('img-quality-val');
+    const imgLock = document.getElementById('img-aspect-ratio-lock');
+    const imgPreview = document.getElementById('img-preview');
+    let loadedImg = null, origW = 0, origH = 0, origBytes = 0, compBlob = null;
+
+    imgDropzone.addEventListener('click', () => imgFileInput.click());
+    imgFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        const f = e.target.files[0];
+        origBytes = f.size;
+        document.getElementById('img-orig-size').textContent = (origBytes/1024).toFixed(1) + ' KB';
+        const r = new FileReader();
+        r.onload = (ev) => {
+          loadedImg = new Image();
+          loadedImg.onload = () => {
+            origW = loadedImg.naturalWidth; origH = loadedImg.naturalHeight;
+            imgW.value = origW; imgH.value = origH;
+            document.getElementById('img-orig-dims').textContent = `${origW}x${origH}`;
+            imgDropzone.style.display = 'none'; imgControls.style.display = 'block';
+            processImg();
+          };
+          loadedImg.src = ev.target.result;
+        };
+        r.readAsDataURL(f);
+      }
+    });
+    function processImg() {
+      if (!loadedImg) return;
+      const w = parseInt(imgW.value) || origW, h = parseInt(imgH.value) || origH;
+      const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(loadedImg, 0, 0, w, h);
+      canvas.toBlob((b) => {
+        compBlob = b;
+        imgPreview.src = URL.createObjectURL(b);
+        document.getElementById('img-new-size').textContent = (b.size/1024).toFixed(1) + ' KB';
+        const pct = Math.round(((origBytes - b.size) / origBytes) * 100);
+        document.getElementById('img-savings').textContent = pct > 0 ? `-${pct}%` : `+${Math.abs(pct)}%`;
+      }, imgFormat.value, (parseInt(imgQuality.value)||80)/100);
+    }
+    imgW.addEventListener('input', () => { if (imgLock.checked && origW) imgH.value = Math.round(imgW.value * (origH/origW)); processImg(); });
+    imgH.addEventListener('input', () => { if (imgLock.checked && origH) imgW.value = Math.round(imgH.value * (origW/origH)); processImg(); });
+    imgQuality.addEventListener('input', () => { imgQualityVal.textContent = imgQuality.value; processImg(); });
+    imgFormat.addEventListener('change', processImg);
+    document.getElementById('img-download-btn').addEventListener('click', () => {
+      if (!compBlob) return;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(compBlob); a.download = `compressed_${Date.now()}.${imgFormat.value.split('/')[1]}`; a.click();
+    });
+    document.getElementById('img-reset-btn').addEventListener('click', () => { loadedImg = null; imgControls.style.display = 'none'; imgDropzone.style.display = 'flex'; });
+
+    // 2. PDF Locker & Image to PDF
+    const pdfDrop = document.getElementById('pdf-locker-dropzone');
+    const pdfInput = document.getElementById('pdf-locker-file-input');
+    const pdfControls = document.getElementById('pdf-locker-controls');
+    let currentPdfBytes = null, currentPdfName = '';
+
+    pdfDrop.addEventListener('click', () => pdfInput.click());
+    pdfInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const f = e.target.files[0]; currentPdfName = f.name;
+      const ab = await f.arrayBuffer(); currentPdfBytes = new Uint8Array(ab);
+      pdfDrop.style.display = 'none'; pdfControls.style.display = 'block';
+      document.getElementById('pdf-locker-filename').textContent = `${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+      showToast('PDF loaded! Enter password to lock it.', 'info');
+    });
+
+    document.getElementById('lock-pdf-btn').addEventListener('click', async () => {
+      if (!currentPdfBytes) { showToast('Upload a PDF first', 'error'); return; }
+      const pwd = document.getElementById('pdf-password-input').value.trim();
+      const pwdConf = document.getElementById('pdf-password-confirm').value.trim();
+      if (!pwd) { showToast('Please enter a password', 'error'); return; }
+      if (pwd !== pwdConf) { showToast('Passwords do not match', 'error'); return; }
+
+      const btn = document.getElementById('lock-pdf-btn');
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Locking PDF...';
+      try {
+        const { PDFDocument } = window.PDFLib;
+        const pdfDoc = await PDFDocument.load(currentPdfBytes, { ignoreEncryption: true });
+        const cleanBytes = await pdfDoc.save();
+        const lockedBytes = await window.PDFEncryptLite.encryptPDF(cleanBytes, pwd, {
+          ownerPassword: pwd + '_owner',
+          allowPrinting: document.getElementById('pdf-perm-print').checked,
+          allowCopying: document.getElementById('pdf-perm-copy').checked
+        });
+        const blob = new Blob([lockedBytes], { type: 'application/pdf' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = currentPdfName.replace(/\.pdf$/i, '_locked.pdf'); a.click();
+        showToast('Success! Password lock added to PDF.', 'success');
+      } catch(err) {
+        console.error(err); showToast('Encryption error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Lock & Download Encrypted PDF';
+      }
+    });
+
+    document.getElementById('pdf-locker-reset-btn').addEventListener('click', () => {
+      currentPdfBytes = null; pdfControls.style.display = 'none'; pdfDrop.style.display = 'flex';
+      document.getElementById('pdf-password-input').value = ''; document.getElementById('pdf-password-confirm').value = '';
+    });
+
+    // Image to PDF
+    let pdfImgs = [];
+    const imgToPdfDrop = document.getElementById('pdf-img-dropzone');
+    const imgToPdfInput = document.getElementById('pdf-img-file-input');
+    imgToPdfDrop.addEventListener('click', () => imgToPdfInput.click());
+    imgToPdfInput.addEventListener('change', (e) => {
+      Array.from(e.target.files).forEach(f => {
+        const r = new FileReader(); r.onload = (ev) => {
+          pdfImgs.push(ev.target.result);
+          renderPdfThumbs();
+        };
+        r.readAsDataURL(f);
+      });
+    });
+    function renderPdfThumbs() {
+      const w = document.getElementById('pdf-img-list-wrap');
+      const box = document.getElementById('pdf-img-thumbnails');
+      if (!pdfImgs.length) { w.style.display = 'none'; imgToPdfDrop.style.display = 'flex'; return; }
+      imgToPdfDrop.style.display = 'none'; w.style.display = 'block';
+      document.getElementById('pdf-img-count').textContent = pdfImgs.length;
+      box.innerHTML = '';
+      pdfImgs.forEach((src, idx) => {
+        const d = document.createElement('div'); d.style = 'width:70px; height:70px; position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--border-cyan);';
+        d.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;"><button data-i="${idx}" style="position:absolute; top:2px; right:2px; background:#ef4444; border:none; color:#fff; width:18px; height:18px; border-radius:50%; font-size:10px; cursor:pointer;">✕</button>`;
+        d.querySelector('button').onclick = () => { pdfImgs.splice(idx, 1); renderPdfThumbs(); };
+        box.appendChild(d);
+      });
+    }
+    document.getElementById('pdf-img-clear-btn').onclick = () => { pdfImgs = []; renderPdfThumbs(); };
+    document.getElementById('img-pdf-lock-toggle').onchange = (e) => { document.getElementById('img-pdf-pwd-wrap').style.display = e.target.checked ? 'block' : 'none'; };
+    document.getElementById('generate-pdf-btn').onclick = async () => {
+      if (!pdfImgs.length) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF(document.getElementById('pdf-orientation').value, 'pt', document.getElementById('pdf-format').value);
+      pdfImgs.forEach((img, i) => {
+        if (i > 0) doc.addPage();
+        doc.addImage(img, 'JPEG', 20, 20, doc.internal.pageSize.getWidth()-40, doc.internal.pageSize.getHeight()-40, undefined, 'FAST');
+      });
+      const lockPwd = document.getElementById('img-pdf-lock-toggle').checked ? document.getElementById('img-pdf-pwd-input').value.trim() : '';
+      if (lockPwd && window.PDFEncryptLite) {
+        const bytes = new Uint8Array(doc.output('arraybuffer'));
+        const locked = await window.PDFEncryptLite.encryptPDF(bytes, lockPwd);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([locked], {type:'application/pdf'}));
+        a.download = `images_locked_${Date.now()}.pdf`; a.click();
+      } else {
+        doc.save(`images_${Date.now()}.pdf`);
+      }
+      showToast('PDF downloaded successfully!', 'success');
+    };
+
+    // 3. QR Code Generator & Scanner
+    let qrInst = null;
+    function makeQr() {
+      const box = document.getElementById('qrcode-output'); box.innerHTML = '';
+      const text = document.getElementById('qr-text-input').value.trim() || 'ND SUITE';
+      const size = parseInt(document.getElementById('qr-size-slider').value) || 240;
+      qrInst = new QRCode(box, {
+        text: text, width: size, height: size,
+        colorDark: document.getElementById('qr-color-dark').value,
+        colorLight: document.getElementById('qr-color-light').value,
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+    document.getElementById('qr-text-input').addEventListener('input', makeQr);
+    document.getElementById('qr-color-dark').addEventListener('input', makeQr);
+    document.getElementById('qr-color-light').addEventListener('input', makeQr);
+    document.getElementById('qr-size-slider').addEventListener('input', (e) => { document.getElementById('qr-size-val').textContent = e.target.value; makeQr(); });
+    document.getElementById('download-qr-btn').onclick = () => {
+      const img = document.querySelector('#qrcode-output img');
+      if (img) { const a = document.createElement('a'); a.href = img.src; a.download = `qrcode_${Date.now()}.png`; a.click(); }
+    };
+    makeQr();
+
+    // QR Scanner
+    const qrScanDrop = document.getElementById('qr-scan-dropzone');
+    const qrScanInput = document.getElementById('qr-scan-file-input');
+    qrScanDrop.onclick = () => qrScanInput.click();
+    qrScanInput.onchange = (e) => {
+      if (!e.target.files.length) return;
+      const img = new Image();
+      img.onload = () => {
+        const cvs = document.createElement('canvas'); cvs.width = img.width; cvs.height = img.height;
+        const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+        const code = jsQR(imgData.data, cvs.width, cvs.height);
+        if (code) {
+          document.getElementById('qr-scan-result-text').textContent = code.data;
+          document.getElementById('qr-scan-result-wrap').style.display = 'block';
+          showToast('QR code successfully scanned!', 'success');
+        } else {
+          showToast('Could not find QR code in this image', 'error');
+        }
+      };
+      img.src = URL.createObjectURL(e.target.files[0]);
+    };
+    document.getElementById('qr-copy-result-btn').onclick = () => copyToClipboard(document.getElementById('qr-scan-result-text').textContent);
+
+    // 4. Text Case Converter
+    const caseIn = document.getElementById('case-input');
+    document.querySelectorAll('[data-case]').forEach(b => {
+      b.onclick = () => {
+        const val = caseIn.value, c = b.getAttribute('data-case');
+        if (c === 'upper') caseIn.value = val.toUpperCase();
+        else if (c === 'lower') caseIn.value = val.toLowerCase();
+        else if (c === 'title') caseIn.value = val.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.substr(1).toLowerCase());
+        else if (c === 'sentence') caseIn.value = val.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+        else if (c === 'camel') caseIn.value = val.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+        else if (c === 'snake') caseIn.value = val.toLowerCase().replace(/\s+/g, '_').replace(/[^\w]/g, '');
+        else if (c === 'kebab') caseIn.value = val.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+      };
+    });
+    document.getElementById('case-copy-btn').onclick = () => copyToClipboard(caseIn.value);
+    document.getElementById('case-clear-btn').onclick = () => { caseIn.value = ''; };
+
+    // 5. Unit Converter
+    const unitRates = {
+      length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
+      weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, t: 1000 },
+      data: { MB: 1, KB: 0.0009765625, GB: 1024, TB: 1048576, B: 0.00000095367431640625 },
+      currency: { USD: 1, EUR: 1.08, GBP: 1.28, BDT: 0.0084, INR: 0.012, CAD: 0.74, JPY: 0.0067 }
+    };
+    let currentConvType = 'length';
+    const fromUnitSel = document.getElementById('conv-from-unit');
+    const toUnitSel = document.getElementById('conv-to-unit');
+    const fromValInput = document.getElementById('conv-from-val');
+
+    function initConvUnits() {
+      fromUnitSel.innerHTML = ''; toUnitSel.innerHTML = '';
+      if (currentConvType === 'temp') {
+        ['Celsius (°C)', 'Fahrenheit (°F)', 'Kelvin (K)'].forEach((u, i) => {
+          fromUnitSel.add(new Option(u, i)); toUnitSel.add(new Option(u, i));
+        });
+        toUnitSel.selectedIndex = 1;
+      } else {
+        const keys = Object.keys(unitRates[currentConvType]);
+        keys.forEach(k => { fromUnitSel.add(new Option(k, k)); toUnitSel.add(new Option(k, k)); });
+        if (keys.length > 1) toUnitSel.selectedIndex = 1;
+      }
+      calcConversion();
+    }
+    function calcConversion() {
+      const v = parseFloat(fromValInput.value) || 0;
+      let res = 0;
+      if (currentConvType === 'temp') {
+        const from = fromUnitSel.selectedIndex, to = toUnitSel.selectedIndex;
+        let c = from === 0 ? v : from === 1 ? (v - 32) * 5/9 : v - 273.15;
+        res = to === 0 ? c : to === 1 ? (c * 9/5) + 32 : c + 273.15;
+      } else {
+        const rates = unitRates[currentConvType];
+        const base = v * rates[fromUnitSel.value];
+        res = base / rates[toUnitSel.value];
+      }
+      document.getElementById('conv-result-display').textContent = res.toLocaleString(undefined, { maximumFractionDigits: 6 });
+    }
+    document.querySelectorAll('[data-conv-type]').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('[data-conv-type]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentConvType = btn.getAttribute('data-conv-type');
+        initConvUnits();
+      };
+    });
+    fromValInput.oninput = calcConversion;
+    fromUnitSel.onchange = calcConversion;
+    toUnitSel.onchange = calcConversion;
+    document.getElementById('conv-swap-btn').onclick = () => {
+      const s = fromUnitSel.selectedIndex; fromUnitSel.selectedIndex = toUnitSel.selectedIndex; toUnitSel.selectedIndex = s;
+      calcConversion();
+    };
+    initConvUnits();
+
+    // 6. Age Calculator
+    const dobIn = document.getElementById('age-dob-input');
+    const targetDateIn = document.getElementById('age-target-input');
+    targetDateIn.valueAsDate = new Date();
+    document.getElementById('calc-age-btn').onclick = () => {
+      if (!dobIn.value) { showToast('Select date of birth', 'error'); return; }
+      const b = new Date(dobIn.value), t = new Date(targetDateIn.value || new Date());
+      if (b > t) { showToast('DOB cannot be in the future', 'error'); return; }
+      let y = t.getFullYear() - b.getFullYear(), m = t.getMonth() - b.getMonth(), d = t.getDate() - b.getDate();
+      if (d < 0) { m--; d += new Date(t.getFullYear(), t.getMonth(), 0).getDate(); }
+      if (m < 0) { y--; m += 12; }
+      document.getElementById('age-res-years').textContent = y;
+      document.getElementById('age-res-months').textContent = m;
+      document.getElementById('age-res-days').textContent = d;
+      document.getElementById('age-res-total-days').textContent = Math.floor((t - b) / (1000*60*60*24));
+      const nextB = new Date(t.getFullYear(), b.getMonth(), b.getDate());
+      if (nextB < t) nextB.setFullYear(t.getFullYear() + 1);
+      document.getElementById('age-res-next-bday').textContent = Math.ceil((nextB - t) / (1000*60*60*24)) + ' days';
+      document.getElementById('age-result-wrap').style.display = 'block';
+    };
+
+    // 7. Password Generator
+    function generatePassword() {
+      const len = parseInt(document.getElementById('pwd-len-slider').value) || 16;
+      let chars = '';
+      if (document.getElementById('pwd-inc-upper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (document.getElementById('pwd-inc-lower').checked) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (document.getElementById('pwd-inc-num').checked) chars += '0123456789';
+      if (document.getElementById('pwd-inc-sym').checked) chars += '!@#$%^&*()_+~|}{[]:;?><,./-=';
+      if (!chars) chars = 'abcdefghijklmnopqrstuvwxyz';
+      let res = '';
+      const arr = new Uint32Array(len);
+      window.crypto.getRandomValues(arr);
+      for (let i = 0; i < len; i++) res += chars[arr[i] % chars.length];
+      document.getElementById('pwd-display').value = res;
+    }
+    document.getElementById('pwd-len-slider').oninput = (e) => { document.getElementById('pwd-len-val').textContent = e.target.value; generatePassword(); };
+    document.getElementById('pwd-gen-btn').onclick = generatePassword;
+    document.getElementById('pwd-copy-btn').onclick = () => copyToClipboard(document.getElementById('pwd-display').value);
+    generatePassword();
+
+    // 8. Aspect Ratio
+    const rw = document.getElementById('ratio-w'), rh = document.getElementById('ratio-h');
+    function gcd(a, b) { return b == 0 ? a : gcd(b, a % b); }
+    function calcRatio() {
+      const w = parseInt(rw.value) || 1, h = parseInt(rh.value) || 1;
+      const d = gcd(w, h);
+      document.getElementById('ratio-result').value = `${w/d}:${h/d}`;
+    }
+    rw.oninput = calcRatio; rh.oninput = calcRatio;
+    document.querySelectorAll('[data-ratio]').forEach(b => {
+      b.onclick = () => {
+        const [pw, ph] = b.getAttribute('data-ratio').split(':');
+        rw.value = pw; rh.value = ph; calcRatio();
+      };
+    });
+
+    // 9. Word Counter
+    const wordIn = document.getElementById('word-input');
+    wordIn.oninput = () => {
+      const t = wordIn.value.trim();
+      const words = t ? t.split(/\s+/).length : 0;
+      document.getElementById('stat-words').textContent = words;
+      document.getElementById('stat-chars').textContent = wordIn.value.length;
+      document.getElementById('stat-nospaces').textContent = wordIn.value.replace(/\s/g, '').length;
+      document.getElementById('stat-sentences').textContent = t ? (t.match(/[\.\!\?]+/g) || []).length : 0;
+      document.getElementById('stat-reading').textContent = `${Math.ceil(words / 200)} min`;
+    };
+
+    // 10. Base64/URL
+    let currentCodec = 'b64-encode';
+    document.querySelectorAll('[data-codec]').forEach(b => {
+      b.onclick = () => {
+        document.querySelectorAll('[data-codec]').forEach(x => x.classList.remove('active'));
+        b.classList.add('active'); currentCodec = b.getAttribute('data-codec');
+      };
+    });
+    document.getElementById('codec-exec-btn').onclick = () => {
+      const inp = document.getElementById('codec-input').value;
+      const out = document.getElementById('codec-output');
+      try {
+        if (currentCodec === 'b64-encode') out.value = btoa(unescape(encodeURIComponent(inp)));
+        else if (currentCodec === 'b64-decode') out.value = decodeURIComponent(escape(atob(inp)));
+        else if (currentCodec === 'url-encode') out.value = encodeURIComponent(inp);
+        else if (currentCodec === 'url-decode') out.value = decodeURIComponent(inp);
+      } catch(e) { showToast('Codec error: ' + e.message, 'error'); }
+    };
+    document.getElementById('codec-copy-btn').onclick = () => copyToClipboard(document.getElementById('codec-output').value);
+
+    // 11. Lorem Ipsum
+    const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+    document.getElementById('lorem-count-slider').oninput = (e) => document.getElementById('lorem-count-val').textContent = e.target.value;
+    document.getElementById('lorem-gen-btn').onclick = () => {
+      const type = document.getElementById('lorem-type').value;
+      const cnt = parseInt(document.getElementById('lorem-count-slider').value) || 3;
+      let res = [];
+      for (let i = 0; i < cnt; i++) {
+        if (type === 'paragraphs') res.push(Array.from({length: 45}, () => loremWords[Math.floor(Math.random()*loremWords.length)]).join(' ') + '.');
+        else if (type === 'sentences') res.push(Array.from({length: 12}, () => loremWords[Math.floor(Math.random()*loremWords.length)]).join(' ') + '.');
+        else res.push(loremWords[Math.floor(Math.random()*loremWords.length)]);
+      }
+      document.getElementById('lorem-output').value = res.join(type === 'paragraphs' ? '\n\n' : type === 'sentences' ? ' ' : ' ');
+    };
+    document.getElementById('lorem-copy-btn').onclick = () => copyToClipboard(document.getElementById('lorem-output').value);
+
+    // 12. To-Do List & Notes
+    let todos = JSON.parse(localStorage.getItem('nd_todos') || '[]');
+    function saveTodos() { localStorage.setItem('nd_todos', JSON.stringify(todos)); renderTodos(); }
+    function renderTodos() {
+      const c = document.getElementById('todo-list-container'); c.innerHTML = '';
+      todos.forEach((item, idx) => {
+        const el = document.createElement('div'); el.className = `todo-item ${item.done ? 'completed' : ''}`;
+        el.style = 'display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(8,12,24,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:8px;';
+        el.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" ${item.done ? 'checked' : ''} style="cursor:pointer;">
+            <span class="todo-text" style="${item.done ? 'text-decoration:line-through; color:var(--text-dim);' : ''}">${item.text}</span>
+            <span class="priority-badge" style="font-size:0.7rem; padding:2px 6px; border-radius:4px; text-transform:uppercase; background:${item.prio==='high'?'rgba(239,68,68,0.2)':item.prio==='medium'?'rgba(245,158,11,0.2)':'rgba(16,185,129,0.2)'}; color:${item.prio==='high'?'#ef4444':item.prio==='medium'?'#f59e0b':'#10b981'};">${item.prio}</span>
+          </div>
+          <button style="background:none; border:none; color:var(--text-dim); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+        `;
+        el.querySelector('input').onchange = () => { item.done = !item.done; saveTodos(); };
+        el.querySelector('button').onclick = () => { todos.splice(idx, 1); saveTodos(); };
+        c.appendChild(el);
+      });
+    }
+    document.getElementById('todo-add-btn').onclick = () => {
+      const val = document.getElementById('todo-text-input').value.trim();
+      if (!val) return;
+      todos.push({ text: val, prio: document.getElementById('todo-priority-select').value, done: false });
+      document.getElementById('todo-text-input').value = '';
+      saveTodos();
+    };
+    const qNotes = document.getElementById('quick-notes-input');
+    qNotes.value = localStorage.getItem('nd_notes') || '';
+    qNotes.oninput = () => localStorage.setItem('nd_notes', qNotes.value);
+    renderTodos();
+
+    // 13. Pomodoro Timer
+    let timerTotal = 25 * 60, timeLeft = timerTotal, timerInterval = null, pomoCount = 0;
+    const ring = document.getElementById('timer-progress-ring');
+    const ringLen = 2 * Math.PI * 110;
+    ring.style.strokeDasharray = ringLen;
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+      document.getElementById('timer-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      ring.style.strokeDashoffset = ringLen * (1 - (timeLeft / timerTotal));
+    }
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.4);
+      } catch(e) {}
+    }
+    document.getElementById('timer-start-btn').onclick = () => {
+      if (timerInterval) return;
+      document.getElementById('timer-start-btn').disabled = true;
+      document.getElementById('timer-pause-btn').disabled = false;
+      timerInterval = setInterval(() => {
+        if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); }
+        else {
+          clearInterval(timerInterval); timerInterval = null;
+          playBeep(); showToast('Timer finished!', 'success');
+          pomoCount++; document.getElementById('pomo-sessions').textContent = pomoCount;
+          document.getElementById('timer-start-btn').disabled = false;
+          document.getElementById('timer-pause-btn').disabled = true;
+        }
+      }, 1000);
+    };
+    document.getElementById('timer-pause-btn').onclick = () => {
+      clearInterval(timerInterval); timerInterval = null;
+      document.getElementById('timer-start-btn').disabled = false;
+      document.getElementById('timer-pause-btn').disabled = true;
+    };
+    document.getElementById('timer-reset-btn').onclick = () => {
+      clearInterval(timerInterval); timerInterval = null;
+      timeLeft = timerTotal; updateTimerDisplay();
+      document.getElementById('timer-start-btn').disabled = false;
+      document.getElementById('timer-pause-btn').disabled = true;
+    };
+    document.getElementById('pomo-mode-focus').onclick = () => { timerTotal = 25*60; timeLeft = timerTotal; document.getElementById('timer-label').textContent = 'Focus Session'; updateTimerDisplay(); };
+    document.getElementById('pomo-mode-short').onclick = () => { timerTotal = 5*60; timeLeft = timerTotal; document.getElementById('timer-label').textContent = 'Short Break'; updateTimerDisplay(); };
+    document.getElementById('pomo-mode-long').onclick = () => { timerTotal = 15*60; timeLeft = timerTotal; document.getElementById('timer-label').textContent = 'Long Break'; updateTimerDisplay(); };
+    updateTimerDisplay();
   </script>
 </body>
 </html>
