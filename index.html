@@ -6,8 +6,9 @@
   <title>ND SUITE - All-in-One Digital Productivity & Utility Engine</title>
   <meta name="description" content="ND SUITE is your all-in-one digital Swiss Army Knife designed to enhance productivity and streamline daily online workflows. Developed and maintained by MD NAHID ISLAM." />
   <meta property="og:title" content="ND SUITE - All-in-One Digital Productivity & Utility Engine" />
-  <meta property="og:description" content="All-in-one digital Swiss Army Knife with 13 client-side utility and productivity tools." />
+  <meta property="og:description" content="ND SUITE is your all-in-one digital Swiss Army Knife designed to enhance productivity and streamline daily online workflows. Developed and maintained by MD NAHID ISLAM." />
   <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +20,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite@1.2.0/dist/pdf-encrypt-lite.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
@@ -167,6 +169,18 @@
     .stat-badge-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
     .stat-badge-value { font-size: 1.3rem; font-weight: 700; color: #ffffff; font-family: var(--font-mono); }
 
+    /* QR Code Generator Styling */
+    .qr-type-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .qr-type-btn { padding: 7px 14px; border-radius: var(--radius-full); font-size: 0.82rem; font-weight: 600; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .qr-type-btn.active { background: rgba(0, 242, 254, 0.15); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0, 242, 254, 0.3); }
+    .qr-theme-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .qr-theme-chip { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 600; background: rgba(8, 12, 24, 0.7); border: 1px solid var(--border-subtle); color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+    .qr-theme-chip:hover, .qr-theme-chip.active { border-color: var(--cyan); color: #ffffff; }
+    .qr-color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .qr-preview-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: rgba(6, 9, 19, 0.8); border: 1px solid var(--border-cyan); border-radius: 18px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 242, 254, 0.05); }
+    .qr-code-frame { padding: 18px; background: #ffffff; border-radius: 14px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4); display: inline-block; position: relative; transition: all 0.3s; }
+    .qr-code-frame canvas, .qr-code-frame img { display: block; border-radius: 6px; }
+
     /* Pomodoro Ring */
     .timer-ring-container { position: relative; width: 260px; height: 260px; margin: 16px auto; display: flex; align-items: center; justify-content: center; }
     .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
@@ -261,16 +275,16 @@
           <div class="tool-card-icon-wrap"><i class="fa-solid fa-file-pdf"></i></div>
           <div class="tool-card-category">Utility Tools</div>
           <h3 class="tool-card-title">PDF Locker & Utility</h3>
-          <p class="tool-card-desc">Convert images into clean PDFs and lock PDF files with genuine client-side password encryption.</p>
-          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Password Lock</span></div>
+          <p class="tool-card-desc">Lock PDF files with passwords, unlock encrypted PDFs client-side, and convert images into clean PDFs.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Lock & Unlock</span></div>
         </article>
 
         <article class="tool-card" data-category="utility" data-tool="qrcode">
           <div class="tool-card-icon-wrap"><i class="fa-solid fa-qrcode"></i></div>
           <div class="tool-card-category">Utility Tools</div>
           <h3 class="tool-card-title">QR Code Generator & Scanner</h3>
-          <p class="tool-card-desc">Generate custom colored QR codes with instant download, and decode QR codes from uploaded images.</p>
-          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">QR Engine</span></div>
+          <p class="tool-card-desc">Create modern QR codes for URLs, Wi-Fi, vCard, WhatsApp with themes, logo badge, SVG/PNG export, and scan images.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">QR Studio</span></div>
         </article>
 
         <article class="tool-card" data-category="utility" data-tool="textcase">
@@ -365,8 +379,8 @@
         </div>
         <select class="input-field btn-sm" id="quick-tool-select" style="max-width: 220px;">
           <option value="resizer">Image Resizer</option>
-          <option value="pdf">PDF Locker</option>
-          <option value="qrcode">QR Generator</option>
+          <option value="pdf">PDF Locker & Unlocker</option>
+          <option value="qrcode">QR Studio & Scanner</option>
           <option value="textcase">Text Case</option>
           <option value="converter">Unit Converter</option>
           <option value="agecalc">Age Calculator</option>
@@ -386,7 +400,7 @@
           <div class="dropzone" id="img-dropzone"><i class="fa-solid fa-cloud-arrow-up"></i><h4>Click or drop image here</h4><p style="color:var(--text-muted);font-size:0.85rem">Supports JPG, PNG, WebP</p><input type="file" id="img-file-input" class="hidden-input" accept="image/*"></div>
           <div id="img-editor-controls" style="display:none; margin-top:20px;">
             <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
-              <div style="max-width:240px; border-radius:12px; overflow:hidden; border:1px solid var(--border-cyan);"><img id="img-preview" style="width:100%; display:block;"></div>
+              <div style="max-width:240px; border-radius:12px; overflow:hidden; border:1px solid var(--border-cyan);"><img id="img-preview" style="width:100%; display:block;" alt="Preview"></div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <p>Original: <strong id="img-orig-dims">-</strong> (<span id="img-orig-size">-</span>)</p>
                 <p>Compressed: <strong id="img-new-size">-</strong> (<span id="img-savings" style="color:#10b981;">-</span>)</p>
@@ -403,13 +417,15 @@
           </div>
         </div>
 
-        <!-- 2. PDF Locker & Utility -->
+        <!-- 2. PDF Locker & Utility (With Password Protection, Unlock PDF & Image to PDF) -->
         <div id="tool-pane-pdf" class="tool-pane" style="display: none;">
           <div class="tool-tabs">
             <button class="tool-tab-btn active" data-subtab="pdf-locker"><i class="fa-solid fa-lock"></i> PDF Locker (Password Protect)</button>
+            <button class="tool-tab-btn" data-subtab="pdf-unlocker"><i class="fa-solid fa-unlock-keyhole"></i> Unlock PDF (Remove Password)</button>
             <button class="tool-tab-btn" data-subtab="img-to-pdf"><i class="fa-solid fa-images"></i> Image to PDF</button>
           </div>
-          <!-- Subtab A: PDF Locker -->
+
+          <!-- Subtab A: PDF Locker (Protect) -->
           <div id="subtab-pane-pdf-locker" class="subtab-pane">
             <div class="dropzone" id="pdf-locker-dropzone"><i class="fa-solid fa-file-shield"></i><h4>Upload PDF file to Lock</h4><p style="color:var(--text-muted);font-size:0.85rem">Select any PDF file from your device</p><input type="file" id="pdf-locker-file-input" class="hidden-input" accept=".pdf,application/pdf"></div>
             <div id="pdf-locker-controls" style="display: none; margin-top: 20px;">
@@ -424,7 +440,63 @@
               <div style="display:flex; gap:12px; margin-top:20px;"><button class="btn btn-purple" id="lock-pdf-btn"><i class="fa-solid fa-shield-halved"></i> Lock & Download Encrypted PDF</button><button class="btn btn-glass" id="pdf-locker-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button></div>
             </div>
           </div>
-          <!-- Subtab B: Image to PDF -->
+
+          <!-- Subtab B: Unlock PDF (Remove Password) -->
+          <div id="subtab-pane-pdf-unlocker" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="pdf-unlock-dropzone">
+              <i class="fa-solid fa-file-circle-question" style="color:var(--cyan);"></i>
+              <h4>Upload Password-Protected PDF</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Drag & drop your locked PDF file here to decrypt and remove password</p>
+              <input type="file" id="pdf-unlock-file-input" class="hidden-input" accept=".pdf,application/pdf">
+            </div>
+            <div id="pdf-unlock-controls" style="display: none; margin-top: 20px;">
+              <div style="padding:16px; border-radius:14px; background:rgba(155, 81, 224, 0.08); border:1px solid rgba(155, 81, 224, 0.3); margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="width:42px; height:42px; border-radius:10px; background:rgba(155, 81, 224, 0.2); display:flex; align-items:center; justify-content:center; color:var(--purple); font-size:1.3rem;">
+                    <i class="fa-solid fa-file-pdf"></i>
+                  </div>
+                  <div>
+                    <strong id="pdf-unlock-filename" style="color:#ffffff; font-size:0.95rem;">locked_doc.pdf</strong>
+                    <div id="pdf-unlock-filesize" style="color:var(--text-muted); font-size:0.8rem; font-family:var(--font-mono);">0 KB</div>
+                  </div>
+                </div>
+                <span class="creator-badge" style="background:rgba(239, 68, 68, 0.15); border-color:rgba(239, 68, 68, 0.35); color:#f87171;">
+                  <i class="fa-solid fa-lock"></i> Protected PDF
+                </span>
+              </div>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label">Enter PDF Document Password *</label>
+                <div style="position:relative; max-width:540px;">
+                  <input type="password" id="pdf-unlock-password-input" class="input-field" placeholder="Type current password to decrypt..." style="padding-right:45px;">
+                  <button type="button" id="toggle-unlock-pwd-btn" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem;" title="Show or hide password">
+                    <i class="fa-regular fa-eye" id="toggle-pwd-icon"></i>
+                  </button>
+                </div>
+                <small style="color:var(--text-dim); font-size:0.8rem; margin-top:4px;">
+                  <i class="fa-solid fa-circle-info" style="color:var(--cyan); margin-right:4px;"></i> The password will be verified client-side to strip all encryption and owner restrictions cleanly.
+                </small>
+              </div>
+
+              <div id="pdf-unlock-progress" style="display:none; margin:16px 0; padding:14px 18px; border-radius:12px; background:rgba(0,242,254,0.06); border:1px solid var(--border-cyan);">
+                <div style="display:flex; align-items:center; gap:12px; color:var(--cyan); font-size:0.92rem;">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  <span id="pdf-unlock-status-text">Decrypting document streams...</span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
+                <button class="btn btn-neon" id="unlock-pdf-btn">
+                  <i class="fa-solid fa-unlock-keyhole"></i> Unlock & Download Clean PDF
+                </button>
+                <button class="btn btn-glass" id="pdf-unlock-reset-btn">
+                  <i class="fa-solid fa-rotate-left"></i> Change PDF
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subtab C: Image to PDF -->
           <div id="subtab-pane-img-to-pdf" class="subtab-pane" style="display:none;">
             <div class="dropzone" id="pdf-img-dropzone"><i class="fa-solid fa-images"></i><h4>Select multiple images to combine into PDF</h4><p style="color:var(--text-muted);font-size:0.85rem">Click or drop JPG, PNG</p><input type="file" id="pdf-img-file-input" class="hidden-input" accept="image/*" multiple></div>
             <div id="pdf-img-list-wrap" style="display:none; margin-top:20px;">
@@ -440,24 +512,181 @@
           </div>
         </div>
 
-        <!-- 3. QR Code Generator & Scanner -->
+        <!-- 3. QR Code Generator & Scanner (Upgraded Modern QR Studio) -->
         <div id="tool-pane-qrcode" class="tool-pane" style="display: none;">
-          <div class="tool-tabs"><button class="tool-tab-btn active" data-subtab="qr-generate">Generate QR</button><button class="tool-tab-btn" data-subtab="qr-scan">Scan QR from Image</button></div>
-          <div id="subtab-pane-qr-generate" class="subtab-pane">
-            <div class="tool-controls-grid">
-              <div class="form-group" style="grid-column: 1 / -1;"><label class="form-label">Text or URL to Encode</label><textarea id="qr-text-input" class="input-field" style="min-height:70px;">https://ndsuite.app</textarea></div>
-              <div class="form-group"><label class="form-label">Foreground Color</label><input type="color" id="qr-color-dark" class="input-field" value="#000000" style="height:44px; padding:2px;"></div>
-              <div class="form-group"><label class="form-label">Background Color</label><input type="color" id="qr-color-light" class="input-field" value="#ffffff" style="height:44px; padding:2px;"></div>
-              <div class="form-group"><label class="form-label">Size (<span id="qr-size-val">240</span>px)</label><input type="range" id="qr-size-slider" min="128" max="360" value="240"></div>
-            </div>
-            <div style="text-align:center; margin:20px 0;"><div id="qrcode-output"></div><div><button class="btn btn-neon" id="download-qr-btn" style="margin-top:14px;"><i class="fa-solid fa-download"></i> Download QR PNG</button></div></div>
+          <div class="tool-tabs">
+            <button class="tool-tab-btn active" data-subtab="qr-generate"><i class="fa-solid fa-wand-magic-sparkles"></i> QR Studio Generator</button>
+            <button class="tool-tab-btn" data-subtab="qr-scan"><i class="fa-solid fa-camera"></i> Scan QR from Image</button>
           </div>
+
+          <!-- Subtab A: QR Generator Studio -->
+          <div id="subtab-pane-qr-generate" class="subtab-pane">
+            <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px; align-items:start;">
+              <!-- Left Column: Controls & Dynamic Content -->
+              <div>
+                <!-- Content Type Selection -->
+                <label class="form-label" style="margin-bottom:8px; display:block;">Select QR Data Type</label>
+                <div class="qr-type-pills">
+                  <button type="button" class="qr-type-btn active" data-qr-type="url"><i class="fa-solid fa-link"></i> Website URL</button>
+                  <button type="button" class="qr-type-btn" data-qr-type="wifi"><i class="fa-solid fa-wifi"></i> Wi-Fi Network</button>
+                  <button type="button" class="qr-type-btn" data-qr-type="vcard"><i class="fa-solid fa-address-card"></i> vCard Contact</button>
+                  <button type="button" class="qr-type-btn" data-qr-type="whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+                  <button type="button" class="qr-type-btn" data-qr-type="email"><i class="fa-solid fa-envelope"></i> Email</button>
+                  <button type="button" class="qr-type-btn" data-qr-type="text"><i class="fa-solid fa-align-left"></i> Plain Text</button>
+                </div>
+
+                <!-- Dynamic Input Fields by Type -->
+                <div id="qr-inputs-container" style="background:rgba(8, 12, 24, 0.6); padding:16px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); margin-bottom:18px;">
+                  <!-- Type 1: URL -->
+                  <div class="qr-type-group" id="qr-group-url">
+                    <div class="form-group">
+                      <label class="form-label">Website Address (URL)</label>
+                      <input type="url" id="qr-input-url" class="input-field" value="https://ndsuite.app" placeholder="https://example.com">
+                    </div>
+                  </div>
+
+                  <!-- Type 2: Wi-Fi -->
+                  <div class="qr-type-group" id="qr-group-wifi" style="display:none;">
+                    <div class="tool-controls-grid" style="margin:0 0 10px 0;">
+                      <div class="form-group"><label class="form-label">Network Name (SSID)</label><input type="text" id="qr-wifi-ssid" class="input-field" placeholder="MyWiFi_5G" value="Office_WiFi"></div>
+                      <div class="form-group"><label class="form-label">Wi-Fi Password</label><input type="text" id="qr-wifi-pass" class="input-field" placeholder="WiFiSecret123" value="FastInternet2026"></div>
+                    </div>
+                    <div class="tool-controls-grid" style="margin:0;">
+                      <div class="form-group"><label class="form-label">Security</label><select id="qr-wifi-type" class="input-field"><option value="WPA" selected>WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">None (Open)</option></select></div>
+                      <div class="form-group" style="justify-content:center;"><label class="checkbox-wrap" style="margin-top:20px;"><input type="checkbox" id="qr-wifi-hidden"> Hidden Network</label></div>
+                    </div>
+                  </div>
+
+                  <!-- Type 3: vCard Contact -->
+                  <div class="qr-type-group" id="qr-group-vcard" style="display:none;">
+                    <div class="tool-controls-grid" style="margin:0 0 10px 0;">
+                      <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="qr-vcard-name" class="input-field" value="MD NAHID ISLAM"></div>
+                      <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="qr-vcard-phone" class="input-field" placeholder="+8801700000000" value="+8801700000000"></div>
+                    </div>
+                    <div class="tool-controls-grid" style="margin:0;">
+                      <div class="form-group"><label class="form-label">Email Address</label><input type="email" id="qr-vcard-email" class="input-field" value="nahid4624ahmed@gmail.com"></div>
+                      <div class="form-group"><label class="form-label">Organization / Note</label><input type="text" id="qr-vcard-org" class="input-field" value="ND SUITE Founder"></div>
+                    </div>
+                  </div>
+
+                  <!-- Type 4: WhatsApp -->
+                  <div class="qr-type-group" id="qr-group-whatsapp" style="display:none;">
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label class="form-label">WhatsApp Number (with country code, no + or spaces)</label>
+                      <input type="text" id="qr-wa-phone" class="input-field" placeholder="8801700000000" value="8801700000000">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Pre-filled Message</label>
+                      <input type="text" id="qr-wa-msg" class="input-field" value="Hello MD NAHID ISLAM! I am reaching out from ND SUITE." placeholder="Optional message...">
+                    </div>
+                  </div>
+
+                  <!-- Type 5: Email -->
+                  <div class="qr-type-group" id="qr-group-email" style="display:none;">
+                    <div class="tool-controls-grid" style="margin:0 0 10px 0;">
+                      <div class="form-group"><label class="form-label">Recipient Email</label><input type="email" id="qr-email-to" class="input-field" value="nahid4624ahmed@gmail.com"></div>
+                      <div class="form-group"><label class="form-label">Subject</label><input type="text" id="qr-email-subject" class="input-field" value="Inquiry via ND SUITE"></div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Body</label><textarea id="qr-email-body" class="input-field" style="min-height:70px;">Hello, I would like to get in touch with you.</textarea></div>
+                  </div>
+
+                  <!-- Type 6: Plain Text -->
+                  <div class="qr-type-group" id="qr-group-text" style="display:none;">
+                    <div class="form-group">
+                      <label class="form-label">Plain Text / Notes</label>
+                      <textarea id="qr-input-rawtext" class="input-field" style="min-height:90px;" placeholder="Type any text, message, or cryptographic key here...">Welcome to ND SUITE Digital Utility Engine</textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Theme & Color Styling -->
+                <div style="margin-bottom:16px;">
+                  <label class="form-label">Design Themes & Presets</label>
+                  <div class="qr-theme-chips">
+                    <button type="button" class="qr-theme-chip active" data-fg="#00f2fe" data-bg="#060913"><span class="qr-color-dot" style="background:#00f2fe;"></span> Neon Cyan</button>
+                    <button type="button" class="qr-theme-chip" data-fg="#9b51e0" data-bg="#0a0518"><span class="qr-color-dot" style="background:#9b51e0;"></span> Cyber Purple</button>
+                    <button type="button" class="qr-theme-chip" data-fg="#000000" data-bg="#ffffff"><span class="qr-color-dot" style="background:#000000; border-color:#999;"></span> Print Classic</button>
+                    <button type="button" class="qr-theme-chip" data-fg="#10b981" data-bg="#031a12"><span class="qr-color-dot" style="background:#10b981;"></span> Emerald Matrix</button>
+                    <button type="button" class="qr-theme-chip" data-fg="#f59e0b" data-bg="#1a1102"><span class="qr-color-dot" style="background:#f59e0b;"></span> Solar Gold</button>
+                  </div>
+                </div>
+
+                <div class="tool-controls-grid">
+                  <div class="form-group"><label class="form-label">Foreground Color</label><input type="color" id="qr-color-dark" class="input-field" value="#00f2fe" style="height:42px; padding:2px;"></div>
+                  <div class="form-group"><label class="form-label">Background Color</label><input type="color" id="qr-color-light" class="input-field" value="#060913" style="height:42px; padding:2px;"></div>
+                  <div class="form-group"><label class="form-label">Resolution (<span id="qr-size-val">260</span>px)</label><input type="range" id="qr-size-slider" min="160" max="420" value="260"></div>
+                  <div class="form-group">
+                    <label class="form-label">Error Correction</label>
+                    <select id="qr-ec-select" class="input-field">
+                      <option value="H" selected>High (30% - Best Reliability)</option>
+                      <option value="Q">Quartile (25%)</option>
+                      <option value="M">Medium (15%)</option>
+                      <option value="L">Low (7% - Compact)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:16px; margin-top:8px;">
+                  <label class="checkbox-wrap"><input type="checkbox" id="qr-center-badge" checked> Add Center "ND" Logo Badge</label>
+                  <label class="checkbox-wrap"><input type="checkbox" id="qr-frame-padding" checked> Clean Outer Margin</label>
+                </div>
+              </div>
+
+              <!-- Right Column: Interactive Live Preview & Download Bar -->
+              <div>
+                <div class="qr-preview-wrapper">
+                  <div style="margin-bottom:14px; font-size:0.82rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; display:flex; align-items:center; gap:6px;">
+                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></span>
+                    Live QR Preview
+                  </div>
+
+                  <div id="qr-preview-card" class="qr-code-frame" style="background:#060913; border: 1px solid rgba(0, 242, 254, 0.3);">
+                    <div id="qrcode-output"></div>
+                  </div>
+
+                  <div style="margin-top:14px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); text-align:center;">
+                    Encoded Characters: <span id="qr-char-count" style="color:var(--cyan); font-weight:600;">0</span>
+                  </div>
+
+                  <!-- Download Buttons -->
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:320px; margin-top:18px;">
+                    <button class="btn btn-neon btn-sm" id="download-qr-btn">
+                      <i class="fa-solid fa-download"></i> Download PNG
+                    </button>
+                    <button class="btn btn-purple btn-sm" id="download-qr-svg-btn">
+                      <i class="fa-solid fa-file-code"></i> Download SVG
+                    </button>
+                    <button class="btn btn-glass btn-sm" id="copy-qr-btn">
+                      <i class="fa-regular fa-copy"></i> Copy Image
+                    </button>
+                    <button class="btn btn-glass btn-sm" id="print-qr-btn">
+                      <i class="fa-solid fa-print"></i> Print QR
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subtab B: Scan QR from Image -->
           <div id="subtab-pane-qr-scan" class="subtab-pane" style="display: none;">
-            <div class="dropzone" id="qr-scan-dropzone"><i class="fa-solid fa-camera"></i><h4>Upload QR code image to scan</h4><input type="file" id="qr-scan-file-input" class="hidden-input" accept="image/*"></div>
-            <div id="qr-scan-result-wrap" style="display:none; margin-top:20px; padding:18px; border-radius:14px; background:rgba(8,12,24,0.8); border:1px solid var(--border-cyan);">
-              <h5 style="color:var(--cyan); margin-bottom:8px;">Scanned Result:</h5>
-              <div id="qr-scan-result-text" style="font-family:var(--font-mono); word-break:break-all; font-size:1rem; margin-bottom:14px;"></div>
-              <button class="btn btn-sm btn-glass" id="qr-copy-result-btn"><i class="fa-regular fa-copy"></i> Copy Content</button>
+            <div class="dropzone" id="qr-scan-dropzone">
+              <i class="fa-solid fa-camera"></i>
+              <h4>Upload QR code image to scan</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Select any PNG, JPG, or screenshot with a QR code</p>
+              <input type="file" id="qr-scan-file-input" class="hidden-input" accept="image/*">
+            </div>
+            <div id="qr-scan-result-wrap" style="display:none; margin-top:20px; padding:20px; border-radius:16px; background:rgba(8,12,24,0.85); border:1px solid var(--border-cyan);">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <h5 style="color:var(--cyan); font-size:1.05rem;"><i class="fa-solid fa-circle-check"></i> Scanned QR Content:</h5>
+                <span class="creator-badge" style="background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981;">Decoded</span>
+              </div>
+              <div id="qr-scan-result-text" style="font-family:var(--font-mono); word-break:break-all; font-size:1rem; padding:12px; background:rgba(0,0,0,0.3); border-radius:10px; border:1px solid rgba(255,255,255,0.06); margin-bottom:14px; user-select:all;"></div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-neon" id="qr-copy-result-btn"><i class="fa-regular fa-copy"></i> Copy Content</button>
+                <a id="qr-open-url-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-glass" style="display:none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Link</a>
+                <button class="btn btn-sm btn-glass" id="qr-scan-again-btn"><i class="fa-solid fa-rotate-left"></i> Scan Another</button>
+              </div>
             </div>
           </div>
         </div>
@@ -644,15 +873,23 @@
       </div>
       <div class="footer-bottom">
         <div>&copy; 2026 <strong>ND SUITE</strong>. All rights reserved. Developed and maintained by <strong>MD NAHID ISLAM</strong>.</div>
-        <div style="font-family: var(--font-mono); font-size: 0.78rem;"><span style="color:var(--cyan);">● Client-Side Encrypted</span> &bull; <span>v2.8 Production</span></div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem;"><span style="color:var(--cyan);">● Client-Side Encrypted</span> &bull; <span>v2.9 Production</span></div>
       </div>
     </footer>
   </div>
 
   <div class="toast-container" id="toast-container"></div>
+  <div id="root" style="display:none;"></div>
+  <script type="module" src="/src/main.tsx"></script>
 
-  <!-- Vanilla JavaScript Logic -->
+  <!-- Complete In-Browser Client Logic -->
   <script>
+    // Initialize PDF.js worker
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // Toast Notifications
     function showToast(msg, type = 'info') {
       const c = document.getElementById('toast-container');
       const t = document.createElement('div');
@@ -710,6 +947,11 @@
       dashboardView.style.display = 'none';
       workspaceView.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Refresh QR canvas if opening qrcode
+      if (toolKey === 'qrcode' && typeof renderQrStudio === 'function') {
+        setTimeout(renderQrStudio, 50);
+      }
     }
 
     document.querySelectorAll('.tool-card').forEach(c => c.addEventListener('click', () => openTool(c.getAttribute('data-tool'))));
@@ -754,7 +996,7 @@
       });
     });
 
-    // 1. Image Resizer
+    // 1. Image Resizer & Compressor
     const imgDropzone = document.getElementById('img-dropzone');
     const imgFileInput = document.getElementById('img-file-input');
     const imgControls = document.getElementById('img-editor-controls');
@@ -811,7 +1053,8 @@
     });
     document.getElementById('img-reset-btn').addEventListener('click', () => { loadedImg = null; imgControls.style.display = 'none'; imgDropzone.style.display = 'flex'; });
 
-    // 2. PDF Locker & Image to PDF
+    // 2. PDF Locker & Utility Tools
+    // 2A. PDF Locker (Encrypt with password)
     const pdfDrop = document.getElementById('pdf-locker-dropzone');
     const pdfInput = document.getElementById('pdf-locker-file-input');
     const pdfControls = document.getElementById('pdf-locker-controls');
@@ -861,7 +1104,188 @@
       document.getElementById('pdf-password-input').value = ''; document.getElementById('pdf-password-confirm').value = '';
     });
 
-    // Image to PDF
+    // 2B. PDF Unlocker (Unlock & Decrypt Password Protected PDF)
+    const pdfUnlockDrop = document.getElementById('pdf-unlock-dropzone');
+    const pdfUnlockInput = document.getElementById('pdf-unlock-file-input');
+    const pdfUnlockControls = document.getElementById('pdf-unlock-controls');
+    const toggleUnlockPwdBtn = document.getElementById('toggle-unlock-pwd-btn');
+    const unlockPwdInput = document.getElementById('pdf-unlock-password-input');
+    const unlockStatusBox = document.getElementById('pdf-unlock-progress');
+    const unlockStatusText = document.getElementById('pdf-unlock-status-text');
+    let unlockPdfBytes = null, unlockPdfName = '';
+
+    // Drag and drop handlers
+    ['dragenter', 'dragover'].forEach(eventName => {
+      pdfUnlockDrop.addEventListener(eventName, (e) => { e.preventDefault(); pdfUnlockDrop.classList.add('dragover'); }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      pdfUnlockDrop.addEventListener(eventName, (e) => { e.preventDefault(); pdfUnlockDrop.classList.remove('dragover'); }, false);
+    });
+    pdfUnlockDrop.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt.files && dt.files.length) {
+        handleUnlockFileSelect(dt.files[0]);
+      }
+    });
+
+    pdfUnlockDrop.addEventListener('click', () => pdfUnlockInput.click());
+    pdfUnlockInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleUnlockFileSelect(e.target.files[0]);
+    });
+
+    async function handleUnlockFileSelect(file) {
+      if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file', 'error'); return;
+      }
+      unlockPdfName = file.name;
+      const ab = await file.arrayBuffer();
+      unlockPdfBytes = new Uint8Array(ab);
+      pdfUnlockDrop.style.display = 'none';
+      pdfUnlockControls.style.display = 'block';
+      document.getElementById('pdf-unlock-filename').textContent = file.name;
+      document.getElementById('pdf-unlock-filesize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      unlockPwdInput.value = '';
+      unlockPwdInput.focus();
+      showToast('PDF loaded! Enter document password to unlock.', 'info');
+    }
+
+    // Toggle password visibility
+    toggleUnlockPwdBtn.addEventListener('click', () => {
+      const isPwd = unlockPwdInput.type === 'password';
+      unlockPwdInput.type = isPwd ? 'text' : 'password';
+      document.getElementById('toggle-pwd-icon').className = isPwd ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
+
+    document.getElementById('pdf-unlock-reset-btn').addEventListener('click', () => {
+      unlockPdfBytes = null;
+      pdfUnlockControls.style.display = 'none';
+      pdfUnlockDrop.style.display = 'flex';
+      unlockStatusBox.style.display = 'none';
+      unlockPwdInput.value = '';
+    });
+
+    // Execute PDF Unlocking
+    document.getElementById('unlock-pdf-btn').addEventListener('click', async () => {
+      if (!unlockPdfBytes) { showToast('Upload a protected PDF first', 'error'); return; }
+      const password = unlockPwdInput.value.trim();
+      if (!password) {
+        showToast('Please enter the PDF password', 'error');
+        unlockPwdInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('unlock-pdf-btn');
+      btn.disabled = true;
+      unlockStatusBox.style.display = 'block';
+      unlockStatusText.textContent = 'Verifying password and decrypting PDF streams...';
+
+      try {
+        let unlockedBlob = null;
+        let unlockedVia = '';
+
+        // Strategy 1: Attempt native lossless stream decryption using @pdfsmaller/pdf-decrypt
+        try {
+          unlockStatusText.textContent = 'Attempting lossless native stream decryption...';
+          const decryptModule = await import('https://esm.sh/@pdfsmaller/pdf-decrypt@1.0.1');
+          if (decryptModule && typeof decryptModule.decryptPDF === 'function') {
+            const decryptedBytes = await decryptModule.decryptPDF(unlockPdfBytes, password);
+            unlockedBlob = new Blob([decryptedBytes], { type: 'application/pdf' });
+            unlockedVia = 'native';
+          }
+        } catch (nativeErr) {
+          console.warn('Native decryption attempt skipped or threw, falling back to PDF.js engine:', nativeErr);
+          // If native decryption explicitly detected wrong password, rethrow
+          if (nativeErr.message && (nativeErr.message.toLowerCase().includes('password') || nativeErr.message.toLowerCase().includes('bad key') || nativeErr.message.toLowerCase().includes('hash'))) {
+            throw new Error('Incorrect password');
+          }
+        }
+
+        // Strategy 2: High-Fidelity Universal Engine with PDF.js + jsPDF
+        if (!unlockedBlob) {
+          unlockStatusText.textContent = 'Verifying password with PDF.js engine...';
+          const loadingTask = pdfjsLib.getDocument({
+            data: unlockPdfBytes,
+            password: password,
+            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+            cMapPacked: true
+          });
+
+          let pdfDoc;
+          try {
+            pdfDoc = await loadingTask.promise;
+          } catch (docErr) {
+            if (docErr.name === 'PasswordException' || (docErr.message && docErr.message.toLowerCase().includes('password'))) {
+              throw new Error('Incorrect password! Please check and enter the correct password.');
+            }
+            throw docErr;
+          }
+
+          const numPages = pdfDoc.numPages;
+          const { jsPDF } = window.jspdf;
+          let newDoc = null;
+
+          for (let i = 1; i <= numPages; i++) {
+            unlockStatusText.textContent = `Unlocking and exporting page ${i} of ${numPages}...`;
+            const page = await pdfDoc.getPage(i);
+            const viewport = page.getViewport({ scale: 2.2 }); // Crisp high-res print quality
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.96);
+            const isLandscape = viewport.width > viewport.height;
+            const orient = isLandscape ? 'l' : 'p';
+
+            if (i === 1) {
+              newDoc = new jsPDF({
+                orientation: orient,
+                unit: 'pt',
+                format: [viewport.width, viewport.height]
+              });
+              newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
+            } else {
+              newDoc.addPage([viewport.width, viewport.height], orient);
+              newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
+            }
+          }
+
+          unlockedBlob = newDoc.output('blob');
+          unlockedVia = 'rendered';
+        }
+
+        // Trigger Instant Download
+        const downloadUrl = URL.createObjectURL(unlockedBlob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        const cleanName = unlockPdfName.replace(/(_locked)?\.pdf$/i, '') + '_unlocked.pdf';
+        a.download = cleanName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        unlockStatusText.textContent = 'PDF unlocked & downloaded successfully!';
+        showToast('Success! Password removed from PDF.', 'success');
+
+        setTimeout(() => {
+          unlockStatusBox.style.display = 'none';
+        }, 3000);
+      } catch (err) {
+        console.error(err);
+        const errMsg = err.message || 'Failed to unlock PDF';
+        if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('bad key')) {
+          showToast('Incorrect password! Please check and enter the correct password.', 'error');
+        } else {
+          showToast('Error unlocking PDF: ' + errMsg, 'error');
+        }
+        unlockStatusBox.style.display = 'none';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // 2C. Image to PDF
     let pdfImgs = [];
     const imgToPdfDrop = document.getElementById('pdf-img-dropzone');
     const imgToPdfInput = document.getElementById('pdf-img-file-input');
@@ -884,7 +1308,7 @@
       box.innerHTML = '';
       pdfImgs.forEach((src, idx) => {
         const d = document.createElement('div'); d.style = 'width:70px; height:70px; position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--border-cyan);';
-        d.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;"><button data-i="${idx}" style="position:absolute; top:2px; right:2px; background:#ef4444; border:none; color:#fff; width:18px; height:18px; border-radius:50%; font-size:10px; cursor:pointer;">✕</button>`;
+        d.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;" alt="Thumb"><button data-i="${idx}" style="position:absolute; top:2px; right:2px; background:#ef4444; border:none; color:#fff; width:18px; height:18px; border-radius:50%; font-size:10px; cursor:pointer;">✕</button>`;
         d.querySelector('button').onclick = () => { pdfImgs.splice(idx, 1); renderPdfThumbs(); };
         box.appendChild(d);
       });
@@ -911,32 +1335,280 @@
       showToast('PDF downloaded successfully!', 'success');
     };
 
-    // 3. QR Code Generator & Scanner
-    let qrInst = null;
-    function makeQr() {
-      const box = document.getElementById('qrcode-output'); box.innerHTML = '';
-      const text = document.getElementById('qr-text-input').value.trim() || 'ND SUITE';
-      const size = parseInt(document.getElementById('qr-size-slider').value) || 240;
-      qrInst = new QRCode(box, {
-        text: text, width: size, height: size,
-        colorDark: document.getElementById('qr-color-dark').value,
-        colorLight: document.getElementById('qr-color-light').value,
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    }
-    document.getElementById('qr-text-input').addEventListener('input', makeQr);
-    document.getElementById('qr-color-dark').addEventListener('input', makeQr);
-    document.getElementById('qr-color-light').addEventListener('input', makeQr);
-    document.getElementById('qr-size-slider').addEventListener('input', (e) => { document.getElementById('qr-size-val').textContent = e.target.value; makeQr(); });
-    document.getElementById('download-qr-btn').onclick = () => {
-      const img = document.querySelector('#qrcode-output img');
-      if (img) { const a = document.createElement('a'); a.href = img.src; a.download = `qrcode_${Date.now()}.png`; a.click(); }
-    };
-    makeQr();
+    // 3. Upgraded Modern QR Code Generator & Scanner
+    let currentQrType = 'url';
+    let qrStudioInstance = null;
 
-    // QR Scanner
+    // Type Pills switcher
+    const qrTypeBtns = document.querySelectorAll('.qr-type-btn');
+    qrTypeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        qrTypeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentQrType = btn.getAttribute('data-qr-type');
+        document.querySelectorAll('.qr-type-group').forEach(g => g.style.display = 'none');
+        const activeGroup = document.getElementById(`qr-group-${currentQrType}`);
+        if (activeGroup) activeGroup.style.display = 'block';
+        renderQrStudio();
+      });
+    });
+
+    // Theme Chips switcher
+    const qrThemeChips = document.querySelectorAll('.qr-theme-chip');
+    qrThemeChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        qrThemeChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const fg = chip.getAttribute('data-fg');
+        const bg = chip.getAttribute('data-bg');
+        document.getElementById('qr-color-dark').value = fg;
+        document.getElementById('qr-color-light').value = bg;
+        document.getElementById('qr-preview-card').style.background = bg;
+        renderQrStudio();
+      });
+    });
+
+    // Compute formatted QR text payload
+    function getQrPayload() {
+      if (currentQrType === 'url') {
+        let u = document.getElementById('qr-input-url').value.trim() || 'https://ndsuite.app';
+        if (!/^https?:\/\//i.test(u) && !u.startsWith('/')) u = 'https://' + u;
+        return u;
+      }
+      if (currentQrType === 'wifi') {
+        const ssid = document.getElementById('qr-wifi-ssid').value.trim() || 'MyWiFi';
+        const pass = document.getElementById('qr-wifi-pass').value.trim();
+        const type = document.getElementById('qr-wifi-type').value;
+        const hidden = document.getElementById('qr-wifi-hidden').checked ? 'H:true;' : '';
+        return `WIFI:S:${ssid};T:${type};P:${pass};${hidden};`;
+      }
+      if (currentQrType === 'vcard') {
+        const name = document.getElementById('qr-vcard-name').value.trim() || 'MD NAHID ISLAM';
+        const phone = document.getElementById('qr-vcard-phone').value.trim();
+        const email = document.getElementById('qr-vcard-email').value.trim();
+        const org = document.getElementById('qr-vcard-org').value.trim();
+        return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nORG:${org}\nEND:VCARD`;
+      }
+      if (currentQrType === 'whatsapp') {
+        const phone = document.getElementById('qr-wa-phone').value.replace(/[^0-9]/g, '');
+        const msg = encodeURIComponent(document.getElementById('qr-wa-msg').value.trim());
+        return `https://wa.me/${phone}${msg ? '?text=' + msg : ''}`;
+      }
+      if (currentQrType === 'email') {
+        const to = document.getElementById('qr-email-to').value.trim();
+        const sub = encodeURIComponent(document.getElementById('qr-email-subject').value.trim());
+        const body = encodeURIComponent(document.getElementById('qr-email-body').value.trim());
+        return `mailto:${to}?subject=${sub}&body=${body}`;
+      }
+      if (currentQrType === 'text') {
+        return document.getElementById('qr-input-rawtext').value.trim() || 'ND SUITE';
+      }
+      return 'https://ndsuite.app';
+    }
+
+    // Render QR Code with Logo Badge
+    function renderQrStudio() {
+      const box = document.getElementById('qrcode-output');
+      box.innerHTML = '';
+      const text = getQrPayload();
+      document.getElementById('qr-char-count').textContent = text.length;
+
+      const size = parseInt(document.getElementById('qr-size-slider').value) || 260;
+      const fgColor = document.getElementById('qr-color-dark').value;
+      const bgColor = document.getElementById('qr-color-light').value;
+      const ecLevelKey = document.getElementById('qr-ec-select').value;
+      const ecMap = {
+        'L': QRCode.CorrectLevel.L,
+        'M': QRCode.CorrectLevel.M,
+        'Q': QRCode.CorrectLevel.Q,
+        'H': QRCode.CorrectLevel.H
+      };
+
+      document.getElementById('qr-preview-card').style.background = bgColor;
+
+      qrStudioInstance = new QRCode(box, {
+        text: text,
+        width: size,
+        height: size,
+        colorDark: fgColor,
+        colorLight: bgColor,
+        correctLevel: ecMap[ecLevelKey] || QRCode.CorrectLevel.H
+      });
+
+      // Overlay center badge if requested
+      if (document.getElementById('qr-center-badge').checked) {
+        setTimeout(() => {
+          const canvas = box.querySelector('canvas');
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const cw = canvas.width, ch = canvas.height;
+            const badgeSize = Math.floor(cw * 0.22);
+            const bx = (cw - badgeSize) / 2;
+            const by = (ch - badgeSize) / 2;
+
+            // Draw rounded badge background
+            ctx.save();
+            ctx.fillStyle = bgColor;
+            ctx.strokeStyle = fgColor;
+            ctx.lineWidth = Math.max(2, Math.floor(cw * 0.012));
+            ctx.beginPath();
+            const r = 8;
+            ctx.moveTo(bx + r, by);
+            ctx.lineTo(bx + badgeSize - r, by);
+            ctx.quadraticCurveTo(bx + badgeSize, by, bx + badgeSize, by + r);
+            ctx.lineTo(bx + badgeSize, by + badgeSize - r);
+            ctx.quadraticCurveTo(bx + badgeSize, by + badgeSize, bx + badgeSize - r, by + badgeSize);
+            ctx.lineTo(bx + r, by + badgeSize);
+            ctx.quadraticCurveTo(bx, by + badgeSize, bx, by + badgeSize - r);
+            ctx.lineTo(bx, by + r);
+            ctx.quadraticCurveTo(bx, by, bx + r, by);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw center ND insignia
+            ctx.fillStyle = fgColor;
+            ctx.font = `bold ${Math.floor(badgeSize * 0.46)}px Outfit, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('ND', cw / 2, ch / 2);
+            ctx.restore();
+
+            // Update underlying image tag for consistency
+            const img = box.querySelector('img');
+            if (img) img.src = canvas.toDataURL();
+          }
+        }, 40);
+      }
+    }
+
+    // Input listeners for real-time QR updates
+    [
+      'qr-input-url', 'qr-wifi-ssid', 'qr-wifi-pass', 'qr-wifi-type', 'qr-wifi-hidden',
+      'qr-vcard-name', 'qr-vcard-phone', 'qr-vcard-email', 'qr-vcard-org',
+      'qr-wa-phone', 'qr-wa-msg', 'qr-email-to', 'qr-email-subject', 'qr-email-body',
+      'qr-input-rawtext'
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', renderQrStudio);
+    });
+
+    document.getElementById('qr-color-dark').addEventListener('input', () => {
+      qrThemeChips.forEach(c => c.classList.remove('active'));
+      renderQrStudio();
+    });
+    document.getElementById('qr-color-light').addEventListener('input', (e) => {
+      qrThemeChips.forEach(c => c.classList.remove('active'));
+      document.getElementById('qr-preview-card').style.background = e.target.value;
+      renderQrStudio();
+    });
+    document.getElementById('qr-size-slider').addEventListener('input', (e) => {
+      document.getElementById('qr-size-val').textContent = e.target.value;
+      renderQrStudio();
+    });
+    document.getElementById('qr-ec-select').addEventListener('change', renderQrStudio);
+    document.getElementById('qr-center-badge').addEventListener('change', renderQrStudio);
+    document.getElementById('qr-frame-padding').addEventListener('change', (e) => {
+      document.getElementById('qr-preview-card').style.padding = e.target.checked ? '18px' : '4px';
+    });
+
+    // Download PNG
+    document.getElementById('download-qr-btn').onclick = () => {
+      const canvas = document.querySelector('#qrcode-output canvas');
+      if (canvas) {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = `nd_qrcode_${Date.now()}.png`;
+        a.click();
+        showToast('PNG QR code downloaded!', 'success');
+      } else {
+        const img = document.querySelector('#qrcode-output img');
+        if (img) {
+          const a = document.createElement('a');
+          a.href = img.src;
+          a.download = `nd_qrcode_${Date.now()}.png`;
+          a.click();
+          showToast('PNG QR code downloaded!', 'success');
+        }
+      }
+    };
+
+    // Download SVG
+    document.getElementById('download-qr-svg-btn').onclick = () => {
+      if (!qrStudioInstance || !qrStudioInstance._oQRCode) {
+        showToast('Generate QR code first', 'error'); return;
+      }
+      const qr = qrStudioInstance._oQRCode;
+      const count = qr.getModuleCount();
+      const size = 320;
+      const tile = size / count;
+      const fg = document.getElementById('qr-color-dark').value;
+      const bg = document.getElementById('qr-color-light').value;
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">\n`;
+      svg += `  <rect width="100%" height="100%" fill="${bg}"/>\n`;
+      for (let r = 0; r < count; r++) {
+        for (let c = 0; c < count; c++) {
+          if (qr.isDark(r, c)) {
+            svg += `  <rect x="${(c * tile).toFixed(2)}" y="${(r * tile).toFixed(2)}" width="${tile.toFixed(2)}" height="${tile.toFixed(2)}" fill="${fg}"/>\n`;
+          }
+        }
+      }
+      svg += `</svg>`;
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `nd_qrcode_${Date.now()}.svg`;
+      a.click();
+      showToast('Scalable vector SVG downloaded!', 'success');
+    };
+
+    // Copy QR Image to Clipboard
+    document.getElementById('copy-qr-btn').onclick = async () => {
+      const canvas = document.querySelector('#qrcode-output canvas');
+      if (canvas && navigator.clipboard && window.ClipboardItem) {
+        try {
+          canvas.toBlob(async (blob) => {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            showToast('QR code copied to clipboard as image!', 'success');
+          });
+        } catch (e) {
+          copyToClipboard(getQrPayload(), 'QR text copied to clipboard!');
+        }
+      } else {
+        copyToClipboard(getQrPayload(), 'QR payload copied to clipboard!');
+      }
+    };
+
+    // Print QR Code
+    document.getElementById('print-qr-btn').onclick = () => {
+      const canvas = document.querySelector('#qrcode-output canvas');
+      if (!canvas) return;
+      const dataUrl = canvas.toDataURL();
+      const pWin = window.open('', '_blank');
+      if (pWin) {
+        pWin.document.write(`
+          <html>
+            <head><title>Print QR Code - ND SUITE</title></head>
+            <body style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:90vh; font-family:sans-serif;">
+              <h2>ND SUITE QR Code</h2>
+              <img src="${dataUrl}" style="max-width:320px; border:1px solid #ccc; padding:12px; border-radius:8px;"/>
+              <p style="margin-top:14px; font-size:12px; color:#666;">Generated by ND SUITE &bull; MD NAHID ISLAM</p>
+              <script>window.onload = function() { window.print(); window.close(); }<\/script>
+            </body>
+          </html>
+        `);
+        pWin.document.close();
+      }
+    };
+
+    // Scan QR Code
     const qrScanDrop = document.getElementById('qr-scan-dropzone');
     const qrScanInput = document.getElementById('qr-scan-file-input');
+    const qrScanResultWrap = document.getElementById('qr-scan-result-wrap');
+    const qrScanResultText = document.getElementById('qr-scan-result-text');
+    const qrOpenUrlBtn = document.getElementById('qr-open-url-btn');
+
     qrScanDrop.onclick = () => qrScanInput.click();
     qrScanInput.onchange = (e) => {
       if (!e.target.files.length) return;
@@ -947,16 +1619,31 @@
         const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
         const code = jsQR(imgData.data, cvs.width, cvs.height);
         if (code) {
-          document.getElementById('qr-scan-result-text').textContent = code.data;
-          document.getElementById('qr-scan-result-wrap').style.display = 'block';
+          const val = code.data;
+          qrScanResultText.textContent = val;
+          qrScanResultWrap.style.display = 'block';
+
+          if (/^https?:\/\//i.test(val)) {
+            qrOpenUrlBtn.href = val;
+            qrOpenUrlBtn.style.display = 'inline-flex';
+          } else {
+            qrOpenUrlBtn.style.display = 'none';
+          }
           showToast('QR code successfully scanned!', 'success');
         } else {
-          showToast('Could not find QR code in this image', 'error');
+          showToast('Could not detect any QR code in this image', 'error');
         }
       };
       img.src = URL.createObjectURL(e.target.files[0]);
     };
-    document.getElementById('qr-copy-result-btn').onclick = () => copyToClipboard(document.getElementById('qr-scan-result-text').textContent);
+    document.getElementById('qr-copy-result-btn').onclick = () => copyToClipboard(qrScanResultText.textContent);
+    document.getElementById('qr-scan-again-btn').onclick = () => {
+      qrScanResultWrap.style.display = 'none';
+      qrScanInput.value = '';
+    };
+
+    // Initialize QR Code on page load
+    renderQrStudio();
 
     // 4. Text Case Converter
     const caseIn = document.getElementById('case-input');
@@ -1073,7 +1760,7 @@
     document.getElementById('pwd-copy-btn').onclick = () => copyToClipboard(document.getElementById('pwd-display').value);
     generatePassword();
 
-    // 8. Aspect Ratio
+    // 8. Aspect Ratio Calculator
     const rw = document.getElementById('ratio-w'), rh = document.getElementById('ratio-h');
     function gcd(a, b) { return b == 0 ? a : gcd(b, a % b); }
     function calcRatio() {
@@ -1089,7 +1776,7 @@
       };
     });
 
-    // 9. Word Counter
+    // 9. Word & Character Counter
     const wordIn = document.getElementById('word-input');
     wordIn.oninput = () => {
       const t = wordIn.value.trim();
@@ -1101,7 +1788,7 @@
       document.getElementById('stat-reading').textContent = `${Math.ceil(words / 200)} min`;
     };
 
-    // 10. Base64/URL
+    // 10. Base64 / URL Encoder & Decoder
     let currentCodec = 'b64-encode';
     document.querySelectorAll('[data-codec]').forEach(b => {
       b.onclick = () => {
@@ -1121,7 +1808,7 @@
     };
     document.getElementById('codec-copy-btn').onclick = () => copyToClipboard(document.getElementById('codec-output').value);
 
-    // 11. Lorem Ipsum
+    // 11. Lorem Ipsum Generator
     const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
     document.getElementById('lorem-count-slider').oninput = (e) => document.getElementById('lorem-count-val').textContent = e.target.value;
     document.getElementById('lorem-gen-btn').onclick = () => {
@@ -1170,7 +1857,7 @@
     qNotes.oninput = () => localStorage.setItem('nd_notes', qNotes.value);
     renderTodos();
 
-    // 13. Pomodoro Timer
+    // 13. Pomodoro Focus Timer
     let timerTotal = 25 * 60, timeLeft = timerTotal, timerInterval = null, pomoCount = 0;
     const ring = document.getElementById('timer-progress-ring');
     const ringLen = 2 * Math.PI * 110;
