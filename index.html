@@ -23,6 +23,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 
   <style>
     :root {
@@ -249,7 +250,7 @@
       <section class="services-header-wrap">
         <h2 class="section-title">Choose <span>Our Services</span></h2>
         <div class="filter-bar">
-          <button class="filter-tab active" data-category="all">All Services (13)</button>
+          <button class="filter-tab active" data-category="all">All Services (14)</button>
           <button class="filter-tab" data-category="utility">Utility Tools</button>
           <button class="filter-tab" data-category="converter">Converters & Calculators</button>
           <button class="filter-tab" data-category="content">Content & Text</button>
@@ -257,12 +258,21 @@
         </div>
         <div class="search-box-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="tool-search-input" class="input-field search-input" placeholder="Search any tool (Image Resizer, PDF Locker, Pomodoro)...">
+          <input type="text" id="tool-search-input" class="input-field search-input" placeholder="Search any tool (Video to Audio, Image Resizer, PDF Locker)...">
         </div>
       </section>
 
-      <!-- 13 Service Cards Grid -->
+      <!-- 14 Service Cards Grid -->
       <section class="services-grid" id="services-grid">
+        <!-- New Tool: Video to Audio Converter -->
+        <article class="tool-card" data-category="converter" data-tool="videoaudio">
+          <div class="tool-card-icon-wrap"><i class="fa-solid fa-file-audio"></i></div>
+          <div class="tool-card-category">Converters & Calculators</div>
+          <h3 class="tool-card-title">Video to Audio Converter</h3>
+          <p class="tool-card-desc">Extract crisp, high-quality audio from any video (MP4, MKV, WebM, MOV, AVI) and download in MP3, WAV, AAC/M4A, OGG, or WebM formats with custom bitrates.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Multi-Format</span></div>
+        </article>
+
         <article class="tool-card" data-category="utility" data-tool="resizer">
           <div class="tool-card-icon-wrap"><i class="fa-solid fa-image"></i></div>
           <div class="tool-card-category">Utility Tools</div>
@@ -378,6 +388,7 @@
           <div><h2 class="workspace-heading" id="ws-heading">Tool Name</h2><p class="workspace-subheading" id="ws-subheading">Category</p></div>
         </div>
         <select class="input-field btn-sm" id="quick-tool-select" style="max-width: 220px;">
+          <option value="videoaudio">Video to Audio Converter</option>
           <option value="resizer">Image Resizer</option>
           <option value="pdf">PDF Locker & Unlocker</option>
           <option value="qrcode">QR Studio & Scanner</option>
@@ -395,6 +406,164 @@
       </div>
 
       <div class="tool-workspace-body">
+        <!-- NEW: Video to Audio Converter Tool Pane -->
+        <div id="tool-pane-videoaudio" class="tool-pane" style="display: none;">
+          <div class="dropzone" id="va-dropzone">
+            <i class="fa-solid fa-file-video"></i>
+            <h4>Click or drag & drop video file here</h4>
+            <p style="color:var(--text-muted);font-size:0.85rem">Supports MP4, WebM, MKV, MOV, AVI, FLV, 3GP & more</p>
+            <input type="file" id="va-file-input" class="hidden-input" accept="video/*,.mp4,.mkv,.webm,.mov,.avi,.flv,.wmv,.m4v,.3gp">
+          </div>
+
+          <div id="va-controls" style="display:none; margin-top:20px;">
+            <!-- Video Preview & Metadata -->
+            <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-bottom:20px; padding:16px; border-radius:14px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan);">
+              <div style="max-width:260px; width:100%; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); background:#000;">
+                <video id="va-video-preview" controls playsinline style="width:100%; max-height:160px; display:block;"></video>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px; flex:1; min-width:220px;">
+                <h4 id="va-filename" style="color:#ffffff; word-break:break-all; font-size:1.05rem;">video.mp4</h4>
+                <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.88rem; color:var(--text-muted);">
+                  <span><i class="fa-solid fa-hard-drive" style="color:var(--cyan); margin-right:4px;"></i> Size: <strong id="va-filesize" style="color:#fff;">-</strong></span>
+                  <span><i class="fa-solid fa-clock" style="color:var(--purple); margin-right:4px;"></i> Duration: <strong id="va-duration" style="color:#fff;">-</strong></span>
+                </div>
+                <div style="font-size:0.8rem; color:var(--text-dim);">
+                  <i class="fa-solid fa-shield-halved" style="color:#10b981; margin-right:4px;"></i> 100% Client-Side In-Browser Audio Extraction
+                </div>
+              </div>
+            </div>
+
+            <!-- Conversion Settings -->
+            <div class="tool-controls-grid">
+              <div class="form-group">
+                <label class="form-label">Desired Audio Format *</label>
+                <select id="va-format-select" class="input-field">
+                  <option value="mp3" selected>MP3 (.mp3 - Universal Standard)</option>
+                  <option value="wav">WAV (.wav - Lossless PCM Studio)</option>
+                  <option value="m4a">AAC / M4A (.m4a - Apple/YouTube)</option>
+                  <option value="ogg">OGG (.ogg - High Quality Opus)</option>
+                  <option value="webm">WebM Audio (.webm - Modern Web)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Audio Quality / Bitrate</label>
+                <select id="va-bitrate-select" class="input-field">
+                  <option value="320">320 kbps (Ultra High Fidelity)</option>
+                  <option value="256">256 kbps (High Quality)</option>
+                  <option value="192" selected>192 kbps (Standard Recommended)</option>
+                  <option value="128">128 kbps (Compact Web Size)</option>
+                  <option value="96">96 kbps (Voice / Low Size)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Channels</label>
+                <select id="va-channels-select" class="input-field">
+                  <option value="2" selected>Stereo (2 Channels)</option>
+                  <option value="1">Mono (1 Channel)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Volume Boost</label>
+                <select id="va-volume-select" class="input-field">
+                  <option value="1.0" selected>Normal (100%)</option>
+                  <option value="1.25">Boost +25% (125%)</option>
+                  <option value="1.5">Boost +50% (150%)</option>
+                  <option value="2.0">Maximum Boost 2x (200%)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Optional Audio Trimmer -->
+            <div style="margin: 14px 0; padding:14px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="va-trim-toggle"> Trim Audio Segment (Extract only specific clip)
+              </label>
+              <div id="va-trim-controls" style="display:none; margin-top:12px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+                <div class="form-group" style="min-width:130px;">
+                  <label class="form-label">Start Time (sec)</label>
+                  <input type="number" id="va-trim-start" class="input-field" min="0" step="0.5" value="0">
+                </div>
+                <div class="form-group" style="min-width:130px;">
+                  <label class="form-label">End Time (sec)</label>
+                  <input type="number" id="va-trim-end" class="input-field" min="0" step="0.5" value="0">
+                </div>
+                <div style="color:var(--text-muted); font-size:0.82rem; align-self:flex-end; padding-bottom:10px;">
+                  Clip Duration: <strong id="va-trim-duration" style="color:var(--cyan);">-</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;">
+              <button class="btn btn-neon" id="va-convert-btn">
+                <i class="fa-solid fa-bolt"></i> Extract & Convert Audio
+              </button>
+              <button class="btn btn-glass" id="va-reset-btn">
+                <i class="fa-solid fa-rotate-left"></i> Change Video
+              </button>
+            </div>
+
+            <!-- Conversion Progress Feedback -->
+            <div id="va-progress-wrap" style="display:none; margin-top:20px; padding:16px; border-radius:12px; background:rgba(0,242,254,0.06); border:1px solid var(--border-cyan);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem;">
+                <span id="va-status-text" style="color:var(--cyan);"><i class="fa-solid fa-spinner fa-spin"></i> Processing audio track...</span>
+                <span id="va-progress-pct" style="color:#fff; font-family:var(--font-mono); font-weight:600;">0%</span>
+              </div>
+              <div style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
+                <div id="va-progress-bar" style="width:0%; height:100%; background:var(--neon-grad); transition:width 0.2s;"></div>
+              </div>
+            </div>
+
+            <!-- Output Download Center -->
+            <div id="va-result-wrap" style="display:none; margin-top:24px; padding:22px; border-radius:16px; background:rgba(13,19,36,0.9); border:1px solid var(--border-cyan); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:40px; height:40px; border-radius:10px; background:var(--neon-grad); color:#040714; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                  <div>
+                    <h4 style="color:#ffffff; font-size:1.1rem;">Audio Ready!</h4>
+                    <p style="color:var(--cyan); font-size:0.82rem; font-family:var(--font-mono);" id="va-result-meta">Converted successfully</p>
+                  </div>
+                </div>
+                <span class="creator-badge" style="background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981;">
+                  <i class="fa-solid fa-circle-check"></i> Clean Audio Output
+                </span>
+              </div>
+
+              <!-- Live Audio Preview -->
+              <div style="margin:16px 0; padding:12px; border-radius:12px; background:rgba(6,9,19,0.8); border:1px solid rgba(255,255,255,0.08);">
+                <label class="form-label" style="margin-bottom:8px; display:block;"><i class="fa-solid fa-headphones" style="color:var(--cyan); margin-right:6px;"></i> Converted Audio Player</label>
+                <audio id="va-audio-player" controls style="width:100%; display:block; outline:none; filter:contrast(1.1);"></audio>
+              </div>
+
+              <!-- Main Download Button -->
+              <div style="margin-top:16px;">
+                <button class="btn btn-neon" id="va-download-primary-btn" style="width:100%; font-size:1.05rem; padding:14px;">
+                  <i class="fa-solid fa-download"></i> Download Converted Audio
+                </button>
+              </div>
+
+              <!-- One-Click Multi-Format Export Options -->
+              <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px;">
+                <label class="form-label" style="margin-bottom:10px; display:block; color:var(--text-muted);">
+                  <i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--purple); margin-right:6px;"></i> Download in Other Formats:
+                </label>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                  <button type="button" class="btn btn-glass btn-sm" id="va-dl-btn-mp3"><i class="fa-solid fa-music"></i> Save as MP3</button>
+                  <button type="button" class="btn btn-glass btn-sm" id="va-dl-btn-wav"><i class="fa-solid fa-wave-square"></i> Save as WAV</button>
+                  <button type="button" class="btn btn-glass btn-sm" id="va-dl-btn-m4a"><i class="fa-solid fa-compact-disc"></i> Save as M4A</button>
+                  <button type="button" class="btn btn-glass btn-sm" id="va-dl-btn-ogg"><i class="fa-solid fa-headphones"></i> Save as OGG</button>
+                  <button type="button" class="btn btn-glass btn-sm" id="va-dl-btn-webm"><i class="fa-solid fa-globe"></i> Save as WebM</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 1. Image Resizer -->
         <div id="tool-pane-resizer" class="tool-pane" style="display: none;">
           <div class="dropzone" id="img-dropzone"><i class="fa-solid fa-cloud-arrow-up"></i><h4>Click or drop image here</h4><p style="color:var(--text-muted);font-size:0.85rem">Supports JPG, PNG, WebP</p><input type="file" id="img-file-input" class="hidden-input" accept="image/*"></div>
@@ -919,6 +1088,7 @@
     const wsIconPill = document.getElementById('ws-icon-pill');
 
     const toolsMeta = {
+      videoaudio: { title: 'Video to Audio Converter', category: 'Converters & Calculators', icon: 'fa-file-audio' },
       resizer: { title: 'Image Resizer & Compressor', category: 'Utility Tools', icon: 'fa-image' },
       pdf: { title: 'PDF Locker & Utility Tools', category: 'Utility Tools', icon: 'fa-file-pdf' },
       qrcode: { title: 'QR Code Generator & Scanner', category: 'Utility Tools', icon: 'fa-qrcode' },
@@ -996,7 +1166,450 @@
       });
     });
 
+    // ==========================================
+    // NEW TOOL: Video to Audio Converter Logic
+    // ==========================================
+    const vaDropzone = document.getElementById('va-dropzone');
+    const vaFileInput = document.getElementById('va-file-input');
+    const vaControls = document.getElementById('va-controls');
+    const vaVideoPreview = document.getElementById('va-video-preview');
+    const vaFilename = document.getElementById('va-filename');
+    const vaFilesize = document.getElementById('va-filesize');
+    const vaDuration = document.getElementById('va-duration');
+    const vaFormatSelect = document.getElementById('va-format-select');
+    const vaBitrateSelect = document.getElementById('va-bitrate-select');
+    const vaChannelsSelect = document.getElementById('va-channels-select');
+    const vaVolumeSelect = document.getElementById('va-volume-select');
+    const vaTrimToggle = document.getElementById('va-trim-toggle');
+    const vaTrimControls = document.getElementById('va-trim-controls');
+    const vaTrimStart = document.getElementById('va-trim-start');
+    const vaTrimEnd = document.getElementById('va-trim-end');
+    const vaTrimDuration = document.getElementById('va-trim-duration');
+    const vaConvertBtn = document.getElementById('va-convert-btn');
+    const vaResetBtn = document.getElementById('va-reset-btn');
+    const vaProgressWrap = document.getElementById('va-progress-wrap');
+    const vaStatusText = document.getElementById('va-status-text');
+    const vaProgressPct = document.getElementById('va-progress-pct');
+    const vaProgressBar = document.getElementById('va-progress-bar');
+    const vaResultWrap = document.getElementById('va-result-wrap');
+    const vaResultMeta = document.getElementById('va-result-meta');
+    const vaAudioPlayer = document.getElementById('va-audio-player');
+    const vaDownloadPrimaryBtn = document.getElementById('va-download-primary-btn');
+
+    let currentVideoFile = null;
+    let decodedAudioBuffer = null; // Store processed AudioBuffer for multi-format downloads
+    let currentConvertedBlob = null;
+    let currentConvertedFormat = 'mp3';
+
+    // Drag and Drop for Video
+    ['dragenter', 'dragover'].forEach(eventName => {
+      vaDropzone.addEventListener(eventName, (e) => { e.preventDefault(); vaDropzone.classList.add('dragover'); }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      vaDropzone.addEventListener(eventName, (e) => { e.preventDefault(); vaDropzone.classList.remove('dragover'); }, false);
+    });
+    vaDropzone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files && e.dataTransfer.files.length) {
+        handleVideoSelection(e.dataTransfer.files[0]);
+      }
+    });
+    vaDropzone.addEventListener('click', () => vaFileInput.click());
+    vaFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) handleVideoSelection(e.target.files[0]);
+    });
+
+    function formatTimeSeconds(sec) {
+      if (!isFinite(sec) || sec < 0) return '00:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function handleVideoSelection(file) {
+      currentVideoFile = file;
+      decodedAudioBuffer = null;
+      currentConvertedBlob = null;
+      vaFilename.textContent = file.name;
+      vaFilesize.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      
+      const videoUrl = URL.createObjectURL(file);
+      vaVideoPreview.src = videoUrl;
+      vaVideoPreview.onloadedmetadata = () => {
+        const dur = vaVideoPreview.duration || 0;
+        vaDuration.textContent = formatTimeSeconds(dur);
+        vaTrimStart.value = 0;
+        vaTrimEnd.value = dur.toFixed(1);
+        vaTrimDuration.textContent = dur.toFixed(1) + 's';
+      };
+
+      vaDropzone.style.display = 'none';
+      vaControls.style.display = 'block';
+      vaResultWrap.style.display = 'none';
+      vaProgressWrap.style.display = 'none';
+      showToast('Video loaded! Choose audio settings & convert.', 'info');
+    }
+
+    // Toggle Trimmer
+    vaTrimToggle.addEventListener('change', (e) => {
+      vaTrimControls.style.display = e.target.checked ? 'flex' : 'none';
+      updateTrimDuration();
+    });
+    function updateTrimDuration() {
+      const s = parseFloat(vaTrimStart.value) || 0;
+      const end = parseFloat(vaTrimEnd.value) || (vaVideoPreview.duration || 0);
+      const diff = Math.max(0, end - s);
+      vaTrimDuration.textContent = diff.toFixed(1) + 's';
+    }
+    vaTrimStart.addEventListener('input', updateTrimDuration);
+    vaTrimEnd.addEventListener('input', updateTrimDuration);
+
+    vaResetBtn.addEventListener('click', () => {
+      currentVideoFile = null;
+      decodedAudioBuffer = null;
+      currentConvertedBlob = null;
+      if (vaVideoPreview.src) URL.revokeObjectURL(vaVideoPreview.src);
+      if (vaAudioPlayer.src) URL.revokeObjectURL(vaAudioPlayer.src);
+      vaVideoPreview.src = '';
+      vaAudioPlayer.src = '';
+      vaFileInput.value = '';
+      vaControls.style.display = 'none';
+      vaDropzone.style.display = 'flex';
+      vaProgressWrap.style.display = 'none';
+      vaResultWrap.style.display = 'none';
+    });
+
+    // Pure Client-side Audio Processing & Encoders
+    // 1. WAV Encoder (16-bit PCM Lossless)
+    function audioBufferToWavBlob(buffer, optChannels) {
+      const numChannels = optChannels ? Math.min(optChannels, buffer.numberOfChannels) : buffer.numberOfChannels;
+      const sampleRate = buffer.sampleRate;
+      const format = 1; // PCM
+      const bitDepth = 16;
+      
+      const numSamples = buffer.length;
+      const bytesPerSample = bitDepth / 8;
+      const blockAlign = numChannels * bytesPerSample;
+      const byteRate = sampleRate * blockAlign;
+      const dataSize = numSamples * blockAlign;
+      const bufferSize = 44 + dataSize;
+      
+      const arrayBuffer = new ArrayBuffer(bufferSize);
+      const view = new DataView(arrayBuffer);
+      
+      function writeString(offset, str) {
+        for (let i = 0; i < str.length; i++) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      }
+      
+      // RIFF header
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true); // subchunk1size (16 for PCM)
+      view.setUint16(20, format, true); // audio format (1 = PCM)
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, bitDepth, true);
+      writeString(36, 'data');
+      view.setUint32(40, dataSize, true);
+      
+      // Write interleaved PCM samples
+      const channelData = [];
+      for (let ch = 0; ch < numChannels; ch++) {
+        channelData.push(buffer.getChannelData(ch));
+      }
+      
+      let offset = 44;
+      for (let i = 0; i < numSamples; i++) {
+        for (let ch = 0; ch < numChannels; ch++) {
+          let s = Math.max(-1, Math.min(1, channelData[ch][i]));
+          s = s < 0 ? s * 0x8000 : s * 0x7FFF;
+          view.setInt16(offset, s, true);
+          offset += 2;
+        }
+      }
+      
+      return new Blob([view], { type: 'audio/wav' });
+    }
+
+    // 2. MP3 Encoder (via lamejs)
+    async function audioBufferToMp3Blob(buffer, kbps, onProgress) {
+      if (!window.lamejs) {
+        throw new Error('MP3 encoder module not loaded.');
+      }
+      const channels = buffer.numberOfChannels;
+      const sampleRate = buffer.sampleRate;
+      const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
+      const mp3Data = [];
+      
+      const numSamples = buffer.length;
+      const leftFloat = buffer.getChannelData(0);
+      const rightFloat = channels > 1 ? buffer.getChannelData(1) : leftFloat;
+      
+      const chunkSize = 1152;
+      const leftInt16 = new Int16Array(chunkSize);
+      const rightInt16 = channels > 1 ? new Int16Array(chunkSize) : null;
+      
+      for (let i = 0; i < numSamples; i += chunkSize) {
+        const curLen = Math.min(chunkSize, numSamples - i);
+        for (let j = 0; j < curLen; j++) {
+          const l = Math.max(-1, Math.min(1, leftFloat[i + j]));
+          leftInt16[j] = l < 0 ? l * 0x8000 : l * 0x7FFF;
+          if (channels > 1) {
+            const r = Math.max(-1, Math.min(1, rightFloat[i + j]));
+            rightInt16[j] = r < 0 ? r * 0x8000 : r * 0x7FFF;
+          }
+        }
+        
+        let mp3buf;
+        if (channels === 1) {
+          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen));
+        } else {
+          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen), rightInt16.subarray(0, curLen));
+        }
+        if (mp3buf.length > 0) {
+          mp3Data.push(mp3buf);
+        }
+        
+        if (onProgress && i % (chunkSize * 20) === 0) {
+          const pct = Math.floor((i / numSamples) * 100);
+          onProgress(pct);
+          await new Promise(r => setTimeout(r, 0)); // yield loop
+        }
+      }
+      
+      const endBuf = mp3encoder.flush();
+      if (endBuf.length > 0) mp3Data.push(endBuf);
+      
+      return new Blob(mp3Data, { type: 'audio/mp3' });
+    }
+
+    // 3. Universal MediaRecorder Audio Formatter (OGG, WebM, M4A)
+    async function audioBufferToStreamBlob(buffer, targetFormat, onProgress) {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const dest = audioCtx.createMediaStreamDestination();
+      const srcNode = audioCtx.createBufferSource();
+      srcNode.buffer = buffer;
+      srcNode.connect(dest);
+
+      let mimeType = 'audio/webm;codecs=opus';
+      if (targetFormat === 'ogg' && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+        mimeType = 'audio/ogg;codecs=opus';
+      } else if (targetFormat === 'm4a' && MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      }
+
+      const recorder = new MediaRecorder(dest.stream, { mimeType: mimeType });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+      const durationMs = buffer.duration * 1000;
+      let recordedResolve;
+      const promise = new Promise(res => recordedResolve = res);
+
+      recorder.onstop = () => {
+        audioCtx.close();
+        let finalMime = mimeType;
+        if (targetFormat === 'ogg') finalMime = 'audio/ogg';
+        else if (targetFormat === 'm4a') finalMime = 'audio/mp4';
+        else if (targetFormat === 'webm') finalMime = 'audio/webm';
+        recordedResolve(new Blob(chunks, { type: finalMime }));
+      };
+
+      recorder.start(100);
+      srcNode.start();
+
+      let elapsed = 0;
+      const interval = setInterval(() => {
+        elapsed += 100;
+        if (onProgress) {
+          const pct = Math.min(98, Math.floor((elapsed / durationMs) * 100));
+          onProgress(pct);
+        }
+      }, 100);
+
+      await new Promise(r => setTimeout(r, durationMs + 150));
+      clearInterval(interval);
+      try { recorder.stop(); } catch(e) {}
+      srcNode.stop();
+
+      return await promise;
+    }
+
+    // Master conversion pipeline from AudioBuffer
+    async function convertBufferToFormat(audioBuffer, format, kbps, onProgress) {
+      if (format === 'wav') {
+        if (onProgress) onProgress(80);
+        return audioBufferToWavBlob(audioBuffer);
+      }
+      if (format === 'mp3') {
+        return await audioBufferToMp3Blob(audioBuffer, kbps, onProgress);
+      }
+      return await audioBufferToStreamBlob(audioBuffer, format, onProgress);
+    }
+
+    // Execute Video Audio Extraction
+    vaConvertBtn.addEventListener('click', async () => {
+      if (!currentVideoFile) {
+        showToast('Please select or upload a video file first', 'error'); return;
+      }
+
+      const format = vaFormatSelect.value;
+      const kbps = parseInt(vaBitrateSelect.value) || 192;
+      const channels = parseInt(vaChannelsSelect.value) || 2;
+      const volume = parseFloat(vaVolumeSelect.value) || 1.0;
+      const isTrim = vaTrimToggle.checked;
+      const trimStart = isTrim ? (parseFloat(vaTrimStart.value) || 0) : 0;
+      const trimEnd = isTrim ? (parseFloat(vaTrimEnd.value) || (vaVideoPreview.duration || 0)) : (vaVideoPreview.duration || 0);
+
+      vaConvertBtn.disabled = true;
+      vaProgressWrap.style.display = 'block';
+      vaResultWrap.style.display = 'none';
+      vaProgressBar.style.width = '10%';
+      vaProgressPct.textContent = '10%';
+      vaStatusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reading video data into memory...';
+
+      try {
+        // Step 1: Decode Audio Track from Video File
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        vaStatusText.innerHTML = '<i class="fa-solid fa-waveform-lines fa-fade"></i> Extracting audio stream from video container...';
+        vaProgressBar.style.width = '25%';
+        vaProgressPct.textContent = '25%';
+
+        let rawBuffer;
+        try {
+          const ab = await currentVideoFile.arrayBuffer();
+          rawBuffer = await audioCtx.decodeAudioData(ab);
+        } catch (decodeErr) {
+          console.warn('Native decodeAudioData error, attempting video element capture:', decodeErr);
+          throw new Error('Could not extract audio track. Ensure the video contains an audible audio stream.');
+        }
+
+        // Step 2: Apply Trimming, Volume Boost & Channel Settings
+        vaStatusText.innerHTML = '<i class="fa-solid fa-sliders fa-fade"></i> Applying audio settings (channels, volume, trimming)...';
+        vaProgressBar.style.width = '45%';
+        vaProgressPct.textContent = '45%';
+
+        const sampleRate = rawBuffer.sampleRate;
+        const totalDuration = rawBuffer.duration;
+        let startSample = 0;
+        let endSample = rawBuffer.length;
+
+        if (isTrim && trimEnd > trimStart && trimStart >= 0) {
+          startSample = Math.floor(Math.min(trimStart, totalDuration) * sampleRate);
+          endSample = Math.floor(Math.min(trimEnd, totalDuration) * sampleRate);
+        }
+
+        const outLength = Math.max(1, endSample - startSample);
+        const targetChannels = channels === 1 ? 1 : Math.min(2, rawBuffer.numberOfChannels);
+
+        const processedBuffer = audioCtx.createBuffer(targetChannels, outLength, sampleRate);
+
+        for (let ch = 0; ch < targetChannels; ch++) {
+          const outData = processedBuffer.getChannelData(ch);
+          if (channels === 1 && rawBuffer.numberOfChannels > 1) {
+            // Downmix to Mono (average L & R)
+            const leftData = rawBuffer.getChannelData(0);
+            const rightData = rawBuffer.getChannelData(1);
+            for (let i = 0; i < outLength; i++) {
+              outData[i] = ((leftData[startSample + i] + rightData[startSample + i]) * 0.5) * volume;
+            }
+          } else {
+            const inData = rawBuffer.getChannelData(Math.min(ch, rawBuffer.numberOfChannels - 1));
+            for (let i = 0; i < outLength; i++) {
+              outData[i] = inData[startSample + i] * volume;
+            }
+          }
+        }
+
+        // Cache the processed AudioBuffer for immediate re-downloads in other formats!
+        decodedAudioBuffer = processedBuffer;
+
+        // Step 3: Encode into Requested Audio Format
+        vaStatusText.innerHTML = `<i class="fa-solid fa-cog fa-spin"></i> Encoding audio to ${format.toUpperCase()} (${kbps} kbps)...`;
+        
+        currentConvertedBlob = await convertBufferToFormat(processedBuffer, format, kbps, (pct) => {
+          const overall = Math.floor(50 + (pct * 0.45));
+          vaProgressBar.style.width = overall + '%';
+          vaProgressPct.textContent = overall + '%';
+        });
+
+        currentConvertedFormat = format;
+        vaProgressBar.style.width = '100%';
+        vaProgressPct.textContent = '100%';
+        vaStatusText.innerHTML = '<i class="fa-solid fa-circle-check"></i> Finished audio conversion!';
+
+        // Step 4: Display Player & Downloads
+        const audioUrl = URL.createObjectURL(currentConvertedBlob);
+        vaAudioPlayer.src = audioUrl;
+        
+        const sizeStr = (currentConvertedBlob.size / 1024).toFixed(1) + ' KB';
+        const durStr = formatTimeSeconds(processedBuffer.duration);
+        vaResultMeta.textContent = `Format: ${format.toUpperCase()} | Duration: ${durStr} | Size: ${sizeStr} | Rate: ${sampleRate} Hz`;
+        vaDownloadPrimaryBtn.innerHTML = `<i class="fa-solid fa-download"></i> Download .${format.toUpperCase()} (${sizeStr})`;
+
+        vaResultWrap.style.display = 'block';
+        showToast(`Extracted successfully as ${format.toUpperCase()}!`, 'success');
+        audioCtx.close();
+      } catch (err) {
+        console.error(err);
+        showToast('Conversion failed: ' + (err.message || 'Unknown error'), 'error');
+        vaStatusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> Extraction failed';
+      } finally {
+        vaConvertBtn.disabled = false;
+      }
+    });
+
+    // Primary Download
+    vaDownloadPrimaryBtn.addEventListener('click', () => {
+      if (!currentConvertedBlob) return;
+      triggerDownloadBlob(currentConvertedBlob, currentConvertedFormat);
+    });
+
+    function triggerDownloadBlob(blob, ext) {
+      const baseName = currentVideoFile ? currentVideoFile.name.replace(/\.[^/.]+$/, '') : 'audio';
+      const cleanName = `${baseName}_extracted.${ext}`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = cleanName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`Downloaded ${cleanName}!`, 'success');
+    }
+
+    // Quick Multi-Format Download Handlers
+    async function handleAlternativeDownload(targetFormat) {
+      if (!decodedAudioBuffer) {
+        showToast('Please convert the video first', 'error'); return;
+      }
+      showToast(`Preparing ${targetFormat.toUpperCase()} download...`, 'info');
+      try {
+        const kbps = parseInt(vaBitrateSelect.value) || 192;
+        const blob = await convertBufferToFormat(decodedAudioBuffer, targetFormat, kbps);
+        triggerDownloadBlob(blob, targetFormat);
+      } catch (err) {
+        console.error(err);
+        showToast(`Failed to export ${targetFormat.toUpperCase()}: ${err.message}`, 'error');
+      }
+    }
+
+    document.getElementById('va-dl-btn-mp3').addEventListener('click', () => handleAlternativeDownload('mp3'));
+    document.getElementById('va-dl-btn-wav').addEventListener('click', () => handleAlternativeDownload('wav'));
+    document.getElementById('va-dl-btn-m4a').addEventListener('click', () => handleAlternativeDownload('m4a'));
+    document.getElementById('va-dl-btn-ogg').addEventListener('click', () => handleAlternativeDownload('ogg'));
+    document.getElementById('va-dl-btn-webm').addEventListener('click', () => handleAlternativeDownload('webm'));
+
+    // ==========================================
     // 1. Image Resizer & Compressor
+    // ==========================================
     const imgDropzone = document.getElementById('img-dropzone');
     const imgFileInput = document.getElementById('img-file-input');
     const imgControls = document.getElementById('img-editor-controls');
@@ -1053,7 +1666,9 @@
     });
     document.getElementById('img-reset-btn').addEventListener('click', () => { loadedImg = null; imgControls.style.display = 'none'; imgDropzone.style.display = 'flex'; });
 
+    // ==========================================
     // 2. PDF Locker & Utility Tools
+    // ==========================================
     // 2A. PDF Locker (Encrypt with password)
     const pdfDrop = document.getElementById('pdf-locker-dropzone');
     const pdfInput = document.getElementById('pdf-locker-file-input');
@@ -1181,26 +1796,20 @@
 
       try {
         let unlockedBlob = null;
-        let unlockedVia = '';
-
-        // Strategy 1: Attempt native lossless stream decryption using @pdfsmaller/pdf-decrypt
         try {
           unlockStatusText.textContent = 'Attempting lossless native stream decryption...';
           const decryptModule = await import('https://esm.sh/@pdfsmaller/pdf-decrypt@1.0.1');
           if (decryptModule && typeof decryptModule.decryptPDF === 'function') {
             const decryptedBytes = await decryptModule.decryptPDF(unlockPdfBytes, password);
             unlockedBlob = new Blob([decryptedBytes], { type: 'application/pdf' });
-            unlockedVia = 'native';
           }
         } catch (nativeErr) {
-          console.warn('Native decryption attempt skipped or threw, falling back to PDF.js engine:', nativeErr);
-          // If native decryption explicitly detected wrong password, rethrow
+          console.warn('Native decryption attempt skipped, falling back to PDF.js engine:', nativeErr);
           if (nativeErr.message && (nativeErr.message.toLowerCase().includes('password') || nativeErr.message.toLowerCase().includes('bad key') || nativeErr.message.toLowerCase().includes('hash'))) {
             throw new Error('Incorrect password');
           }
         }
 
-        // Strategy 2: High-Fidelity Universal Engine with PDF.js + jsPDF
         if (!unlockedBlob) {
           unlockStatusText.textContent = 'Verifying password with PDF.js engine...';
           const loadingTask = pdfjsLib.getDocument({
@@ -1227,7 +1836,7 @@
           for (let i = 1; i <= numPages; i++) {
             unlockStatusText.textContent = `Unlocking and exporting page ${i} of ${numPages}...`;
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 2.2 }); // Crisp high-res print quality
+            const viewport = page.getViewport({ scale: 2.2 });
             const canvas = document.createElement('canvas');
             canvas.width = viewport.width;
             canvas.height = viewport.height;
@@ -1252,10 +1861,8 @@
           }
 
           unlockedBlob = newDoc.output('blob');
-          unlockedVia = 'rendered';
         }
 
-        // Trigger Instant Download
         const downloadUrl = URL.createObjectURL(unlockedBlob);
         const a = document.createElement('a');
         a.href = downloadUrl;
@@ -1335,11 +1942,12 @@
       showToast('PDF downloaded successfully!', 'success');
     };
 
+    // ==========================================
     // 3. Upgraded Modern QR Code Generator & Scanner
+    // ==========================================
     let currentQrType = 'url';
     let qrStudioInstance = null;
 
-    // Type Pills switcher
     const qrTypeBtns = document.querySelectorAll('.qr-type-btn');
     qrTypeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1353,7 +1961,6 @@
       });
     });
 
-    // Theme Chips switcher
     const qrThemeChips = document.querySelectorAll('.qr-theme-chip');
     qrThemeChips.forEach(chip => {
       chip.addEventListener('click', () => {
@@ -1368,7 +1975,6 @@
       });
     });
 
-    // Compute formatted QR text payload
     function getQrPayload() {
       if (currentQrType === 'url') {
         let u = document.getElementById('qr-input-url').value.trim() || 'https://ndsuite.app';
@@ -1406,7 +2012,6 @@
       return 'https://ndsuite.app';
     }
 
-    // Render QR Code with Logo Badge
     function renderQrStudio() {
       const box = document.getElementById('qrcode-output');
       box.innerHTML = '';
@@ -1435,7 +2040,6 @@
         correctLevel: ecMap[ecLevelKey] || QRCode.CorrectLevel.H
       });
 
-      // Overlay center badge if requested
       if (document.getElementById('qr-center-badge').checked) {
         setTimeout(() => {
           const canvas = box.querySelector('canvas');
@@ -1446,7 +2050,6 @@
             const bx = (cw - badgeSize) / 2;
             const by = (ch - badgeSize) / 2;
 
-            // Draw rounded badge background
             ctx.save();
             ctx.fillStyle = bgColor;
             ctx.strokeStyle = fgColor;
@@ -1466,7 +2069,6 @@
             ctx.fill();
             ctx.stroke();
 
-            // Draw center ND insignia
             ctx.fillStyle = fgColor;
             ctx.font = `bold ${Math.floor(badgeSize * 0.46)}px Outfit, sans-serif`;
             ctx.textAlign = 'center';
@@ -1474,7 +2076,6 @@
             ctx.fillText('ND', cw / 2, ch / 2);
             ctx.restore();
 
-            // Update underlying image tag for consistency
             const img = box.querySelector('img');
             if (img) img.src = canvas.toDataURL();
           }
@@ -1482,7 +2083,6 @@
       }
     }
 
-    // Input listeners for real-time QR updates
     [
       'qr-input-url', 'qr-wifi-ssid', 'qr-wifi-pass', 'qr-wifi-type', 'qr-wifi-hidden',
       'qr-vcard-name', 'qr-vcard-phone', 'qr-vcard-email', 'qr-vcard-org',
@@ -1512,7 +2112,6 @@
       document.getElementById('qr-preview-card').style.padding = e.target.checked ? '18px' : '4px';
     });
 
-    // Download PNG
     document.getElementById('download-qr-btn').onclick = () => {
       const canvas = document.querySelector('#qrcode-output canvas');
       if (canvas) {
@@ -1533,7 +2132,6 @@
       }
     };
 
-    // Download SVG
     document.getElementById('download-qr-svg-btn').onclick = () => {
       if (!qrStudioInstance || !qrStudioInstance._oQRCode) {
         showToast('Generate QR code first', 'error'); return;
@@ -1563,7 +2161,6 @@
       showToast('Scalable vector SVG downloaded!', 'success');
     };
 
-    // Copy QR Image to Clipboard
     document.getElementById('copy-qr-btn').onclick = async () => {
       const canvas = document.querySelector('#qrcode-output canvas');
       if (canvas && navigator.clipboard && window.ClipboardItem) {
@@ -1580,7 +2177,6 @@
       }
     };
 
-    // Print QR Code
     document.getElementById('print-qr-btn').onclick = () => {
       const canvas = document.querySelector('#qrcode-output canvas');
       if (!canvas) return;
@@ -1602,7 +2198,6 @@
       }
     };
 
-    // Scan QR Code
     const qrScanDrop = document.getElementById('qr-scan-dropzone');
     const qrScanInput = document.getElementById('qr-scan-file-input');
     const qrScanResultWrap = document.getElementById('qr-scan-result-wrap');
@@ -1642,10 +2237,11 @@
       qrScanInput.value = '';
     };
 
-    // Initialize QR Code on page load
     renderQrStudio();
 
+    // ==========================================
     // 4. Text Case Converter
+    // ==========================================
     const caseIn = document.getElementById('case-input');
     document.querySelectorAll('[data-case]').forEach(b => {
       b.onclick = () => {
@@ -1662,7 +2258,9 @@
     document.getElementById('case-copy-btn').onclick = () => copyToClipboard(caseIn.value);
     document.getElementById('case-clear-btn').onclick = () => { caseIn.value = ''; };
 
+    // ==========================================
     // 5. Unit Converter
+    // ==========================================
     const unitRates = {
       length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
       weight: { kg: 1, g: 0.001, mg: 0.000001, lb: 0.453592, oz: 0.0283495, t: 1000 },
@@ -1719,7 +2317,9 @@
     };
     initConvUnits();
 
+    // ==========================================
     // 6. Age Calculator
+    // ==========================================
     const dobIn = document.getElementById('age-dob-input');
     const targetDateIn = document.getElementById('age-target-input');
     targetDateIn.valueAsDate = new Date();
@@ -1740,7 +2340,9 @@
       document.getElementById('age-result-wrap').style.display = 'block';
     };
 
+    // ==========================================
     // 7. Password Generator
+    // ==========================================
     function generatePassword() {
       const len = parseInt(document.getElementById('pwd-len-slider').value) || 16;
       let chars = '';
@@ -1760,7 +2362,9 @@
     document.getElementById('pwd-copy-btn').onclick = () => copyToClipboard(document.getElementById('pwd-display').value);
     generatePassword();
 
+    // ==========================================
     // 8. Aspect Ratio Calculator
+    // ==========================================
     const rw = document.getElementById('ratio-w'), rh = document.getElementById('ratio-h');
     function gcd(a, b) { return b == 0 ? a : gcd(b, a % b); }
     function calcRatio() {
@@ -1776,7 +2380,9 @@
       };
     });
 
+    // ==========================================
     // 9. Word & Character Counter
+    // ==========================================
     const wordIn = document.getElementById('word-input');
     wordIn.oninput = () => {
       const t = wordIn.value.trim();
@@ -1788,7 +2394,9 @@
       document.getElementById('stat-reading').textContent = `${Math.ceil(words / 200)} min`;
     };
 
+    // ==========================================
     // 10. Base64 / URL Encoder & Decoder
+    // ==========================================
     let currentCodec = 'b64-encode';
     document.querySelectorAll('[data-codec]').forEach(b => {
       b.onclick = () => {
@@ -1808,7 +2416,9 @@
     };
     document.getElementById('codec-copy-btn').onclick = () => copyToClipboard(document.getElementById('codec-output').value);
 
+    // ==========================================
     // 11. Lorem Ipsum Generator
+    // ==========================================
     const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
     document.getElementById('lorem-count-slider').oninput = (e) => document.getElementById('lorem-count-val').textContent = e.target.value;
     document.getElementById('lorem-gen-btn').onclick = () => {
@@ -1824,7 +2434,9 @@
     };
     document.getElementById('lorem-copy-btn').onclick = () => copyToClipboard(document.getElementById('lorem-output').value);
 
+    // ==========================================
     // 12. To-Do List & Notes
+    // ==========================================
     let todos = JSON.parse(localStorage.getItem('nd_todos') || '[]');
     function saveTodos() { localStorage.setItem('nd_todos', JSON.stringify(todos)); renderTodos(); }
     function renderTodos() {
@@ -1857,7 +2469,9 @@
     qNotes.oninput = () => localStorage.setItem('nd_notes', qNotes.value);
     renderTodos();
 
+    // ==========================================
     // 13. Pomodoro Focus Timer
+    // ==========================================
     let timerTotal = 25 * 60, timeLeft = timerTotal, timerInterval = null, pomoCount = 0;
     const ring = document.getElementById('timer-progress-ring');
     const ringLen = 2 * Math.PI * 110;
