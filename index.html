@@ -18,12 +18,16 @@
 
   <!-- CDNs for In-Browser Client-Side Processing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite@1.2.0/dist/pdf-encrypt-lite.umd.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     :root {
@@ -155,9 +159,11 @@
     .tool-workspace-body { background: var(--bg-card); border: 1px solid var(--border-cyan); border-radius: 20px; padding: 28px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); }
 
     /* Tool Tabs & Dropzone */
-    .tool-tabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px; margin-bottom: 22px; overflow-x: auto; }
-    .tool-tab-btn { padding: 8px 18px; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 0.88rem; font-weight: 600; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .tool-tabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 14px; margin-bottom: 22px; overflow-x: auto; scrollbar-width: thin; }
+    .tool-tab-btn { padding: 8px 16px; border-radius: var(--radius-md); font-family: var(--font-display); font-size: 0.86rem; font-weight: 600; background: rgba(255, 255, 255, 0.04); color: var(--text-muted); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; }
     .tool-tab-btn.active { background: rgba(0, 242, 254, 0.12); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0, 242, 254, 0.25); }
+    .tool-tab-btn:hover:not(.active) { color: #fff; background: rgba(255, 255, 255, 0.08); }
+    
     .dropzone { border: 2px dashed rgba(0, 242, 254, 0.35); border-radius: 18px; padding: 36px 20px; text-align: center; background: rgba(9, 13, 28, 0.6); cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
     .dropzone:hover, .dropzone.dragover { border-color: var(--cyan); background: rgba(0, 242, 254, 0.06); box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); }
     .dropzone i { font-size: 2.8rem; color: var(--cyan); }
@@ -190,6 +196,17 @@
     .timer-time-display { position: absolute; text-align: center; }
     .timer-clock { font-size: 3rem; font-weight: 800; font-family: var(--font-mono); color: #ffffff; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
     .timer-status-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cyan); margin-top: 2px; }
+
+    /* Document/Table Preview Container */
+    .doc-preview-box { background: rgba(6, 9, 19, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; max-height: 380px; overflow-y: auto; font-family: var(--font-body); font-size: 0.9rem; color: var(--text-main); }
+    .doc-preview-box table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .doc-preview-box th, .doc-preview-box td { border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; text-align: left; }
+    .doc-preview-box th { background: rgba(0,242,254,0.12); color: var(--cyan); font-family: var(--font-display); }
+    .doc-preview-box tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+    /* Thumbnails and Items Lists */
+    .file-item-pill { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(8,12,24,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 8px; }
+    .file-item-pill:hover { border-color: var(--cyan); }
 
     /* Footer */
     .site-footer { margin-top: 70px; border-top: 1px solid rgba(0, 242, 254, 0.15); background: linear-gradient(180deg, rgba(7, 10, 20, 0.4) 0%, rgba(4, 6, 12, 0.95) 100%); padding: 50px 0 30px; }
@@ -258,13 +275,12 @@
         </div>
         <div class="search-box-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="tool-search-input" class="input-field search-input" placeholder="Search any tool (Video to Audio, Image Resizer, PDF Locker)...">
+          <input type="text" id="tool-search-input" class="input-field search-input" placeholder="Search any tool (PDF Locker, Word to PDF, Video to Audio, QR Studio)...">
         </div>
       </section>
 
       <!-- 14 Service Cards Grid -->
       <section class="services-grid" id="services-grid">
-        <!-- New Tool: Video to Audio Converter -->
         <article class="tool-card" data-category="converter" data-tool="videoaudio">
           <div class="tool-card-icon-wrap"><i class="fa-solid fa-file-audio"></i></div>
           <div class="tool-card-category">Converters & Calculators</div>
@@ -281,12 +297,13 @@
           <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Client-side</span></div>
         </article>
 
+        <!-- Upgraded Comprehensive PDF Locker & Suite Card -->
         <article class="tool-card" data-category="utility" data-tool="pdf">
           <div class="tool-card-icon-wrap"><i class="fa-solid fa-file-pdf"></i></div>
           <div class="tool-card-category">Utility Tools</div>
-          <h3 class="tool-card-title">PDF Locker & Utility</h3>
-          <p class="tool-card-desc">Lock PDF files with passwords, unlock encrypted PDFs client-side, and convert images into clean PDFs.</p>
-          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Lock & Unlock</span></div>
+          <h3 class="tool-card-title">PDF Locker & Document Suite</h3>
+          <p class="tool-card-desc">Password Lock/Unlock, PDF ↔ Image, Merge & Split, PDF Compressor, plus Word to PDF, PDF to Word, Excel to PDF, and PDF to Excel conversions.</p>
+          <div class="tool-card-footer"><span class="tool-launch-text">Launch Tool <i class="fa-solid fa-arrow-right"></i></span><span class="tool-card-badge">Full Suite</span></div>
         </article>
 
         <article class="tool-card" data-category="utility" data-tool="qrcode">
@@ -390,7 +407,7 @@
         <select class="input-field btn-sm" id="quick-tool-select" style="max-width: 220px;">
           <option value="videoaudio">Video to Audio Converter</option>
           <option value="resizer">Image Resizer</option>
-          <option value="pdf">PDF Locker & Unlocker</option>
+          <option value="pdf">PDF Locker & Document Suite</option>
           <option value="qrcode">QR Studio & Scanner</option>
           <option value="textcase">Text Case</option>
           <option value="converter">Unit Converter</option>
@@ -406,7 +423,7 @@
       </div>
 
       <div class="tool-workspace-body">
-        <!-- NEW: Video to Audio Converter Tool Pane -->
+        <!-- Video to Audio Converter Tool Pane -->
         <div id="tool-pane-videoaudio" class="tool-pane" style="display: none;">
           <div class="dropzone" id="va-dropzone">
             <i class="fa-solid fa-file-video"></i>
@@ -416,7 +433,6 @@
           </div>
 
           <div id="va-controls" style="display:none; margin-top:20px;">
-            <!-- Video Preview & Metadata -->
             <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-bottom:20px; padding:16px; border-radius:14px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan);">
               <div style="max-width:260px; width:100%; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); background:#000;">
                 <video id="va-video-preview" controls playsinline style="width:100%; max-height:160px; display:block;"></video>
@@ -433,7 +449,6 @@
               </div>
             </div>
 
-            <!-- Conversion Settings -->
             <div class="tool-controls-grid">
               <div class="form-group">
                 <label class="form-label">Desired Audio Format *</label>
@@ -445,7 +460,6 @@
                   <option value="webm">WebM Audio (.webm - Modern Web)</option>
                 </select>
               </div>
-
               <div class="form-group">
                 <label class="form-label">Audio Quality / Bitrate</label>
                 <select id="va-bitrate-select" class="input-field">
@@ -456,7 +470,6 @@
                   <option value="96">96 kbps (Voice / Low Size)</option>
                 </select>
               </div>
-
               <div class="form-group">
                 <label class="form-label">Channels</label>
                 <select id="va-channels-select" class="input-field">
@@ -464,7 +477,6 @@
                   <option value="1">Mono (1 Channel)</option>
                 </select>
               </div>
-
               <div class="form-group">
                 <label class="form-label">Volume Boost</label>
                 <select id="va-volume-select" class="input-field">
@@ -476,7 +488,6 @@
               </div>
             </div>
 
-            <!-- Optional Audio Trimmer -->
             <div style="margin: 14px 0; padding:14px; border-radius:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
               <label class="checkbox-wrap">
                 <input type="checkbox" id="va-trim-toggle"> Trim Audio Segment (Extract only specific clip)
@@ -496,7 +507,6 @@
               </div>
             </div>
 
-            <!-- Action Buttons -->
             <div style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;">
               <button class="btn btn-neon" id="va-convert-btn">
                 <i class="fa-solid fa-bolt"></i> Extract & Convert Audio
@@ -506,7 +516,6 @@
               </button>
             </div>
 
-            <!-- Conversion Progress Feedback -->
             <div id="va-progress-wrap" style="display:none; margin-top:20px; padding:16px; border-radius:12px; background:rgba(0,242,254,0.06); border:1px solid var(--border-cyan);">
               <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.88rem;">
                 <span id="va-status-text" style="color:var(--cyan);"><i class="fa-solid fa-spinner fa-spin"></i> Processing audio track...</span>
@@ -517,7 +526,6 @@
               </div>
             </div>
 
-            <!-- Output Download Center -->
             <div id="va-result-wrap" style="display:none; margin-top:24px; padding:22px; border-radius:16px; background:rgba(13,19,36,0.9); border:1px solid var(--border-cyan); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
               <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
                 <div style="display:flex; align-items:center; gap:10px;">
@@ -534,20 +542,17 @@
                 </span>
               </div>
 
-              <!-- Live Audio Preview -->
               <div style="margin:16px 0; padding:12px; border-radius:12px; background:rgba(6,9,19,0.8); border:1px solid rgba(255,255,255,0.08);">
                 <label class="form-label" style="margin-bottom:8px; display:block;"><i class="fa-solid fa-headphones" style="color:var(--cyan); margin-right:6px;"></i> Converted Audio Player</label>
                 <audio id="va-audio-player" controls style="width:100%; display:block; outline:none; filter:contrast(1.1);"></audio>
               </div>
 
-              <!-- Main Download Button -->
               <div style="margin-top:16px;">
                 <button class="btn btn-neon" id="va-download-primary-btn" style="width:100%; font-size:1.05rem; padding:14px;">
                   <i class="fa-solid fa-download"></i> Download Converted Audio
                 </button>
               </div>
 
-              <!-- One-Click Multi-Format Export Options -->
               <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px;">
                 <label class="form-label" style="margin-bottom:10px; display:block; color:var(--text-muted);">
                   <i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--purple); margin-right:6px;"></i> Download in Other Formats:
@@ -564,7 +569,7 @@
           </div>
         </div>
 
-        <!-- 1. Image Resizer -->
+        <!-- Image Resizer -->
         <div id="tool-pane-resizer" class="tool-pane" style="display: none;">
           <div class="dropzone" id="img-dropzone"><i class="fa-solid fa-cloud-arrow-up"></i><h4>Click or drop image here</h4><p style="color:var(--text-muted);font-size:0.85rem">Supports JPG, PNG, WebP</p><input type="file" id="img-file-input" class="hidden-input" accept="image/*"></div>
           <div id="img-editor-controls" style="display:none; margin-top:20px;">
@@ -586,17 +591,31 @@
           </div>
         </div>
 
-        <!-- 2. PDF Locker & Utility (With Password Protection, Unlock PDF & Image to PDF) -->
+        <!-- ======================================================== -->
+        <!-- UPGRADED MASTER TOOL: PDF LOCKER & DOCUMENT CONVERSIONS -->
+        <!-- ======================================================== -->
         <div id="tool-pane-pdf" class="tool-pane" style="display: none;">
-          <div class="tool-tabs">
-            <button class="tool-tab-btn active" data-subtab="pdf-locker"><i class="fa-solid fa-lock"></i> PDF Locker (Password Protect)</button>
-            <button class="tool-tab-btn" data-subtab="pdf-unlocker"><i class="fa-solid fa-unlock-keyhole"></i> Unlock PDF (Remove Password)</button>
-            <button class="tool-tab-btn" data-subtab="img-to-pdf"><i class="fa-solid fa-images"></i> Image to PDF</button>
+          <!-- Master Tabs Navigation -->
+          <div class="tool-tabs" id="pdf-master-tabs">
+            <button class="tool-tab-btn active" data-subtab="pdf-locker"><i class="fa-solid fa-lock"></i> PDF Locker</button>
+            <button class="tool-tab-btn" data-subtab="pdf-unlocker"><i class="fa-solid fa-unlock-keyhole"></i> Unlock PDF</button>
+            <button class="tool-tab-btn" data-subtab="pdf-img-conv"><i class="fa-solid fa-arrows-rotate"></i> PDF ↔ Image</button>
+            <button class="tool-tab-btn" data-subtab="pdf-merge-split"><i class="fa-solid fa-code-merge"></i> PDF Merge & Split</button>
+            <button class="tool-tab-btn" data-subtab="pdf-compressor"><i class="fa-solid fa-compress"></i> PDF Compressor</button>
+            <button class="tool-tab-btn" data-subtab="word-to-pdf"><i class="fa-solid fa-file-word"></i> Word to PDF</button>
+            <button class="tool-tab-btn" data-subtab="pdf-to-word"><i class="fa-solid fa-file-lines"></i> PDF to Word</button>
+            <button class="tool-tab-btn" data-subtab="excel-to-pdf"><i class="fa-solid fa-file-excel"></i> Excel to PDF</button>
+            <button class="tool-tab-btn" data-subtab="pdf-to-excel"><i class="fa-solid fa-table"></i> PDF to Excel</button>
           </div>
 
-          <!-- Subtab A: PDF Locker (Protect) -->
+          <!-- 1. PDF Locker (Password Protect) -->
           <div id="subtab-pane-pdf-locker" class="subtab-pane">
-            <div class="dropzone" id="pdf-locker-dropzone"><i class="fa-solid fa-file-shield"></i><h4>Upload PDF file to Lock</h4><p style="color:var(--text-muted);font-size:0.85rem">Select any PDF file from your device</p><input type="file" id="pdf-locker-file-input" class="hidden-input" accept=".pdf,application/pdf"></div>
+            <div class="dropzone" id="pdf-locker-dropzone">
+              <i class="fa-solid fa-file-shield"></i>
+              <h4>Upload PDF file to Lock</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Select any PDF file from your device to add encryption</p>
+              <input type="file" id="pdf-locker-file-input" class="hidden-input" accept=".pdf,application/pdf">
+            </div>
             <div id="pdf-locker-controls" style="display: none; margin-top: 20px;">
               <div style="padding:14px; border-radius:12px; background:rgba(0,242,254,0.08); border:1px solid var(--border-cyan); margin-bottom:18px;">
                 <i class="fa-solid fa-file-pdf" style="color:var(--cyan); margin-right:8px;"></i> Selected File: <strong id="pdf-locker-filename" style="color:#ffffff;">document.pdf</strong>
@@ -610,7 +629,7 @@
             </div>
           </div>
 
-          <!-- Subtab B: Unlock PDF (Remove Password) -->
+          <!-- 2. Unlock PDF (Remove Password) -->
           <div id="subtab-pane-pdf-unlocker" class="subtab-pane" style="display:none;">
             <div class="dropzone" id="pdf-unlock-dropzone">
               <i class="fa-solid fa-file-circle-question" style="color:var(--cyan);"></i>
@@ -643,7 +662,7 @@
                   </button>
                 </div>
                 <small style="color:var(--text-dim); font-size:0.8rem; margin-top:4px;">
-                  <i class="fa-solid fa-circle-info" style="color:var(--cyan); margin-right:4px;"></i> The password will be verified client-side to strip all encryption and owner restrictions cleanly.
+                  <i class="fa-solid fa-circle-info" style="color:var(--cyan); margin-right:4px;"></i> The password will be verified client-side to strip all encryption cleanly.
                 </small>
               </div>
 
@@ -665,35 +684,297 @@
             </div>
           </div>
 
-          <!-- Subtab C: Image to PDF -->
-          <div id="subtab-pane-img-to-pdf" class="subtab-pane" style="display:none;">
-            <div class="dropzone" id="pdf-img-dropzone"><i class="fa-solid fa-images"></i><h4>Select multiple images to combine into PDF</h4><p style="color:var(--text-muted);font-size:0.85rem">Click or drop JPG, PNG</p><input type="file" id="pdf-img-file-input" class="hidden-input" accept="image/*" multiple></div>
-            <div id="pdf-img-list-wrap" style="display:none; margin-top:20px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h5 style="color:#fff;">Uploaded Images (<span id="pdf-img-count">0</span>)</h5><button class="btn btn-sm btn-glass" id="pdf-img-clear-btn">Clear All</button></div>
-              <div id="pdf-img-thumbnails" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
-              <div class="tool-controls-grid">
-                <div class="form-group"><label class="form-label">Orientation</label><select id="pdf-orientation" class="input-field"><option value="p">Portrait</option><option value="l">Landscape</option></select></div>
-                <div class="form-group"><label class="form-label">Format</label><select id="pdf-format" class="input-field"><option value="a4">A4 Standard</option><option value="letter">US Letter</option></select></div>
+          <!-- 3. PDF ↔ Image Converter (PDF to Image & Image to PDF) -->
+          <div id="subtab-pane-pdf-img-conv" class="subtab-pane" style="display:none;">
+            <div style="display:flex; gap:10px; margin-bottom:18px;">
+              <button class="btn btn-glass btn-sm active" id="mode-pdf-to-img-btn"><i class="fa-solid fa-file-export"></i> PDF to Image (Extract)</button>
+              <button class="btn btn-glass btn-sm" id="mode-img-to-pdf-btn"><i class="fa-solid fa-file-import"></i> Image to PDF (Convert)</button>
+            </div>
+
+            <!-- View 3A: PDF to Image Extraction -->
+            <div id="box-pdf-to-img">
+              <div class="dropzone" id="p2i-dropzone">
+                <i class="fa-solid fa-images" style="color:var(--cyan);"></i>
+                <h4>Upload PDF to Extract Images/Pages</h4>
+                <p style="color:var(--text-muted);font-size:0.85rem">Convert every page into high-resolution JPG or PNG pictures</p>
+                <input type="file" id="p2i-file-input" class="hidden-input" accept=".pdf,application/pdf">
               </div>
-              <div style="margin:14px 0;"><label class="checkbox-wrap"><input type="checkbox" id="img-pdf-lock-toggle"> Also Password Protect this PDF</label><div id="img-pdf-pwd-wrap" style="display:none; margin-top:8px;"><input type="password" id="img-pdf-pwd-input" class="input-field" placeholder="Enter password for generated PDF..." style="max-width:320px;"></div></div>
-              <button class="btn btn-neon" id="generate-pdf-btn"><i class="fa-solid fa-file-arrow-down"></i> Generate & Download PDF</button>
+
+              <div id="p2i-controls" style="display:none; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:14px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan); border-radius:12px; margin-bottom:18px;">
+                  <div>
+                    <h5 id="p2i-filename" style="color:#fff;">document.pdf</h5>
+                    <span id="p2i-meta" style="color:var(--cyan); font-size:0.82rem; font-family:var(--font-mono);">-</span>
+                  </div>
+                  <div style="display:flex; gap:10px;">
+                    <select id="p2i-format-select" class="input-field btn-sm" style="width:120px;">
+                      <option value="png">PNG (Lossless)</option>
+                      <option value="jpeg" selected>JPG (Compact)</option>
+                    </select>
+                    <button class="btn btn-neon btn-sm" id="p2i-download-all-btn"><i class="fa-solid fa-file-zipper"></i> Download All (ZIP)</button>
+                  </div>
+                </div>
+
+                <div id="p2i-progress-bar-wrap" style="display:none; margin-bottom:16px;">
+                  <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
+                    <div id="p2i-progress-bar" style="width:0%; height:100%; background:var(--neon-grad);"></div>
+                  </div>
+                  <p id="p2i-progress-text" style="font-size:0.8rem; color:var(--cyan); margin-top:4px;">Rendering pages...</p>
+                </div>
+
+                <div id="p2i-thumbnails-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:16px;"></div>
+                <div style="margin-top:16px;"><button class="btn btn-glass btn-sm" id="p2i-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button></div>
+              </div>
+            </div>
+
+            <!-- View 3B: Image to PDF (Enhanced) -->
+            <div id="box-img-to-pdf" style="display:none;">
+              <div class="dropzone" id="pdf-img-dropzone"><i class="fa-solid fa-images"></i><h4>Select multiple photos / images</h4><p style="color:var(--text-muted);font-size:0.85rem">Click or drop JPG, PNG, WebP images to make a PDF</p><input type="file" id="pdf-img-file-input" class="hidden-input" accept="image/*" multiple></div>
+              <div id="pdf-img-list-wrap" style="display:none; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h5 style="color:#fff;">Uploaded Images (<span id="pdf-img-count">0</span>)</h5><button class="btn btn-sm btn-glass" id="pdf-img-clear-btn">Clear All</button></div>
+                <div id="pdf-img-thumbnails" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
+                <div class="tool-controls-grid">
+                  <div class="form-group"><label class="form-label">Orientation</label><select id="pdf-orientation" class="input-field"><option value="p">Portrait</option><option value="l">Landscape</option></select></div>
+                  <div class="form-group"><label class="form-label">Page Format</label><select id="pdf-format" class="input-field"><option value="a4">A4 Standard</option><option value="letter">US Letter</option></select></div>
+                </div>
+                <div style="margin:14px 0;"><label class="checkbox-wrap"><input type="checkbox" id="img-pdf-lock-toggle"> Also Password Protect this PDF</label><div id="img-pdf-pwd-wrap" style="display:none; margin-top:8px;"><input type="password" id="img-pdf-pwd-input" class="input-field" placeholder="Enter password for generated PDF..." style="max-width:320px;"></div></div>
+                <button class="btn btn-neon" id="generate-pdf-btn"><i class="fa-solid fa-file-arrow-down"></i> Generate & Download PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. PDF Merge & Split -->
+          <div id="subtab-pane-pdf-merge-split" class="subtab-pane" style="display:none;">
+            <div style="display:flex; gap:10px; margin-bottom:18px;">
+              <button class="btn btn-glass btn-sm active" id="mode-merge-btn"><i class="fa-solid fa-object-group"></i> PDF Merge (Combine)</button>
+              <button class="btn btn-glass btn-sm" id="mode-split-btn"><i class="fa-solid fa-scissors"></i> PDF Split (Extract Pages)</button>
+            </div>
+
+            <!-- Merge Section -->
+            <div id="box-pdf-merge">
+              <div class="dropzone" id="merge-dropzone">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                <h4>Select 2 or more PDF files to Merge</h4>
+                <p style="color:var(--text-muted);font-size:0.85rem">Combine multiple documents into one seamless single PDF</p>
+                <input type="file" id="merge-file-input" class="hidden-input" accept=".pdf,application/pdf" multiple>
+              </div>
+
+              <div id="merge-controls" style="display:none; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <h5 style="color:#fff;">PDFs to Combine (<span id="merge-file-count">0</span>)</h5>
+                  <button class="btn btn-sm btn-glass" id="merge-clear-btn"><i class="fa-solid fa-trash"></i> Clear</button>
+                </div>
+                <div id="merge-files-list" style="margin-bottom:18px;"></div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                  <button class="btn btn-neon" id="execute-merge-btn"><i class="fa-solid fa-bolt"></i> Merge & Download Combined PDF</button>
+                  <button class="btn btn-glass" id="merge-add-more-btn"><i class="fa-solid fa-plus"></i> Add More PDFs</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Split Section -->
+            <div id="box-pdf-split" style="display:none;">
+              <div class="dropzone" id="split-dropzone">
+                <i class="fa-solid fa-scissors" style="color:var(--purple);"></i>
+                <h4>Upload PDF to Split or Extract Pages</h4>
+                <p style="color:var(--text-muted);font-size:0.85rem">Extract specific page numbers or ranges (e.g. 1-3, 5)</p>
+                <input type="file" id="split-file-input" class="hidden-input" accept=".pdf,application/pdf">
+              </div>
+
+              <div id="split-controls" style="display:none; margin-top:20px;">
+                <div style="padding:14px; border-radius:12px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan); margin-bottom:18px;">
+                  <i class="fa-solid fa-file-pdf" style="color:var(--cyan); margin-right:8px;"></i>
+                  <span id="split-filename" style="color:#fff; font-weight:600;">document.pdf</span>
+                  <span style="color:var(--cyan); font-size:0.85rem; margin-left:12px;">(Total Pages: <strong id="split-total-pages" style="color:#fff;">0</strong>)</span>
+                </div>
+
+                <div class="tool-controls-grid">
+                  <div class="form-group">
+                    <label class="form-label">Split Mode</label>
+                    <select id="split-mode-select" class="input-field">
+                      <option value="range">Extract Custom Pages / Ranges (e.g. 1-3, 5)</option>
+                      <option value="all">Extract Every Page as Separate PDF (ZIP)</option>
+                    </select>
+                  </div>
+                  <div class="form-group" id="split-range-group">
+                    <label class="form-label">Page Selection (e.g., 1-2, 4)</label>
+                    <input type="text" id="split-range-input" class="input-field" placeholder="1-3, 5" value="1">
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:12px; margin-top:16px;">
+                  <button class="btn btn-neon" id="execute-split-btn"><i class="fa-solid fa-scissors"></i> Split & Download</button>
+                  <button class="btn btn-glass" id="split-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. PDF Compressor -->
+          <div id="subtab-pane-pdf-compressor" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="compress-dropzone">
+              <i class="fa-solid fa-compress" style="color:var(--cyan);"></i>
+              <h4>Upload PDF to Compress & Reduce File Size</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Shrink MB size while preserving crisp text & document layout</p>
+              <input type="file" id="compress-file-input" class="hidden-input" accept=".pdf,application/pdf">
+            </div>
+
+            <div id="compress-controls" style="display:none; margin-top:20px;">
+              <div style="padding:16px; border-radius:14px; background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan); margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <h5 id="compress-filename" style="color:#fff;">document.pdf</h5>
+                  <span style="color:var(--text-muted); font-size:0.85rem;">Original Size: <strong id="compress-orig-size" style="color:#fff;">0 KB</strong></span>
+                </div>
+                <span class="creator-badge" style="color:var(--cyan); border-color:var(--cyan);"><i class="fa-solid fa-gauge-high"></i> Smart Optimizer</span>
+              </div>
+
+              <div class="tool-controls-grid">
+                <div class="form-group">
+                  <label class="form-label">Compression Level</label>
+                  <select id="compress-level-select" class="input-field">
+                    <option value="high">High Compression (Lowest Size, Standard DPI)</option>
+                    <option value="medium" selected>Balanced (Recommended - Crisp & Compact)</option>
+                    <option value="low">Light Compression (Maximum Visual Quality)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Estimated Output</label>
+                  <div style="padding:10px 14px; background:rgba(0,0,0,0.4); border-radius:10px; font-family:var(--font-mono); color:var(--cyan); font-size:0.9rem;">
+                    Approx. 40% - 75% Reduction
+                  </div>
+                </div>
+              </div>
+
+              <div id="compress-progress-wrap" style="display:none; margin:16px 0;">
+                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--cyan); margin-bottom:6px;">
+                  <span id="compress-status-text">Compressing pages...</span>
+                  <span id="compress-pct-text">0%</span>
+                </div>
+                <div style="width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
+                  <div id="compress-progress-bar" style="width:0%; height:100%; background:var(--neon-grad);"></div>
+                </div>
+              </div>
+
+              <div id="compress-result-wrap" style="display:none; margin:18px 0; padding:16px; border-radius:12px; background:rgba(16,185,129,0.08); border:1px solid #10b981;">
+                <h5 style="color:#10b981; margin-bottom:6px;"><i class="fa-solid fa-circle-check"></i> Compression Complete!</h5>
+                <p style="color:#fff; font-size:0.9rem;">New Size: <strong id="compress-new-size">-</strong> &bull; Savings: <strong id="compress-savings-pct" style="color:#10b981;">-</strong></p>
+              </div>
+
+              <div style="display:flex; gap:12px; margin-top:16px;">
+                <button class="btn btn-neon" id="execute-compress-btn"><i class="fa-solid fa-compress"></i> Compress PDF Now</button>
+                <button class="btn btn-purple" id="download-compressed-btn" style="display:none;"><i class="fa-solid fa-download"></i> Download Compressed PDF</button>
+                <button class="btn btn-glass" id="compress-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Word to PDF (.docx/.doc) -->
+          <div id="subtab-pane-word-to-pdf" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="w2p-dropzone">
+              <i class="fa-solid fa-file-word" style="color:#3b82f6;"></i>
+              <h4>Upload Word Document (.docx / .doc)</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Convert Microsoft Word files into clean, shareable PDFs</p>
+              <input type="file" id="w2p-file-input" class="hidden-input" accept=".docx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword">
+            </div>
+
+            <div id="w2p-controls" style="display:none; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h5 id="w2p-filename" style="color:#fff;">document.docx</h5>
+                <span class="creator-badge" style="background:rgba(59,130,246,0.15); border-color:#3b82f6; color:#60a5fa;"><i class="fa-solid fa-file-lines"></i> Ready to Convert</span>
+              </div>
+              <label class="form-label" style="margin-bottom:6px; display:block;">Formatted Document Preview:</label>
+              <div id="w2p-preview-box" class="doc-preview-box" style="margin-bottom:16px;"></div>
+              <div style="display:flex; gap:12px;">
+                <button class="btn btn-neon" id="execute-w2p-btn"><i class="fa-solid fa-file-pdf"></i> Convert & Download PDF</button>
+                <button class="btn btn-glass" id="w2p-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change Word File</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. PDF to Word (.docx) -->
+          <div id="subtab-pane-pdf-to-word" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="p2w-dropzone">
+              <i class="fa-solid fa-file-arrow-down" style="color:var(--purple);"></i>
+              <h4>Upload PDF to Convert to Editable Word (.doc / .docx)</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Preserves headings, paragraphs, and text formatting for Microsoft Word</p>
+              <input type="file" id="p2w-file-input" class="hidden-input" accept=".pdf,application/pdf">
+            </div>
+
+            <div id="p2w-controls" style="display:none; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h5 id="p2w-filename" style="color:#fff;">document.pdf</h5>
+                <span id="p2w-page-count" style="color:var(--cyan); font-family:var(--font-mono); font-size:0.85rem;">0 Pages</span>
+              </div>
+              <label class="form-label" style="margin-bottom:6px; display:block;">Extracted Word Content Preview:</label>
+              <div id="p2w-preview-box" class="doc-preview-box" style="margin-bottom:16px;"></div>
+              <div style="display:flex; gap:12px;">
+                <button class="btn btn-neon" id="execute-p2w-btn"><i class="fa-solid fa-file-word"></i> Download Editable Word (.docx)</button>
+                <button class="btn btn-glass" id="p2w-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Excel to PDF (.xlsx/.xls) -->
+          <div id="subtab-pane-excel-to-pdf" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="e2p-dropzone">
+              <i class="fa-solid fa-file-excel" style="color:#10b981;"></i>
+              <h4>Upload Excel Spreadsheet (.xlsx / .xls / .csv)</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Convert spreadsheets into professional, structured PDF tables</p>
+              <input type="file" id="e2p-file-input" class="hidden-input" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+            </div>
+
+            <div id="e2p-controls" style="display:none; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                <h5 id="e2p-filename" style="color:#fff;">spreadsheet.xlsx</h5>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <label class="form-label" style="margin:0;">Select Sheet:</label>
+                  <select id="e2p-sheet-select" class="input-field btn-sm" style="width:160px;"></select>
+                </div>
+              </div>
+              <label class="form-label" style="margin-bottom:6px; display:block;">Spreadsheet Table Preview:</label>
+              <div id="e2p-preview-box" class="doc-preview-box" style="margin-bottom:16px;"></div>
+              <div style="display:flex; gap:12px;">
+                <button class="btn btn-neon" id="execute-e2p-btn"><i class="fa-solid fa-file-pdf"></i> Convert & Download PDF</button>
+                <button class="btn btn-glass" id="e2p-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change Excel File</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. PDF to Excel (.xlsx) -->
+          <div id="subtab-pane-pdf-to-excel" class="subtab-pane" style="display:none;">
+            <div class="dropzone" id="p2e-dropzone">
+              <i class="fa-solid fa-table-cells" style="color:var(--cyan);"></i>
+              <h4>Upload PDF to Extract into Excel (.xlsx)</h4>
+              <p style="color:var(--text-muted);font-size:0.85rem">Detect tables and structured data to build an editable spreadsheet</p>
+              <input type="file" id="p2e-file-input" class="hidden-input" accept=".pdf,application/pdf">
+            </div>
+
+            <div id="p2e-controls" style="display:none; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h5 id="p2e-filename" style="color:#fff;">document.pdf</h5>
+                <span id="p2e-row-count" style="color:var(--cyan); font-family:var(--font-mono); font-size:0.85rem;">0 Rows Detected</span>
+              </div>
+              <label class="form-label" style="margin-bottom:6px; display:block;">Extracted Spreadsheet Preview:</label>
+              <div id="p2e-preview-box" class="doc-preview-box" style="margin-bottom:16px;"></div>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button class="btn btn-neon" id="execute-p2e-btn"><i class="fa-solid fa-file-excel"></i> Download Excel (.xlsx)</button>
+                <button class="btn btn-glass" id="download-p2e-csv-btn"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
+                <button class="btn btn-glass" id="p2e-reset-btn"><i class="fa-solid fa-rotate-left"></i> Change PDF</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 3. QR Code Generator & Scanner (Upgraded Modern QR Studio) -->
+        <!-- QR Code Generator & Scanner -->
         <div id="tool-pane-qrcode" class="tool-pane" style="display: none;">
           <div class="tool-tabs">
             <button class="tool-tab-btn active" data-subtab="qr-generate"><i class="fa-solid fa-wand-magic-sparkles"></i> QR Studio Generator</button>
             <button class="tool-tab-btn" data-subtab="qr-scan"><i class="fa-solid fa-camera"></i> Scan QR from Image</button>
           </div>
 
-          <!-- Subtab A: QR Generator Studio -->
           <div id="subtab-pane-qr-generate" class="subtab-pane">
             <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px; align-items:start;">
-              <!-- Left Column: Controls & Dynamic Content -->
               <div>
-                <!-- Content Type Selection -->
                 <label class="form-label" style="margin-bottom:8px; display:block;">Select QR Data Type</label>
                 <div class="qr-type-pills">
                   <button type="button" class="qr-type-btn active" data-qr-type="url"><i class="fa-solid fa-link"></i> Website URL</button>
@@ -704,17 +985,13 @@
                   <button type="button" class="qr-type-btn" data-qr-type="text"><i class="fa-solid fa-align-left"></i> Plain Text</button>
                 </div>
 
-                <!-- Dynamic Input Fields by Type -->
                 <div id="qr-inputs-container" style="background:rgba(8, 12, 24, 0.6); padding:16px; border-radius:14px; border:1px solid rgba(255,255,255,0.06); margin-bottom:18px;">
-                  <!-- Type 1: URL -->
                   <div class="qr-type-group" id="qr-group-url">
                     <div class="form-group">
                       <label class="form-label">Website Address (URL)</label>
                       <input type="url" id="qr-input-url" class="input-field" value="https://ndsuite.app" placeholder="https://example.com">
                     </div>
                   </div>
-
-                  <!-- Type 2: Wi-Fi -->
                   <div class="qr-type-group" id="qr-group-wifi" style="display:none;">
                     <div class="tool-controls-grid" style="margin:0 0 10px 0;">
                       <div class="form-group"><label class="form-label">Network Name (SSID)</label><input type="text" id="qr-wifi-ssid" class="input-field" placeholder="MyWiFi_5G" value="Office_WiFi"></div>
@@ -725,8 +1002,6 @@
                       <div class="form-group" style="justify-content:center;"><label class="checkbox-wrap" style="margin-top:20px;"><input type="checkbox" id="qr-wifi-hidden"> Hidden Network</label></div>
                     </div>
                   </div>
-
-                  <!-- Type 3: vCard Contact -->
                   <div class="qr-type-group" id="qr-group-vcard" style="display:none;">
                     <div class="tool-controls-grid" style="margin:0 0 10px 0;">
                       <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="qr-vcard-name" class="input-field" value="MD NAHID ISLAM"></div>
@@ -737,8 +1012,6 @@
                       <div class="form-group"><label class="form-label">Organization / Note</label><input type="text" id="qr-vcard-org" class="input-field" value="ND SUITE Founder"></div>
                     </div>
                   </div>
-
-                  <!-- Type 4: WhatsApp -->
                   <div class="qr-type-group" id="qr-group-whatsapp" style="display:none;">
                     <div class="form-group" style="margin-bottom:10px;">
                       <label class="form-label">WhatsApp Number (with country code, no + or spaces)</label>
@@ -749,8 +1022,6 @@
                       <input type="text" id="qr-wa-msg" class="input-field" value="Hello MD NAHID ISLAM! I am reaching out from ND SUITE." placeholder="Optional message...">
                     </div>
                   </div>
-
-                  <!-- Type 5: Email -->
                   <div class="qr-type-group" id="qr-group-email" style="display:none;">
                     <div class="tool-controls-grid" style="margin:0 0 10px 0;">
                       <div class="form-group"><label class="form-label">Recipient Email</label><input type="email" id="qr-email-to" class="input-field" value="nahid4624ahmed@gmail.com"></div>
@@ -758,17 +1029,14 @@
                     </div>
                     <div class="form-group"><label class="form-label">Body</label><textarea id="qr-email-body" class="input-field" style="min-height:70px;">Hello, I would like to get in touch with you.</textarea></div>
                   </div>
-
-                  <!-- Type 6: Plain Text -->
                   <div class="qr-type-group" id="qr-group-text" style="display:none;">
                     <div class="form-group">
                       <label class="form-label">Plain Text / Notes</label>
-                      <textarea id="qr-input-rawtext" class="input-field" style="min-height:90px;" placeholder="Type any text, message, or cryptographic key here...">Welcome to ND SUITE Digital Utility Engine</textarea>
+                      <textarea id="qr-input-rawtext" class="input-field" style="min-height:90px;" placeholder="Type any text, message, or key here...">Welcome to ND SUITE Digital Utility Engine</textarea>
                     </div>
                   </div>
                 </div>
 
-                <!-- Theme & Color Styling -->
                 <div style="margin-bottom:16px;">
                   <label class="form-label">Design Themes & Presets</label>
                   <div class="qr-theme-chips">
@@ -801,43 +1069,29 @@
                 </div>
               </div>
 
-              <!-- Right Column: Interactive Live Preview & Download Bar -->
               <div>
                 <div class="qr-preview-wrapper">
                   <div style="margin-bottom:14px; font-size:0.82rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; display:flex; align-items:center; gap:6px;">
                     <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></span>
                     Live QR Preview
                   </div>
-
                   <div id="qr-preview-card" class="qr-code-frame" style="background:#060913; border: 1px solid rgba(0, 242, 254, 0.3);">
                     <div id="qrcode-output"></div>
                   </div>
-
                   <div style="margin-top:14px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); text-align:center;">
                     Encoded Characters: <span id="qr-char-count" style="color:var(--cyan); font-weight:600;">0</span>
                   </div>
-
-                  <!-- Download Buttons -->
                   <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:320px; margin-top:18px;">
-                    <button class="btn btn-neon btn-sm" id="download-qr-btn">
-                      <i class="fa-solid fa-download"></i> Download PNG
-                    </button>
-                    <button class="btn btn-purple btn-sm" id="download-qr-svg-btn">
-                      <i class="fa-solid fa-file-code"></i> Download SVG
-                    </button>
-                    <button class="btn btn-glass btn-sm" id="copy-qr-btn">
-                      <i class="fa-regular fa-copy"></i> Copy Image
-                    </button>
-                    <button class="btn btn-glass btn-sm" id="print-qr-btn">
-                      <i class="fa-solid fa-print"></i> Print QR
-                    </button>
+                    <button class="btn btn-neon btn-sm" id="download-qr-btn"><i class="fa-solid fa-download"></i> Download PNG</button>
+                    <button class="btn btn-purple btn-sm" id="download-qr-svg-btn"><i class="fa-solid fa-file-code"></i> Download SVG</button>
+                    <button class="btn btn-glass btn-sm" id="copy-qr-btn"><i class="fa-regular fa-copy"></i> Copy Image</button>
+                    <button class="btn btn-glass btn-sm" id="print-qr-btn"><i class="fa-solid fa-print"></i> Print QR</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Subtab B: Scan QR from Image -->
           <div id="subtab-pane-qr-scan" class="subtab-pane" style="display: none;">
             <div class="dropzone" id="qr-scan-dropzone">
               <i class="fa-solid fa-camera"></i>
@@ -860,7 +1114,7 @@
           </div>
         </div>
 
-        <!-- 4. Text Case Converter -->
+        <!-- Text Case Converter -->
         <div id="tool-pane-textcase" class="tool-pane" style="display: none;">
           <div class="form-group"><label class="form-label">Enter or paste text</label><textarea id="case-input" class="input-field" style="min-height:140px;" placeholder="Type or paste your text here..."></textarea></div>
           <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 16px 0;">
@@ -876,7 +1130,7 @@
           </div>
         </div>
 
-        <!-- 5. Unit & Currency Converter -->
+        <!-- Unit & Currency Converter -->
         <div id="tool-pane-converter" class="tool-pane" style="display: none;">
           <div class="tool-tabs">
             <button class="tool-tab-btn active" data-conv-type="length">Length</button>
@@ -897,7 +1151,7 @@
           </div>
         </div>
 
-        <!-- 6. Age & Date Calculator -->
+        <!-- Age & Date Calculator -->
         <div id="tool-pane-agecalc" class="tool-pane" style="display: none;">
           <div class="tool-controls-grid">
             <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="age-dob-input" class="input-field"></div>
@@ -917,7 +1171,7 @@
           </div>
         </div>
 
-        <!-- 7. Password Generator -->
+        <!-- Password Generator -->
         <div id="tool-pane-password" class="tool-pane" style="display: none;">
           <div style="position:relative; margin-bottom:20px;">
             <input type="text" id="pwd-display" class="input-field" readonly style="font-family:var(--font-mono); font-size:1.25rem; padding-right:110px;">
@@ -935,7 +1189,7 @@
           <button class="btn btn-purple" id="pwd-gen-btn"><i class="fa-solid fa-arrows-rotate"></i> Generate New Password</button>
         </div>
 
-        <!-- 8. Aspect Ratio Calculator -->
+        <!-- Aspect Ratio Calculator -->
         <div id="tool-pane-aspectratio" class="tool-pane" style="display: none;">
           <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
             <button class="btn btn-sm btn-glass" data-ratio="16:9">YouTube 16:9</button>
@@ -951,7 +1205,7 @@
           </div>
         </div>
 
-        <!-- 9. Word & Character Counter -->
+        <!-- Word & Character Counter -->
         <div id="tool-pane-wordcounter" class="tool-pane" style="display: none;">
           <div class="form-group"><label class="form-label">Your Content</label><textarea id="word-input" class="input-field" style="min-height:160px;" placeholder="Type or paste text to analyze statistics..."></textarea></div>
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-top:16px;">
@@ -963,7 +1217,7 @@
           </div>
         </div>
 
-        <!-- 10. Base64 / URL Encoder & Decoder -->
+        <!-- Base64 / URL Encoder & Decoder -->
         <div id="tool-pane-encoder" class="tool-pane" style="display: none;">
           <div class="tool-tabs"><button class="tool-tab-btn active" data-codec="b64-encode">Base64 Encode</button><button class="tool-tab-btn" data-codec="b64-decode">Base64 Decode</button><button class="tool-tab-btn" data-codec="url-encode">URL Encode</button><button class="tool-tab-btn" data-codec="url-decode">URL Decode</button></div>
           <div class="form-group"><label class="form-label">Input String</label><textarea id="codec-input" class="input-field" placeholder="Enter string to process..."></textarea></div>
@@ -971,7 +1225,7 @@
           <div class="form-group"><label class="form-label">Output Result</label><textarea id="codec-output" class="input-field" readonly style="font-family:var(--font-mono);"></textarea></div>
         </div>
 
-        <!-- 11. Lorem Ipsum Generator -->
+        <!-- Lorem Ipsum Generator -->
         <div id="tool-pane-lorem" class="tool-pane" style="display: none;">
           <div class="tool-controls-grid">
             <div class="form-group"><label class="form-label">Generate By</label><select id="lorem-type" class="input-field"><option value="paragraphs">Paragraphs</option><option value="sentences">Sentences</option><option value="words">Words</option></select></div>
@@ -981,7 +1235,7 @@
           <div class="form-group"><textarea id="lorem-output" class="input-field" style="min-height:160px;" readonly></textarea></div>
         </div>
 
-        <!-- 12. To-Do List & Notes -->
+        <!-- To-Do List & Notes -->
         <div id="tool-pane-todo" class="tool-pane" style="display: none;">
           <div style="display:flex; gap:10px; margin-bottom:18px;">
             <input type="text" id="todo-text-input" class="input-field" placeholder="Enter a new task..." style="flex:1;">
@@ -995,7 +1249,7 @@
           </div>
         </div>
 
-        <!-- 13. Pomodoro Focus Timer -->
+        <!-- Pomodoro Focus Timer -->
         <div id="tool-pane-pomodoro" class="tool-pane" style="display: none;">
           <div style="display:flex; justify-content:center; gap:8px; margin-bottom:16px;">
             <button class="btn btn-sm btn-glass active-timer-mode" id="pomo-mode-focus">25m Focus</button>
@@ -1042,7 +1296,7 @@
       </div>
       <div class="footer-bottom">
         <div>&copy; 2026 <strong>ND SUITE</strong>. All rights reserved. Developed and maintained by <strong>MD NAHID ISLAM</strong>.</div>
-        <div style="font-family: var(--font-mono); font-size: 0.78rem;"><span style="color:var(--cyan);">● Client-Side Encrypted</span> &bull; <span>v2.9 Production</span></div>
+        <div style="font-family: var(--font-mono); font-size: 0.78rem;"><span style="color:var(--cyan);">● Client-Side Encrypted</span> &bull; <span>v3.0 Production Suite</span></div>
       </div>
     </footer>
   </div>
@@ -1090,7 +1344,7 @@
     const toolsMeta = {
       videoaudio: { title: 'Video to Audio Converter', category: 'Converters & Calculators', icon: 'fa-file-audio' },
       resizer: { title: 'Image Resizer & Compressor', category: 'Utility Tools', icon: 'fa-image' },
-      pdf: { title: 'PDF Locker & Utility Tools', category: 'Utility Tools', icon: 'fa-file-pdf' },
+      pdf: { title: 'PDF Locker & Document Suite', category: 'Utility Tools', icon: 'fa-file-pdf' },
       qrcode: { title: 'QR Code Generator & Scanner', category: 'Utility Tools', icon: 'fa-qrcode' },
       textcase: { title: 'Text Case Converter', category: 'Utility Tools', icon: 'fa-font' },
       converter: { title: 'Unit & Currency Converter', category: 'Converters & Calculators', icon: 'fa-calculator' },
@@ -1118,7 +1372,6 @@
       workspaceView.style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // Refresh QR canvas if opening qrcode
       if (toolKey === 'qrcode' && typeof renderQrStudio === 'function') {
         setTimeout(renderQrStudio, 50);
       }
@@ -1167,7 +1420,7 @@
     });
 
     // ==========================================
-    // NEW TOOL: Video to Audio Converter Logic
+    // Video to Audio Converter Logic
     // ==========================================
     const vaDropzone = document.getElementById('va-dropzone');
     const vaFileInput = document.getElementById('va-file-input');
@@ -1197,11 +1450,10 @@
     const vaDownloadPrimaryBtn = document.getElementById('va-download-primary-btn');
 
     let currentVideoFile = null;
-    let decodedAudioBuffer = null; // Store processed AudioBuffer for multi-format downloads
+    let decodedAudioBuffer = null;
     let currentConvertedBlob = null;
     let currentConvertedFormat = 'mp3';
 
-    // Drag and Drop for Video
     ['dragenter', 'dragover'].forEach(eventName => {
       vaDropzone.addEventListener(eventName, (e) => { e.preventDefault(); vaDropzone.classList.add('dragover'); }, false);
     });
@@ -1249,7 +1501,6 @@
       showToast('Video loaded! Choose audio settings & convert.', 'info');
     }
 
-    // Toggle Trimmer
     vaTrimToggle.addEventListener('change', (e) => {
       vaTrimControls.style.display = e.target.checked ? 'flex' : 'none';
       updateTrimDuration();
@@ -1278,14 +1529,11 @@
       vaResultWrap.style.display = 'none';
     });
 
-    // Pure Client-side Audio Processing & Encoders
-    // 1. WAV Encoder (16-bit PCM Lossless)
     function audioBufferToWavBlob(buffer, optChannels) {
       const numChannels = optChannels ? Math.min(optChannels, buffer.numberOfChannels) : buffer.numberOfChannels;
       const sampleRate = buffer.sampleRate;
-      const format = 1; // PCM
+      const format = 1;
       const bitDepth = 16;
-      
       const numSamples = buffer.length;
       const bytesPerSample = bitDepth / 8;
       const blockAlign = numChannels * bytesPerSample;
@@ -1295,20 +1543,15 @@
       
       const arrayBuffer = new ArrayBuffer(bufferSize);
       const view = new DataView(arrayBuffer);
-      
       function writeString(offset, str) {
-        for (let i = 0; i < str.length; i++) {
-          view.setUint8(offset + i, str.charCodeAt(i));
-        }
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
       }
-      
-      // RIFF header
       writeString(0, 'RIFF');
       view.setUint32(4, 36 + dataSize, true);
       writeString(8, 'WAVE');
       writeString(12, 'fmt ');
-      view.setUint32(16, 16, true); // subchunk1size (16 for PCM)
-      view.setUint16(20, format, true); // audio format (1 = PCM)
+      view.setUint32(16, 16, true);
+      view.setUint16(20, format, true);
       view.setUint16(22, numChannels, true);
       view.setUint32(24, sampleRate, true);
       view.setUint32(28, byteRate, true);
@@ -1317,12 +1560,8 @@
       writeString(36, 'data');
       view.setUint32(40, dataSize, true);
       
-      // Write interleaved PCM samples
       const channelData = [];
-      for (let ch = 0; ch < numChannels; ch++) {
-        channelData.push(buffer.getChannelData(ch));
-      }
-      
+      for (let ch = 0; ch < numChannels; ch++) channelData.push(buffer.getChannelData(ch));
       let offset = 44;
       for (let i = 0; i < numSamples; i++) {
         for (let ch = 0; ch < numChannels; ch++) {
@@ -1332,24 +1571,18 @@
           offset += 2;
         }
       }
-      
       return new Blob([view], { type: 'audio/wav' });
     }
 
-    // 2. MP3 Encoder (via lamejs)
     async function audioBufferToMp3Blob(buffer, kbps, onProgress) {
-      if (!window.lamejs) {
-        throw new Error('MP3 encoder module not loaded.');
-      }
+      if (!window.lamejs) throw new Error('MP3 encoder module not loaded.');
       const channels = buffer.numberOfChannels;
       const sampleRate = buffer.sampleRate;
       const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
       const mp3Data = [];
-      
       const numSamples = buffer.length;
       const leftFloat = buffer.getChannelData(0);
       const rightFloat = channels > 1 ? buffer.getChannelData(1) : leftFloat;
-      
       const chunkSize = 1152;
       const leftInt16 = new Int16Array(chunkSize);
       const rightInt16 = channels > 1 ? new Int16Array(chunkSize) : null;
@@ -1364,31 +1597,18 @@
             rightInt16[j] = r < 0 ? r * 0x8000 : r * 0x7FFF;
           }
         }
-        
-        let mp3buf;
-        if (channels === 1) {
-          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen));
-        } else {
-          mp3buf = mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen), rightInt16.subarray(0, curLen));
-        }
-        if (mp3buf.length > 0) {
-          mp3Data.push(mp3buf);
-        }
-        
+        let mp3buf = channels === 1 ? mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen)) : mp3encoder.encodeBuffer(leftInt16.subarray(0, curLen), rightInt16.subarray(0, curLen));
+        if (mp3buf.length > 0) mp3Data.push(mp3buf);
         if (onProgress && i % (chunkSize * 20) === 0) {
-          const pct = Math.floor((i / numSamples) * 100);
-          onProgress(pct);
-          await new Promise(r => setTimeout(r, 0)); // yield loop
+          onProgress(Math.floor((i / numSamples) * 100));
+          await new Promise(r => setTimeout(r, 0));
         }
       }
-      
       const endBuf = mp3encoder.flush();
       if (endBuf.length > 0) mp3Data.push(endBuf);
-      
       return new Blob(mp3Data, { type: 'audio/mp3' });
     }
 
-    // 3. Universal MediaRecorder Audio Formatter (OGG, WebM, M4A)
     async function audioBufferToStreamBlob(buffer, targetFormat, onProgress) {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const dest = audioCtx.createMediaStreamDestination();
@@ -1397,18 +1617,12 @@
       srcNode.connect(dest);
 
       let mimeType = 'audio/webm;codecs=opus';
-      if (targetFormat === 'ogg' && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-        mimeType = 'audio/ogg;codecs=opus';
-      } else if (targetFormat === 'm4a' && MediaRecorder.isTypeSupported('audio/mp4')) {
-        mimeType = 'audio/mp4';
-      } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-        mimeType = 'audio/webm;codecs=opus';
-      }
+      if (targetFormat === 'ogg' && MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mimeType = 'audio/ogg;codecs=opus';
+      else if (targetFormat === 'm4a' && MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
 
-      const recorder = new MediaRecorder(dest.stream, { mimeType: mimeType });
+      const recorder = new MediaRecorder(dest.stream, { mimeType });
       const chunks = [];
       recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-
       const durationMs = buffer.duration * 1000;
       let recordedResolve;
       const promise = new Promise(res => recordedResolve = res);
@@ -1421,28 +1635,20 @@
         else if (targetFormat === 'webm') finalMime = 'audio/webm';
         recordedResolve(new Blob(chunks, { type: finalMime }));
       };
-
       recorder.start(100);
       srcNode.start();
-
       let elapsed = 0;
       const interval = setInterval(() => {
         elapsed += 100;
-        if (onProgress) {
-          const pct = Math.min(98, Math.floor((elapsed / durationMs) * 100));
-          onProgress(pct);
-        }
+        if (onProgress) onProgress(Math.min(98, Math.floor((elapsed / durationMs) * 100)));
       }, 100);
-
       await new Promise(r => setTimeout(r, durationMs + 150));
       clearInterval(interval);
       try { recorder.stop(); } catch(e) {}
       srcNode.stop();
-
       return await promise;
     }
 
-    // Master conversion pipeline from AudioBuffer
     async function convertBufferToFormat(audioBuffer, format, kbps, onProgress) {
       if (format === 'wav') {
         if (onProgress) onProgress(80);
@@ -1454,12 +1660,8 @@
       return await audioBufferToStreamBlob(audioBuffer, format, onProgress);
     }
 
-    // Execute Video Audio Extraction
     vaConvertBtn.addEventListener('click', async () => {
-      if (!currentVideoFile) {
-        showToast('Please select or upload a video file first', 'error'); return;
-      }
-
+      if (!currentVideoFile) { showToast('Please select or upload a video file first', 'error'); return; }
       const format = vaFormatSelect.value;
       const kbps = parseInt(vaBitrateSelect.value) || 192;
       const channels = parseInt(vaChannelsSelect.value) || 2;
@@ -1476,45 +1678,26 @@
       vaStatusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Reading video data into memory...';
 
       try {
-        // Step 1: Decode Audio Track from Video File
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        vaStatusText.innerHTML = '<i class="fa-solid fa-waveform-lines fa-fade"></i> Extracting audio stream from video container...';
-        vaProgressBar.style.width = '25%';
-        vaProgressPct.textContent = '25%';
+        vaStatusText.innerHTML = '<i class="fa-solid fa-waveform-lines fa-fade"></i> Extracting audio stream...';
+        vaProgressBar.style.width = '25%'; vaProgressPct.textContent = '25%';
 
-        let rawBuffer;
-        try {
-          const ab = await currentVideoFile.arrayBuffer();
-          rawBuffer = await audioCtx.decodeAudioData(ab);
-        } catch (decodeErr) {
-          console.warn('Native decodeAudioData error, attempting video element capture:', decodeErr);
-          throw new Error('Could not extract audio track. Ensure the video contains an audible audio stream.');
-        }
-
-        // Step 2: Apply Trimming, Volume Boost & Channel Settings
-        vaStatusText.innerHTML = '<i class="fa-solid fa-sliders fa-fade"></i> Applying audio settings (channels, volume, trimming)...';
-        vaProgressBar.style.width = '45%';
-        vaProgressPct.textContent = '45%';
-
+        const ab = await currentVideoFile.arrayBuffer();
+        const rawBuffer = await audioCtx.decodeAudioData(ab);
         const sampleRate = rawBuffer.sampleRate;
         const totalDuration = rawBuffer.duration;
-        let startSample = 0;
-        let endSample = rawBuffer.length;
-
+        let startSample = 0, endSample = rawBuffer.length;
         if (isTrim && trimEnd > trimStart && trimStart >= 0) {
           startSample = Math.floor(Math.min(trimStart, totalDuration) * sampleRate);
           endSample = Math.floor(Math.min(trimEnd, totalDuration) * sampleRate);
         }
-
         const outLength = Math.max(1, endSample - startSample);
         const targetChannels = channels === 1 ? 1 : Math.min(2, rawBuffer.numberOfChannels);
-
         const processedBuffer = audioCtx.createBuffer(targetChannels, outLength, sampleRate);
 
         for (let ch = 0; ch < targetChannels; ch++) {
           const outData = processedBuffer.getChannelData(ch);
           if (channels === 1 && rawBuffer.numberOfChannels > 1) {
-            // Downmix to Mono (average L & R)
             const leftData = rawBuffer.getChannelData(0);
             const rightData = rawBuffer.getChannelData(1);
             for (let i = 0; i < outLength; i++) {
@@ -1528,12 +1711,8 @@
           }
         }
 
-        // Cache the processed AudioBuffer for immediate re-downloads in other formats!
         decodedAudioBuffer = processedBuffer;
-
-        // Step 3: Encode into Requested Audio Format
         vaStatusText.innerHTML = `<i class="fa-solid fa-cog fa-spin"></i> Encoding audio to ${format.toUpperCase()} (${kbps} kbps)...`;
-        
         currentConvertedBlob = await convertBufferToFormat(processedBuffer, format, kbps, (pct) => {
           const overall = Math.floor(50 + (pct * 0.45));
           vaProgressBar.style.width = overall + '%';
@@ -1541,19 +1720,14 @@
         });
 
         currentConvertedFormat = format;
-        vaProgressBar.style.width = '100%';
-        vaProgressPct.textContent = '100%';
+        vaProgressBar.style.width = '100%'; vaProgressPct.textContent = '100%';
         vaStatusText.innerHTML = '<i class="fa-solid fa-circle-check"></i> Finished audio conversion!';
 
-        // Step 4: Display Player & Downloads
-        const audioUrl = URL.createObjectURL(currentConvertedBlob);
-        vaAudioPlayer.src = audioUrl;
-        
+        vaAudioPlayer.src = URL.createObjectURL(currentConvertedBlob);
         const sizeStr = (currentConvertedBlob.size / 1024).toFixed(1) + ' KB';
         const durStr = formatTimeSeconds(processedBuffer.duration);
-        vaResultMeta.textContent = `Format: ${format.toUpperCase()} | Duration: ${durStr} | Size: ${sizeStr} | Rate: ${sampleRate} Hz`;
+        vaResultMeta.textContent = `Format: ${format.toUpperCase()} | Duration: ${durStr} | Size: ${sizeStr}`;
         vaDownloadPrimaryBtn.innerHTML = `<i class="fa-solid fa-download"></i> Download .${format.toUpperCase()} (${sizeStr})`;
-
         vaResultWrap.style.display = 'block';
         showToast(`Extracted successfully as ${format.toUpperCase()}!`, 'success');
         audioCtx.close();
@@ -1566,7 +1740,6 @@
       }
     });
 
-    // Primary Download
     vaDownloadPrimaryBtn.addEventListener('click', () => {
       if (!currentConvertedBlob) return;
       triggerDownloadBlob(currentConvertedBlob, currentConvertedFormat);
@@ -1576,31 +1749,22 @@
       const baseName = currentVideoFile ? currentVideoFile.name.replace(/\.[^/.]+$/, '') : 'audio';
       const cleanName = `${baseName}_extracted.${ext}`;
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = cleanName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const a = document.createElement('a'); a.href = url; a.download = cleanName;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       showToast(`Downloaded ${cleanName}!`, 'success');
     }
 
-    // Quick Multi-Format Download Handlers
     async function handleAlternativeDownload(targetFormat) {
-      if (!decodedAudioBuffer) {
-        showToast('Please convert the video first', 'error'); return;
-      }
+      if (!decodedAudioBuffer) { showToast('Please convert the video first', 'error'); return; }
       showToast(`Preparing ${targetFormat.toUpperCase()} download...`, 'info');
       try {
         const kbps = parseInt(vaBitrateSelect.value) || 192;
         const blob = await convertBufferToFormat(decodedAudioBuffer, targetFormat, kbps);
         triggerDownloadBlob(blob, targetFormat);
       } catch (err) {
-        console.error(err);
-        showToast(`Failed to export ${targetFormat.toUpperCase()}: ${err.message}`, 'error');
+        showToast(`Failed to export: ${err.message}`, 'error');
       }
     }
-
     document.getElementById('va-dl-btn-mp3').addEventListener('click', () => handleAlternativeDownload('mp3'));
     document.getElementById('va-dl-btn-wav').addEventListener('click', () => handleAlternativeDownload('wav'));
     document.getElementById('va-dl-btn-m4a').addEventListener('click', () => handleAlternativeDownload('m4a'));
@@ -1608,7 +1772,7 @@
     document.getElementById('va-dl-btn-webm').addEventListener('click', () => handleAlternativeDownload('webm'));
 
     // ==========================================
-    // 1. Image Resizer & Compressor
+    // Image Resizer & Compressor
     // ==========================================
     const imgDropzone = document.getElementById('img-dropzone');
     const imgFileInput = document.getElementById('img-file-input');
@@ -1666,10 +1830,11 @@
     });
     document.getElementById('img-reset-btn').addEventListener('click', () => { loadedImg = null; imgControls.style.display = 'none'; imgDropzone.style.display = 'flex'; });
 
-    // ==========================================
-    // 2. PDF Locker & Utility Tools
-    // ==========================================
-    // 2A. PDF Locker (Encrypt with password)
+    // ========================================================
+    // UPGRADED PDF & DOCUMENT CONVERSIONS SUITE (INSIDE PDF TOOL)
+    // ========================================================
+
+    // 1. PDF Locker (Password Protect)
     const pdfDrop = document.getElementById('pdf-locker-dropzone');
     const pdfInput = document.getElementById('pdf-locker-file-input');
     const pdfControls = document.getElementById('pdf-locker-controls');
@@ -1719,7 +1884,7 @@
       document.getElementById('pdf-password-input').value = ''; document.getElementById('pdf-password-confirm').value = '';
     });
 
-    // 2B. PDF Unlocker (Unlock & Decrypt Password Protected PDF)
+    // 2. PDF Unlocker (Remove Password)
     const pdfUnlockDrop = document.getElementById('pdf-unlock-dropzone');
     const pdfUnlockInput = document.getElementById('pdf-unlock-file-input');
     const pdfUnlockControls = document.getElementById('pdf-unlock-controls');
@@ -1729,42 +1894,22 @@
     const unlockStatusText = document.getElementById('pdf-unlock-status-text');
     let unlockPdfBytes = null, unlockPdfName = '';
 
-    // Drag and drop handlers
-    ['dragenter', 'dragover'].forEach(eventName => {
-      pdfUnlockDrop.addEventListener(eventName, (e) => { e.preventDefault(); pdfUnlockDrop.classList.add('dragover'); }, false);
-    });
-    ['dragleave', 'drop'].forEach(eventName => {
-      pdfUnlockDrop.addEventListener(eventName, (e) => { e.preventDefault(); pdfUnlockDrop.classList.remove('dragover'); }, false);
-    });
-    pdfUnlockDrop.addEventListener('drop', (e) => {
-      const dt = e.dataTransfer;
-      if (dt.files && dt.files.length) {
-        handleUnlockFileSelect(dt.files[0]);
-      }
-    });
-
     pdfUnlockDrop.addEventListener('click', () => pdfUnlockInput.click());
-    pdfUnlockInput.addEventListener('change', (e) => {
-      if (e.target.files.length) handleUnlockFileSelect(e.target.files[0]);
-    });
-
-    async function handleUnlockFileSelect(file) {
-      if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
-        showToast('Please select a valid PDF file', 'error'); return;
-      }
-      unlockPdfName = file.name;
-      const ab = await file.arrayBuffer();
+    pdfUnlockInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const f = e.target.files[0];
+      unlockPdfName = f.name;
+      const ab = await f.arrayBuffer();
       unlockPdfBytes = new Uint8Array(ab);
       pdfUnlockDrop.style.display = 'none';
       pdfUnlockControls.style.display = 'block';
-      document.getElementById('pdf-unlock-filename').textContent = file.name;
-      document.getElementById('pdf-unlock-filesize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      document.getElementById('pdf-unlock-filename').textContent = f.name;
+      document.getElementById('pdf-unlock-filesize').textContent = (f.size / 1024).toFixed(1) + ' KB';
       unlockPwdInput.value = '';
       unlockPwdInput.focus();
-      showToast('PDF loaded! Enter document password to unlock.', 'info');
-    }
+      showToast('PDF loaded! Enter password to unlock.', 'info');
+    });
 
-    // Toggle password visibility
     toggleUnlockPwdBtn.addEventListener('click', () => {
       const isPwd = unlockPwdInput.type === 'password';
       unlockPwdInput.type = isPwd ? 'text' : 'password';
@@ -1772,127 +1917,185 @@
     });
 
     document.getElementById('pdf-unlock-reset-btn').addEventListener('click', () => {
-      unlockPdfBytes = null;
-      pdfUnlockControls.style.display = 'none';
-      pdfUnlockDrop.style.display = 'flex';
-      unlockStatusBox.style.display = 'none';
-      unlockPwdInput.value = '';
+      unlockPdfBytes = null; pdfUnlockControls.style.display = 'none'; pdfUnlockDrop.style.display = 'flex';
+      unlockStatusBox.style.display = 'none'; unlockPwdInput.value = '';
     });
 
-    // Execute PDF Unlocking
     document.getElementById('unlock-pdf-btn').addEventListener('click', async () => {
       if (!unlockPdfBytes) { showToast('Upload a protected PDF first', 'error'); return; }
       const password = unlockPwdInput.value.trim();
-      if (!password) {
-        showToast('Please enter the PDF password', 'error');
-        unlockPwdInput.focus();
-        return;
-      }
+      if (!password) { showToast('Please enter the PDF password', 'error'); unlockPwdInput.focus(); return; }
 
       const btn = document.getElementById('unlock-pdf-btn');
       btn.disabled = true;
       unlockStatusBox.style.display = 'block';
-      unlockStatusText.textContent = 'Verifying password and decrypting PDF streams...';
+      unlockStatusText.textContent = 'Verifying password and decrypting...';
 
       try {
-        let unlockedBlob = null;
+        const loadingTask = pdfjsLib.getDocument({
+          data: unlockPdfBytes,
+          password: password,
+          cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+          cMapPacked: true
+        });
+
+        let pdfDoc;
         try {
-          unlockStatusText.textContent = 'Attempting lossless native stream decryption...';
-          const decryptModule = await import('https://esm.sh/@pdfsmaller/pdf-decrypt@1.0.1');
-          if (decryptModule && typeof decryptModule.decryptPDF === 'function') {
-            const decryptedBytes = await decryptModule.decryptPDF(unlockPdfBytes, password);
-            unlockedBlob = new Blob([decryptedBytes], { type: 'application/pdf' });
+          pdfDoc = await loadingTask.promise;
+        } catch (docErr) {
+          if (docErr.name === 'PasswordException' || (docErr.message && docErr.message.toLowerCase().includes('password'))) {
+            throw new Error('Incorrect password! Please verify and retry.');
           }
-        } catch (nativeErr) {
-          console.warn('Native decryption attempt skipped, falling back to PDF.js engine:', nativeErr);
-          if (nativeErr.message && (nativeErr.message.toLowerCase().includes('password') || nativeErr.message.toLowerCase().includes('bad key') || nativeErr.message.toLowerCase().includes('hash'))) {
-            throw new Error('Incorrect password');
+          throw docErr;
+        }
+
+        const numPages = pdfDoc.numPages;
+        const { jsPDF } = window.jspdf;
+        let newDoc = null;
+
+        for (let i = 1; i <= numPages; i++) {
+          unlockStatusText.textContent = `Unlocking and exporting page ${i} of ${numPages}...`;
+          const page = await pdfDoc.getPage(i);
+          const viewport = page.getViewport({ scale: 2.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width; canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport }).promise;
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const orient = viewport.width > viewport.height ? 'l' : 'p';
+
+          if (i === 1) {
+            newDoc = new jsPDF({ orientation: orient, unit: 'pt', format: [viewport.width, viewport.height] });
+            newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
+          } else {
+            newDoc.addPage([viewport.width, viewport.height], orient);
+            newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
           }
         }
 
-        if (!unlockedBlob) {
-          unlockStatusText.textContent = 'Verifying password with PDF.js engine...';
-          const loadingTask = pdfjsLib.getDocument({
-            data: unlockPdfBytes,
-            password: password,
-            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
-            cMapPacked: true
-          });
-
-          let pdfDoc;
-          try {
-            pdfDoc = await loadingTask.promise;
-          } catch (docErr) {
-            if (docErr.name === 'PasswordException' || (docErr.message && docErr.message.toLowerCase().includes('password'))) {
-              throw new Error('Incorrect password! Please check and enter the correct password.');
-            }
-            throw docErr;
-          }
-
-          const numPages = pdfDoc.numPages;
-          const { jsPDF } = window.jspdf;
-          let newDoc = null;
-
-          for (let i = 1; i <= numPages; i++) {
-            unlockStatusText.textContent = `Unlocking and exporting page ${i} of ${numPages}...`;
-            const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 2.2 });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d');
-            await page.render({ canvasContext: ctx, viewport }).promise;
-
-            const imgData = canvas.toDataURL('image/jpeg', 0.96);
-            const isLandscape = viewport.width > viewport.height;
-            const orient = isLandscape ? 'l' : 'p';
-
-            if (i === 1) {
-              newDoc = new jsPDF({
-                orientation: orient,
-                unit: 'pt',
-                format: [viewport.width, viewport.height]
-              });
-              newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
-            } else {
-              newDoc.addPage([viewport.width, viewport.height], orient);
-              newDoc.addImage(imgData, 'JPEG', 0, 0, viewport.width, viewport.height, undefined, 'FAST');
-            }
-          }
-
-          unlockedBlob = newDoc.output('blob');
-        }
-
-        const downloadUrl = URL.createObjectURL(unlockedBlob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        const cleanName = unlockPdfName.replace(/(_locked)?\.pdf$/i, '') + '_unlocked.pdf';
-        a.download = cleanName;
-        document.body.appendChild(a);
+        const unlockedBlob = newDoc.output('blob');
+        const a = document.createElement('a'); a.href = URL.createObjectURL(unlockedBlob);
+        a.download = unlockPdfName.replace(/(_locked)?\.pdf$/i, '') + '_unlocked.pdf';
         a.click();
-        document.body.removeChild(a);
-
-        unlockStatusText.textContent = 'PDF unlocked & downloaded successfully!';
         showToast('Success! Password removed from PDF.', 'success');
-
-        setTimeout(() => {
-          unlockStatusBox.style.display = 'none';
-        }, 3000);
+        setTimeout(() => { unlockStatusBox.style.display = 'none'; }, 2500);
       } catch (err) {
-        console.error(err);
-        const errMsg = err.message || 'Failed to unlock PDF';
-        if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('bad key')) {
-          showToast('Incorrect password! Please check and enter the correct password.', 'error');
-        } else {
-          showToast('Error unlocking PDF: ' + errMsg, 'error');
-        }
+        showToast(err.message || 'Failed to unlock PDF', 'error');
         unlockStatusBox.style.display = 'none';
       } finally {
         btn.disabled = false;
       }
     });
 
-    // 2C. Image to PDF
+    // 3. PDF ↔ Image Converter
+    // Mode switcher: PDF to Image vs Image to PDF
+    const modeP2IBtn = document.getElementById('mode-pdf-to-img-btn');
+    const modeI2PBtn = document.getElementById('mode-img-to-pdf-btn');
+    const boxP2I = document.getElementById('box-pdf-to-img');
+    const boxI2P = document.getElementById('box-img-to-pdf');
+
+    modeP2IBtn.addEventListener('click', () => {
+      modeP2IBtn.classList.add('active'); modeI2PBtn.classList.remove('active');
+      boxP2I.style.display = 'block'; boxI2P.style.display = 'none';
+    });
+    modeI2PBtn.addEventListener('click', () => {
+      modeI2PBtn.classList.add('active'); modeP2IBtn.classList.remove('active');
+      boxI2P.style.display = 'block'; boxP2I.style.display = 'none';
+    });
+
+    // 3A: PDF to Images (Extract Pages to PNG/JPG)
+    const p2iDrop = document.getElementById('p2i-dropzone');
+    const p2iInput = document.getElementById('p2i-file-input');
+    const p2iControls = document.getElementById('p2i-controls');
+    const p2iGrid = document.getElementById('p2i-thumbnails-grid');
+    let p2iPdfDoc = null, p2iPdfName = '', p2iRenderedImages = [];
+
+    p2iDrop.addEventListener('click', () => p2iInput.click());
+    p2iInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0];
+      p2iPdfName = file.name;
+      const ab = await file.arrayBuffer();
+      p2iDrop.style.display = 'none';
+      p2iControls.style.display = 'block';
+      document.getElementById('p2i-filename').textContent = file.name;
+      document.getElementById('p2i-progress-bar-wrap').style.display = 'block';
+      p2iGrid.innerHTML = '';
+      p2iRenderedImages = [];
+
+      try {
+        p2iPdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(ab) }).promise;
+        const total = p2iPdfDoc.numPages;
+        document.getElementById('p2i-meta').textContent = `${total} Pages Detected`;
+
+        const format = document.getElementById('p2i-format-select').value;
+        const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+
+        for (let i = 1; i <= total; i++) {
+          const pct = Math.round((i / total) * 100);
+          document.getElementById('p2i-progress-bar').style.width = pct + '%';
+          document.getElementById('p2i-progress-text').textContent = `Extracting page ${i} of ${total}...`;
+
+          const page = await p2iPdfDoc.getPage(i);
+          const vp = page.getViewport({ scale: 1.8 });
+          const cvs = document.createElement('canvas');
+          cvs.width = vp.width; cvs.height = vp.height;
+          await page.render({ canvasContext: cvs.getContext('2d'), viewport: vp }).promise;
+
+          const dataUrl = cvs.toDataURL(mime, 0.92);
+          p2iRenderedImages.push({ page: i, dataUrl, format });
+
+          const card = document.createElement('div');
+          card.style = 'background:rgba(8,12,24,0.7); border:1px solid var(--border-cyan); border-radius:12px; padding:10px; display:flex; flex-direction:column; gap:8px;';
+          card.innerHTML = `
+            <div style="width:100%; height:140px; border-radius:8px; overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center;">
+              <img src="${dataUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" alt="Page ${i}">
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono);">Page ${i}</span>
+              <button class="btn btn-sm btn-glass dl-single-img-btn" data-page="${i}"><i class="fa-solid fa-download"></i> Save</button>
+            </div>
+          `;
+          card.querySelector('.dl-single-img-btn').onclick = () => {
+            const a = document.createElement('a'); a.href = dataUrl;
+            a.download = `${p2iPdfName.replace(/\.pdf$/i,'')}_page_${i}.${format}`;
+            a.click();
+          };
+          p2iGrid.appendChild(card);
+        }
+        document.getElementById('p2i-progress-bar-wrap').style.display = 'none';
+        showToast(`Extracted ${total} pages successfully!`, 'success');
+      } catch (err) {
+        showToast('Error reading PDF: ' + err.message, 'error');
+        document.getElementById('p2i-progress-bar-wrap').style.display = 'none';
+      }
+    });
+
+    document.getElementById('p2i-download-all-btn').addEventListener('click', async () => {
+      if (!p2iRenderedImages.length) { showToast('No extracted pages available', 'error'); return; }
+      showToast('Creating ZIP archive of all pages...', 'info');
+      const zip = new JSZip();
+      const format = document.getElementById('p2i-format-select').value;
+      const baseName = p2iPdfName.replace(/\.pdf$/i, '');
+
+      p2iRenderedImages.forEach(img => {
+        const base64Data = img.dataUrl.split(',')[1];
+        zip.file(`${baseName}_page_${img.page}.${format}`, base64Data, { base64: true });
+      });
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(zipBlob);
+      a.download = `${baseName}_images.zip`; a.click();
+      showToast('ZIP downloaded!', 'success');
+    });
+
+    document.getElementById('p2i-reset-btn').addEventListener('click', () => {
+      p2iPdfDoc = null; p2iRenderedImages = [];
+      p2iControls.style.display = 'none'; p2iDrop.style.display = 'flex'; p2iInput.value = '';
+    });
+
+    // 3B: Image to PDF (Existing enhanced)
     let pdfImgs = [];
     const imgToPdfDrop = document.getElementById('pdf-img-dropzone');
     const imgToPdfInput = document.getElementById('pdf-img-file-input');
@@ -1942,305 +2145,529 @@
       showToast('PDF downloaded successfully!', 'success');
     };
 
-    // ==========================================
-    // 3. Upgraded Modern QR Code Generator & Scanner
-    // ==========================================
-    let currentQrType = 'url';
-    let qrStudioInstance = null;
+    // 4. PDF Merge & Split
+    const modeMergeBtn = document.getElementById('mode-merge-btn');
+    const modeSplitBtn = document.getElementById('mode-split-btn');
+    const boxMerge = document.getElementById('box-pdf-merge');
+    const boxSplit = document.getElementById('box-pdf-split');
 
-    const qrTypeBtns = document.querySelectorAll('.qr-type-btn');
-    qrTypeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        qrTypeBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentQrType = btn.getAttribute('data-qr-type');
-        document.querySelectorAll('.qr-type-group').forEach(g => g.style.display = 'none');
-        const activeGroup = document.getElementById(`qr-group-${currentQrType}`);
-        if (activeGroup) activeGroup.style.display = 'block';
-        renderQrStudio();
-      });
+    modeMergeBtn.addEventListener('click', () => {
+      modeMergeBtn.classList.add('active'); modeSplitBtn.classList.remove('active');
+      boxMerge.style.display = 'block'; boxSplit.style.display = 'none';
+    });
+    modeSplitBtn.addEventListener('click', () => {
+      modeSplitBtn.classList.add('active'); modeMergeBtn.classList.remove('active');
+      boxSplit.style.display = 'block'; boxMerge.style.display = 'none';
     });
 
-    const qrThemeChips = document.querySelectorAll('.qr-theme-chip');
-    qrThemeChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        qrThemeChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const fg = chip.getAttribute('data-fg');
-        const bg = chip.getAttribute('data-bg');
-        document.getElementById('qr-color-dark').value = fg;
-        document.getElementById('qr-color-light').value = bg;
-        document.getElementById('qr-preview-card').style.background = bg;
-        renderQrStudio();
-      });
-    });
+    // Merge Logic
+    let mergeFiles = [];
+    const mergeDrop = document.getElementById('merge-dropzone');
+    const mergeInput = document.getElementById('merge-file-input');
+    const mergeControls = document.getElementById('merge-controls');
+    const mergeList = document.getElementById('merge-files-list');
 
-    function getQrPayload() {
-      if (currentQrType === 'url') {
-        let u = document.getElementById('qr-input-url').value.trim() || 'https://ndsuite.app';
-        if (!/^https?:\/\//i.test(u) && !u.startsWith('/')) u = 'https://' + u;
-        return u;
-      }
-      if (currentQrType === 'wifi') {
-        const ssid = document.getElementById('qr-wifi-ssid').value.trim() || 'MyWiFi';
-        const pass = document.getElementById('qr-wifi-pass').value.trim();
-        const type = document.getElementById('qr-wifi-type').value;
-        const hidden = document.getElementById('qr-wifi-hidden').checked ? 'H:true;' : '';
-        return `WIFI:S:${ssid};T:${type};P:${pass};${hidden};`;
-      }
-      if (currentQrType === 'vcard') {
-        const name = document.getElementById('qr-vcard-name').value.trim() || 'MD NAHID ISLAM';
-        const phone = document.getElementById('qr-vcard-phone').value.trim();
-        const email = document.getElementById('qr-vcard-email').value.trim();
-        const org = document.getElementById('qr-vcard-org').value.trim();
-        return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nORG:${org}\nEND:VCARD`;
-      }
-      if (currentQrType === 'whatsapp') {
-        const phone = document.getElementById('qr-wa-phone').value.replace(/[^0-9]/g, '');
-        const msg = encodeURIComponent(document.getElementById('qr-wa-msg').value.trim());
-        return `https://wa.me/${phone}${msg ? '?text=' + msg : ''}`;
-      }
-      if (currentQrType === 'email') {
-        const to = document.getElementById('qr-email-to').value.trim();
-        const sub = encodeURIComponent(document.getElementById('qr-email-subject').value.trim());
-        const body = encodeURIComponent(document.getElementById('qr-email-body').value.trim());
-        return `mailto:${to}?subject=${sub}&body=${body}`;
-      }
-      if (currentQrType === 'text') {
-        return document.getElementById('qr-input-rawtext').value.trim() || 'ND SUITE';
-      }
-      return 'https://ndsuite.app';
-    }
-
-    function renderQrStudio() {
-      const box = document.getElementById('qrcode-output');
-      box.innerHTML = '';
-      const text = getQrPayload();
-      document.getElementById('qr-char-count').textContent = text.length;
-
-      const size = parseInt(document.getElementById('qr-size-slider').value) || 260;
-      const fgColor = document.getElementById('qr-color-dark').value;
-      const bgColor = document.getElementById('qr-color-light').value;
-      const ecLevelKey = document.getElementById('qr-ec-select').value;
-      const ecMap = {
-        'L': QRCode.CorrectLevel.L,
-        'M': QRCode.CorrectLevel.M,
-        'Q': QRCode.CorrectLevel.Q,
-        'H': QRCode.CorrectLevel.H
-      };
-
-      document.getElementById('qr-preview-card').style.background = bgColor;
-
-      qrStudioInstance = new QRCode(box, {
-        text: text,
-        width: size,
-        height: size,
-        colorDark: fgColor,
-        colorLight: bgColor,
-        correctLevel: ecMap[ecLevelKey] || QRCode.CorrectLevel.H
-      });
-
-      if (document.getElementById('qr-center-badge').checked) {
-        setTimeout(() => {
-          const canvas = box.querySelector('canvas');
-          if (canvas) {
-            const ctx = canvas.getContext('2d');
-            const cw = canvas.width, ch = canvas.height;
-            const badgeSize = Math.floor(cw * 0.22);
-            const bx = (cw - badgeSize) / 2;
-            const by = (ch - badgeSize) / 2;
-
-            ctx.save();
-            ctx.fillStyle = bgColor;
-            ctx.strokeStyle = fgColor;
-            ctx.lineWidth = Math.max(2, Math.floor(cw * 0.012));
-            ctx.beginPath();
-            const r = 8;
-            ctx.moveTo(bx + r, by);
-            ctx.lineTo(bx + badgeSize - r, by);
-            ctx.quadraticCurveTo(bx + badgeSize, by, bx + badgeSize, by + r);
-            ctx.lineTo(bx + badgeSize, by + badgeSize - r);
-            ctx.quadraticCurveTo(bx + badgeSize, by + badgeSize, bx + badgeSize - r, by + badgeSize);
-            ctx.lineTo(bx + r, by + badgeSize);
-            ctx.quadraticCurveTo(bx, by + badgeSize, bx, by + badgeSize - r);
-            ctx.lineTo(bx, by + r);
-            ctx.quadraticCurveTo(bx, by, bx + r, by);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = fgColor;
-            ctx.font = `bold ${Math.floor(badgeSize * 0.46)}px Outfit, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('ND', cw / 2, ch / 2);
-            ctx.restore();
-
-            const img = box.querySelector('img');
-            if (img) img.src = canvas.toDataURL();
-          }
-        }, 40);
-      }
-    }
-
-    [
-      'qr-input-url', 'qr-wifi-ssid', 'qr-wifi-pass', 'qr-wifi-type', 'qr-wifi-hidden',
-      'qr-vcard-name', 'qr-vcard-phone', 'qr-vcard-email', 'qr-vcard-org',
-      'qr-wa-phone', 'qr-wa-msg', 'qr-email-to', 'qr-email-subject', 'qr-email-body',
-      'qr-input-rawtext'
-    ].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener('input', renderQrStudio);
-    });
-
-    document.getElementById('qr-color-dark').addEventListener('input', () => {
-      qrThemeChips.forEach(c => c.classList.remove('active'));
-      renderQrStudio();
-    });
-    document.getElementById('qr-color-light').addEventListener('input', (e) => {
-      qrThemeChips.forEach(c => c.classList.remove('active'));
-      document.getElementById('qr-preview-card').style.background = e.target.value;
-      renderQrStudio();
-    });
-    document.getElementById('qr-size-slider').addEventListener('input', (e) => {
-      document.getElementById('qr-size-val').textContent = e.target.value;
-      renderQrStudio();
-    });
-    document.getElementById('qr-ec-select').addEventListener('change', renderQrStudio);
-    document.getElementById('qr-center-badge').addEventListener('change', renderQrStudio);
-    document.getElementById('qr-frame-padding').addEventListener('change', (e) => {
-      document.getElementById('qr-preview-card').style.padding = e.target.checked ? '18px' : '4px';
-    });
-
-    document.getElementById('download-qr-btn').onclick = () => {
-      const canvas = document.querySelector('#qrcode-output canvas');
-      if (canvas) {
-        const a = document.createElement('a');
-        a.href = canvas.toDataURL('image/png');
-        a.download = `nd_qrcode_${Date.now()}.png`;
-        a.click();
-        showToast('PNG QR code downloaded!', 'success');
-      } else {
-        const img = document.querySelector('#qrcode-output img');
-        if (img) {
-          const a = document.createElement('a');
-          a.href = img.src;
-          a.download = `nd_qrcode_${Date.now()}.png`;
-          a.click();
-          showToast('PNG QR code downloaded!', 'success');
-        }
-      }
-    };
-
-    document.getElementById('download-qr-svg-btn').onclick = () => {
-      if (!qrStudioInstance || !qrStudioInstance._oQRCode) {
-        showToast('Generate QR code first', 'error'); return;
-      }
-      const qr = qrStudioInstance._oQRCode;
-      const count = qr.getModuleCount();
-      const size = 320;
-      const tile = size / count;
-      const fg = document.getElementById('qr-color-dark').value;
-      const bg = document.getElementById('qr-color-light').value;
-
-      let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">\n`;
-      svg += `  <rect width="100%" height="100%" fill="${bg}"/>\n`;
-      for (let r = 0; r < count; r++) {
-        for (let c = 0; c < count; c++) {
-          if (qr.isDark(r, c)) {
-            svg += `  <rect x="${(c * tile).toFixed(2)}" y="${(r * tile).toFixed(2)}" width="${tile.toFixed(2)}" height="${tile.toFixed(2)}" fill="${fg}"/>\n`;
-          }
-        }
-      }
-      svg += `</svg>`;
-      const blob = new Blob([svg], { type: 'image/svg+xml' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `nd_qrcode_${Date.now()}.svg`;
-      a.click();
-      showToast('Scalable vector SVG downloaded!', 'success');
-    };
-
-    document.getElementById('copy-qr-btn').onclick = async () => {
-      const canvas = document.querySelector('#qrcode-output canvas');
-      if (canvas && navigator.clipboard && window.ClipboardItem) {
-        try {
-          canvas.toBlob(async (blob) => {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            showToast('QR code copied to clipboard as image!', 'success');
-          });
-        } catch (e) {
-          copyToClipboard(getQrPayload(), 'QR text copied to clipboard!');
-        }
-      } else {
-        copyToClipboard(getQrPayload(), 'QR payload copied to clipboard!');
-      }
-    };
-
-    document.getElementById('print-qr-btn').onclick = () => {
-      const canvas = document.querySelector('#qrcode-output canvas');
-      if (!canvas) return;
-      const dataUrl = canvas.toDataURL();
-      const pWin = window.open('', '_blank');
-      if (pWin) {
-        pWin.document.write(`
-          <html>
-            <head><title>Print QR Code - ND SUITE</title></head>
-            <body style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:90vh; font-family:sans-serif;">
-              <h2>ND SUITE QR Code</h2>
-              <img src="${dataUrl}" style="max-width:320px; border:1px solid #ccc; padding:12px; border-radius:8px;"/>
-              <p style="margin-top:14px; font-size:12px; color:#666;">Generated by ND SUITE &bull; MD NAHID ISLAM</p>
-              <script>window.onload = function() { window.print(); window.close(); }<\/script>
-            </body>
-          </html>
-        `);
-        pWin.document.close();
-      }
-    };
-
-    const qrScanDrop = document.getElementById('qr-scan-dropzone');
-    const qrScanInput = document.getElementById('qr-scan-file-input');
-    const qrScanResultWrap = document.getElementById('qr-scan-result-wrap');
-    const qrScanResultText = document.getElementById('qr-scan-result-text');
-    const qrOpenUrlBtn = document.getElementById('qr-open-url-btn');
-
-    qrScanDrop.onclick = () => qrScanInput.click();
-    qrScanInput.onchange = (e) => {
+    mergeDrop.addEventListener('click', () => mergeInput.click());
+    document.getElementById('merge-add-more-btn').addEventListener('click', () => mergeInput.click());
+    mergeInput.addEventListener('change', async (e) => {
       if (!e.target.files.length) return;
-      const img = new Image();
-      img.onload = () => {
-        const cvs = document.createElement('canvas'); cvs.width = img.width; cvs.height = img.height;
-        const ctx = cvs.getContext('2d'); ctx.drawImage(img, 0, 0);
-        const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
-        const code = jsQR(imgData.data, cvs.width, cvs.height);
-        if (code) {
-          const val = code.data;
-          qrScanResultText.textContent = val;
-          qrScanResultWrap.style.display = 'block';
+      for (const f of Array.from(e.target.files)) {
+        const ab = await f.arrayBuffer();
+        mergeFiles.push({ name: f.name, size: f.size, bytes: new Uint8Array(ab) });
+      }
+      renderMergeList();
+    });
 
-          if (/^https?:\/\//i.test(val)) {
-            qrOpenUrlBtn.href = val;
-            qrOpenUrlBtn.style.display = 'inline-flex';
-          } else {
-            qrOpenUrlBtn.style.display = 'none';
-          }
-          showToast('QR code successfully scanned!', 'success');
-        } else {
-          showToast('Could not detect any QR code in this image', 'error');
+    function renderMergeList() {
+      if (!mergeFiles.length) {
+        mergeControls.style.display = 'none'; mergeDrop.style.display = 'flex'; return;
+      }
+      mergeDrop.style.display = 'none'; mergeControls.style.display = 'block';
+      document.getElementById('merge-file-count').textContent = mergeFiles.length;
+      mergeList.innerHTML = '';
+      mergeFiles.forEach((item, idx) => {
+        const pill = document.createElement('div'); pill.className = 'file-item-pill';
+        pill.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="color:var(--cyan); font-weight:700; font-family:var(--font-mono);">${idx + 1}.</span>
+            <span style="color:#fff;">${item.name}</span>
+            <span style="color:var(--text-muted); font-size:0.8rem;">(${(item.size / 1024).toFixed(1)} KB)</span>
+          </div>
+          <button style="background:none; border:none; color:#ef4444; cursor:pointer;" data-idx="${idx}"><i class="fa-solid fa-trash"></i></button>
+        `;
+        pill.querySelector('button').onclick = () => { mergeFiles.splice(idx, 1); renderMergeList(); };
+        mergeList.appendChild(pill);
+      });
+    }
+
+    document.getElementById('merge-clear-btn').addEventListener('click', () => {
+      mergeFiles = []; renderMergeList();
+    });
+
+    document.getElementById('execute-merge-btn').addEventListener('click', async () => {
+      if (mergeFiles.length < 2) { showToast('Please select at least 2 PDF files to merge', 'error'); return; }
+      const btn = document.getElementById('execute-merge-btn');
+      btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Merging PDFs...';
+      try {
+        const { PDFDocument } = window.PDFLib;
+        const mergedDoc = await PDFDocument.create();
+        for (const item of mergeFiles) {
+          const doc = await PDFDocument.load(item.bytes, { ignoreEncryption: true });
+          const copiedPages = await mergedDoc.copyPages(doc, doc.getPageIndices());
+          copiedPages.forEach(p => mergedDoc.addPage(p));
         }
-      };
-      img.src = URL.createObjectURL(e.target.files[0]);
-    };
-    document.getElementById('qr-copy-result-btn').onclick = () => copyToClipboard(qrScanResultText.textContent);
-    document.getElementById('qr-scan-again-btn').onclick = () => {
-      qrScanResultWrap.style.display = 'none';
-      qrScanInput.value = '';
-    };
+        const mergedBytes = await mergedDoc.save();
+        const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `merged_${Date.now()}.pdf`; a.click();
+        showToast('PDF files merged successfully!', 'success');
+      } catch (err) {
+        showToast('Merge error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Merge & Download Combined PDF';
+      }
+    });
 
-    renderQrStudio();
+    // Split Logic
+    const splitDrop = document.getElementById('split-dropzone');
+    const splitInput = document.getElementById('split-file-input');
+    const splitControls = document.getElementById('split-controls');
+    let splitPdfBytes = null, splitPdfName = '', splitTotalPages = 0;
+
+    splitDrop.addEventListener('click', () => splitInput.click());
+    splitInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; splitPdfName = file.name;
+      const ab = await file.arrayBuffer(); splitPdfBytes = new Uint8Array(ab);
+      const { PDFDocument } = window.PDFLib;
+      const doc = await PDFDocument.load(splitPdfBytes, { ignoreEncryption: true });
+      splitTotalPages = doc.getPageCount();
+
+      document.getElementById('split-filename').textContent = file.name;
+      document.getElementById('split-total-pages').textContent = splitTotalPages;
+      document.getElementById('split-range-input').value = `1-${Math.min(splitTotalPages, 2)}`;
+      splitDrop.style.display = 'none'; splitControls.style.display = 'block';
+      showToast(`PDF loaded (${splitTotalPages} pages). Select pages to split.`, 'info');
+    });
+
+    document.getElementById('split-mode-select').addEventListener('change', (e) => {
+      document.getElementById('split-range-group').style.display = e.target.value === 'range' ? 'flex' : 'none';
+    });
+
+    document.getElementById('split-reset-btn').addEventListener('click', () => {
+      splitPdfBytes = null; splitControls.style.display = 'none'; splitDrop.style.display = 'flex'; splitInput.value = '';
+    });
+
+    document.getElementById('execute-split-btn').addEventListener('click', async () => {
+      if (!splitPdfBytes) return;
+      const mode = document.getElementById('split-mode-select').value;
+      const { PDFDocument } = window.PDFLib;
+      const srcDoc = await PDFDocument.load(splitPdfBytes, { ignoreEncryption: true });
+      const total = srcDoc.getPageCount();
+
+      if (mode === 'all') {
+        showToast('Extracting all pages into ZIP archive...', 'info');
+        const zip = new JSZip();
+        for (let i = 0; i < total; i++) {
+          const singleDoc = await PDFDocument.create();
+          const [p] = await singleDoc.copyPages(srcDoc, [i]);
+          singleDoc.addPage(p);
+          const bytes = await singleDoc.save();
+          zip.file(`${splitPdfName.replace(/\.pdf$/i,'')}_page_${i+1}.pdf`, bytes);
+        }
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(zipBlob);
+        a.download = `${splitPdfName.replace(/\.pdf$/i,'')}_all_pages.zip`; a.click();
+        showToast('All pages extracted & zipped!', 'success');
+      } else {
+        // Range mode
+        const rangeStr = document.getElementById('split-range-input').value.trim();
+        const pagesToExtract = new Set();
+        rangeStr.split(',').forEach(part => {
+          part = part.trim();
+          if (part.includes('-')) {
+            const [s, e] = part.split('-').map(x => parseInt(x.trim()));
+            if (!isNaN(s) && !isNaN(e)) {
+              for (let k = Math.min(s, e); k <= Math.max(s, e); k++) {
+                if (k >= 1 && k <= total) pagesToExtract.add(k - 1);
+              }
+            }
+          } else {
+            const num = parseInt(part);
+            if (!isNaN(num) && num >= 1 && num <= total) pagesToExtract.add(num - 1);
+          }
+        });
+
+        if (!pagesToExtract.size) { showToast('Please enter valid page numbers within 1 - ' + total, 'error'); return; }
+        const newDoc = await PDFDocument.create();
+        const indices = Array.from(pagesToExtract).sort((a,b)=>a-b);
+        const copied = await newDoc.copyPages(srcDoc, indices);
+        copied.forEach(p => newDoc.addPage(p));
+        const outBytes = await newDoc.save();
+        const blob = new Blob([outBytes], { type: 'application/pdf' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `${splitPdfName.replace(/\.pdf$/i,'')}_split.pdf`; a.click();
+        showToast(`Extracted ${indices.length} pages successfully!`, 'success');
+      }
+    });
+
+    // 5. PDF Compressor
+    const compDrop = document.getElementById('compress-dropzone');
+    const compInput = document.getElementById('compress-file-input');
+    const compControls = document.getElementById('compress-controls');
+    let compPdfBytes = null, compPdfName = '', compOutputBlob = null;
+
+    compDrop.addEventListener('click', () => compInput.click());
+    compInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; compPdfName = file.name;
+      const ab = await file.arrayBuffer(); compPdfBytes = new Uint8Array(ab);
+      document.getElementById('compress-filename').textContent = file.name;
+      document.getElementById('compress-orig-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      compDrop.style.display = 'none'; compControls.style.display = 'block';
+      document.getElementById('compress-result-wrap').style.display = 'none';
+      document.getElementById('download-compressed-btn').style.display = 'none';
+      showToast('PDF loaded! Choose compression level.', 'info');
+    });
+
+    document.getElementById('compress-reset-btn').addEventListener('click', () => {
+      compPdfBytes = null; compOutputBlob = null; compControls.style.display = 'none'; compDrop.style.display = 'flex'; compInput.value = '';
+    });
+
+    document.getElementById('execute-compress-btn').addEventListener('click', async () => {
+      if (!compPdfBytes) return;
+      const level = document.getElementById('compress-level-select').value;
+      const scale = level === 'high' ? 1.0 : level === 'medium' ? 1.3 : 1.7;
+      const quality = level === 'high' ? 0.5 : level === 'medium' ? 0.72 : 0.85;
+
+      const progressWrap = document.getElementById('compress-progress-wrap');
+      const progressBar = document.getElementById('compress-progress-bar');
+      const statusText = document.getElementById('compress-status-text');
+      const pctText = document.getElementById('compress-pct-text');
+      progressWrap.style.display = 'block';
+
+      try {
+        const pdfDoc = await pdfjsLib.getDocument({ data: compPdfBytes }).promise;
+        const total = pdfDoc.numPages;
+        const { jsPDF } = window.jspdf;
+        let newDoc = null;
+
+        for (let i = 1; i <= total; i++) {
+          const pct = Math.round((i / total) * 100);
+          progressBar.style.width = pct + '%'; pctText.textContent = pct + '%';
+          statusText.textContent = `Optimizing page ${i} of ${total}...`;
+
+          const page = await pdfDoc.getPage(i);
+          const vp = page.getViewport({ scale });
+          const canvas = document.createElement('canvas');
+          canvas.width = vp.width; canvas.height = vp.height;
+          await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+
+          const imgData = canvas.toDataURL('image/jpeg', quality);
+          const orient = vp.width > vp.height ? 'l' : 'p';
+
+          if (i === 1) {
+            newDoc = new jsPDF({ orientation: orient, unit: 'pt', format: [vp.width, vp.height] });
+            newDoc.addImage(imgData, 'JPEG', 0, 0, vp.width, vp.height, undefined, 'FAST');
+          } else {
+            newDoc.addPage([vp.width, vp.height], orient);
+            newDoc.addImage(imgData, 'JPEG', 0, 0, vp.width, vp.height, undefined, 'FAST');
+          }
+        }
+
+        compOutputBlob = newDoc.output('blob');
+        const origSize = compPdfBytes.length;
+        const newSize = compOutputBlob.size;
+        const reduction = Math.max(0, Math.round(((origSize - newSize) / origSize) * 100));
+
+        document.getElementById('compress-new-size').textContent = (newSize / 1024).toFixed(1) + ' KB';
+        document.getElementById('compress-savings-pct').textContent = `-${reduction}%`;
+        document.getElementById('compress-result-wrap').style.display = 'block';
+        document.getElementById('download-compressed-btn').style.display = 'inline-flex';
+        progressWrap.style.display = 'none';
+        showToast(`Compressed! Saved ${reduction}% in file size`, 'success');
+      } catch (err) {
+        showToast('Compression error: ' + err.message, 'error');
+        progressWrap.style.display = 'none';
+      }
+    });
+
+    document.getElementById('download-compressed-btn').addEventListener('click', () => {
+      if (!compOutputBlob) return;
+      const a = document.createElement('a'); a.href = URL.createObjectURL(compOutputBlob);
+      a.download = compPdfName.replace(/\.pdf$/i, '_compressed.pdf'); a.click();
+      showToast('Compressed PDF downloaded!', 'success');
+    });
+
+    // 6. Word to PDF (.docx/.doc)
+    const w2pDrop = document.getElementById('w2p-dropzone');
+    const w2pInput = document.getElementById('w2p-file-input');
+    const w2pControls = document.getElementById('w2p-controls');
+    const w2pPreview = document.getElementById('w2p-preview-box');
+    let w2pDocHtml = '', w2pFileName = '';
+
+    w2pDrop.addEventListener('click', () => w2pInput.click());
+    w2pInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; w2pFileName = file.name;
+      document.getElementById('w2p-filename').textContent = file.name;
+      w2pDrop.style.display = 'none'; w2pControls.style.display = 'block';
+
+      try {
+        const ab = await file.arrayBuffer();
+        if (window.mammoth) {
+          const res = await mammoth.convertToHtml({ arrayBuffer: ab });
+          w2pDocHtml = res.value || '<p>No readable content found.</p>';
+          w2pPreview.innerHTML = w2pDocHtml;
+          showToast('Word document parsed! Ready to convert.', 'success');
+        } else {
+          w2pDocHtml = '<p>Document loaded.</p>';
+          w2pPreview.innerHTML = w2pDocHtml;
+        }
+      } catch (err) {
+        showToast('Error reading docx: ' + err.message, 'error');
+      }
+    });
+
+    document.getElementById('w2p-reset-btn').addEventListener('click', () => {
+      w2pDocHtml = ''; w2pControls.style.display = 'none'; w2pDrop.style.display = 'flex'; w2pInput.value = '';
+    });
+
+    document.getElementById('execute-w2p-btn').addEventListener('click', async () => {
+      if (!w2pDocHtml) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+      showToast('Generating PDF from Word document...', 'info');
+
+      doc.html(w2pPreview, {
+        callback: function (pdf) {
+          pdf.save(w2pFileName.replace(/\.(docx|doc)$/i, '') + '.pdf');
+          showToast('PDF downloaded successfully!', 'success');
+        },
+        x: 36,
+        y: 36,
+        width: 520,
+        windowWidth: 700
+      });
+    });
+
+    // 7. PDF to Word (.docx)
+    const p2wDrop = document.getElementById('p2w-dropzone');
+    const p2wInput = document.getElementById('p2w-file-input');
+    const p2wControls = document.getElementById('p2w-controls');
+    const p2wPreview = document.getElementById('p2w-preview-box');
+    let p2wTextContent = '', p2wFileName = '';
+
+    p2wDrop.addEventListener('click', () => p2wInput.click());
+    p2wInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; p2wFileName = file.name;
+      document.getElementById('p2w-filename').textContent = file.name;
+      p2wDrop.style.display = 'none'; p2wControls.style.display = 'block';
+
+      try {
+        const ab = await file.arrayBuffer();
+        const pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(ab) }).promise;
+        document.getElementById('p2w-page-count').textContent = `${pdfDoc.numPages} Pages`;
+        
+        let fullHtml = '';
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const textContent = await page.getTextContent();
+          let pageText = '';
+          let lastY = null;
+          textContent.items.forEach(item => {
+            if (lastY !== null && Math.abs(item.transform[5] - lastY) > 8) {
+              pageText += '<br>';
+            }
+            pageText += item.str + ' ';
+            lastY = item.transform[5];
+          });
+          fullHtml += `<div style="margin-bottom:20px; padding-bottom:12px; border-bottom:1px dashed rgba(255,255,255,0.1);"><strong>--- Page ${i} ---</strong><br><p>${pageText}</p></div>`;
+        }
+        p2wTextContent = fullHtml;
+        p2wPreview.innerHTML = fullHtml;
+        showToast('Extracted document content for Microsoft Word!', 'success');
+      } catch (err) {
+        showToast('Error reading PDF: ' + err.message, 'error');
+      }
+    });
+
+    document.getElementById('p2w-reset-btn').addEventListener('click', () => {
+      p2wTextContent = ''; p2wControls.style.display = 'none'; p2wDrop.style.display = 'flex'; p2wInput.value = '';
+    });
+
+    document.getElementById('execute-p2w-btn').addEventListener('click', () => {
+      if (!p2wTextContent) return;
+      const wordDocument = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>${p2wFileName}</title>
+        <style>body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; }</style>
+        </head>
+        <body>${p2wTextContent}</body></html>
+      `;
+      const blob = new Blob(['\ufeff', wordDocument], { type: 'application/msword' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = p2wFileName.replace(/\.pdf$/i, '') + '.doc';
+      a.click();
+      showToast('Editable Word document downloaded!', 'success');
+    });
+
+    // 8. Excel to PDF (.xlsx to PDF)
+    const e2pDrop = document.getElementById('e2p-dropzone');
+    const e2pInput = document.getElementById('e2p-file-input');
+    const e2pControls = document.getElementById('e2p-controls');
+    const e2pSheetSelect = document.getElementById('e2p-sheet-select');
+    const e2pPreview = document.getElementById('e2p-preview-box');
+    let e2pWorkbook = null, e2pFileName = '', currentSheetData = [];
+
+    e2pDrop.addEventListener('click', () => e2pInput.click());
+    e2pInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; e2pFileName = file.name;
+      document.getElementById('e2p-filename').textContent = file.name;
+      e2pDrop.style.display = 'none'; e2pControls.style.display = 'block';
+
+      try {
+        const ab = await file.arrayBuffer();
+        e2pWorkbook = XLSX.read(ab, { type: 'array' });
+        e2pSheetSelect.innerHTML = '';
+        e2pWorkbook.SheetNames.forEach(name => e2pSheetSelect.add(new Option(name, name)));
+        loadSelectedSheetPreview();
+        showToast('Spreadsheet loaded! Ready to export to PDF.', 'success');
+      } catch (err) {
+        showToast('Error reading Excel: ' + err.message, 'error');
+      }
+    });
+
+    function loadSelectedSheetPreview() {
+      if (!e2pWorkbook) return;
+      const sheetName = e2pSheetSelect.value;
+      const sheet = e2pWorkbook.Sheets[sheetName];
+      currentSheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      
+      let html = '<table>';
+      currentSheetData.slice(0, 40).forEach((row, rIdx) => {
+        html += '<tr>';
+        row.forEach(cell => {
+          const tag = rIdx === 0 ? 'th' : 'td';
+          html += `<${tag}>${cell !== undefined ? cell : ''}</${tag}>`;
+        });
+        html += '</tr>';
+      });
+      html += '</table>';
+      if (currentSheetData.length > 40) html += `<p style="color:var(--text-dim); margin-top:8px;">Showing first 40 rows out of ${currentSheetData.length}...</p>`;
+      e2pPreview.innerHTML = html;
+    }
+
+    e2pSheetSelect.addEventListener('change', loadSelectedSheetPreview);
+    document.getElementById('e2p-reset-btn').addEventListener('click', () => {
+      e2pWorkbook = null; e2pControls.style.display = 'none'; e2pDrop.style.display = 'flex'; e2pInput.value = '';
+    });
+
+    document.getElementById('execute-e2p-btn').addEventListener('click', () => {
+      if (!currentSheetData.length) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('l', 'pt', 'a4');
+      const head = currentSheetData.length > 0 ? [currentSheetData[0]] : [];
+      const body = currentSheetData.slice(1);
+
+      if (doc.autoTable) {
+        doc.autoTable({
+          head: head,
+          body: body,
+          theme: 'grid',
+          styles: { fontSize: 8, cellPadding: 4 },
+          headStyles: { fillColor: [0, 242, 254], textColor: [4, 7, 20] },
+          margin: { top: 30, left: 30, right: 30 }
+        });
+      }
+      doc.save(e2pFileName.replace(/\.(xlsx|xls|csv)$/i, '') + '.pdf');
+      showToast('Spreadsheet exported to PDF!', 'success');
+    });
+
+    // 9. PDF to Excel (.xlsx)
+    const p2eDrop = document.getElementById('p2e-dropzone');
+    const p2eInput = document.getElementById('p2e-file-input');
+    const p2eControls = document.getElementById('p2e-controls');
+    const p2ePreview = document.getElementById('p2e-preview-box');
+    let p2eRows = [], p2eFileName = '';
+
+    p2eDrop.addEventListener('click', () => p2eInput.click());
+    p2eInput.addEventListener('change', async (e) => {
+      if (!e.target.files.length) return;
+      const file = e.target.files[0]; p2eFileName = file.name;
+      document.getElementById('p2e-filename').textContent = file.name;
+      p2eDrop.style.display = 'none'; p2eControls.style.display = 'block';
+
+      try {
+        const ab = await file.arrayBuffer();
+        const pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(ab) }).promise;
+        p2eRows = [];
+
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const content = await page.getTextContent();
+          
+          const lineMap = new Map();
+          content.items.forEach(item => {
+            const y = Math.round(item.transform[5] / 4) * 4;
+            if (!lineMap.has(y)) lineMap.set(y, []);
+            lineMap.get(y).push({ x: item.transform[4], text: item.str });
+          });
+
+          const sortedYs = Array.from(lineMap.keys()).sort((a,b) => b - a);
+          sortedYs.forEach(y => {
+            const rowItems = lineMap.get(y).sort((a,b) => a.x - b.x);
+            const cols = rowItems.map(it => it.text.trim()).filter(Boolean);
+            if (cols.length) p2eRows.push(cols);
+          });
+        }
+
+        document.getElementById('p2e-row-count').textContent = `${p2eRows.length} Rows Detected`;
+        let html = '<table>';
+        p2eRows.slice(0, 40).forEach((r, rIdx) => {
+          html += '<tr>';
+          r.forEach(c => {
+            const tag = rIdx === 0 ? 'th' : 'td';
+            html += `<${tag}>${c}</${tag}>`;
+          });
+          html += '</tr>';
+        });
+        html += '</table>';
+        if (p2eRows.length > 40) html += `<p style="color:var(--text-dim); margin-top:8px;">Showing first 40 rows out of ${p2eRows.length}...</p>`;
+        p2ePreview.innerHTML = html;
+        showToast('Table data extracted! Ready to export to Excel.', 'success');
+      } catch (err) {
+        showToast('Error reading PDF: ' + err.message, 'error');
+      }
+    });
+
+    document.getElementById('p2e-reset-btn').addEventListener('click', () => {
+      p2eRows = []; p2eControls.style.display = 'none'; p2eDrop.style.display = 'flex'; p2eInput.value = '';
+    });
+
+    document.getElementById('execute-p2e-btn').addEventListener('click', () => {
+      if (!p2eRows.length) return;
+      const ws = XLSX.utils.aoa_to_sheet(p2eRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Extracted Data');
+      XLSX.writeFile(wb, p2eFileName.replace(/\.pdf$/i, '') + '.xlsx');
+      showToast('Excel (.xlsx) downloaded successfully!', 'success');
+    });
+
+    document.getElementById('download-p2e-csv-btn').addEventListener('click', () => {
+      if (!p2eRows.length) return;
+      const ws = XLSX.utils.aoa_to_sheet(p2eRows);
+      const csv = XLSX.utils.sheet_to_csv(ws);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = p2eFileName.replace(/\.pdf$/i, '') + '.csv'; a.click();
+      showToast('CSV file downloaded!', 'success');
+    });
 
     // ==========================================
-    // 4. Text Case Converter
+    // Text Case Converter
     // ==========================================
     const caseIn = document.getElementById('case-input');
     document.querySelectorAll('[data-case]').forEach(b => {
@@ -2259,7 +2686,7 @@
     document.getElementById('case-clear-btn').onclick = () => { caseIn.value = ''; };
 
     // ==========================================
-    // 5. Unit Converter
+    // Unit Converter
     // ==========================================
     const unitRates = {
       length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.34, yd: 0.9144, ft: 0.3048, in: 0.0254 },
@@ -2318,7 +2745,7 @@
     initConvUnits();
 
     // ==========================================
-    // 6. Age Calculator
+    // Age Calculator
     // ==========================================
     const dobIn = document.getElementById('age-dob-input');
     const targetDateIn = document.getElementById('age-target-input');
@@ -2341,7 +2768,7 @@
     };
 
     // ==========================================
-    // 7. Password Generator
+    // Password Generator
     // ==========================================
     function generatePassword() {
       const len = parseInt(document.getElementById('pwd-len-slider').value) || 16;
@@ -2363,7 +2790,7 @@
     generatePassword();
 
     // ==========================================
-    // 8. Aspect Ratio Calculator
+    // Aspect Ratio Calculator
     // ==========================================
     const rw = document.getElementById('ratio-w'), rh = document.getElementById('ratio-h');
     function gcd(a, b) { return b == 0 ? a : gcd(b, a % b); }
@@ -2381,7 +2808,7 @@
     });
 
     // ==========================================
-    // 9. Word & Character Counter
+    // Word & Character Counter
     // ==========================================
     const wordIn = document.getElementById('word-input');
     wordIn.oninput = () => {
@@ -2395,7 +2822,7 @@
     };
 
     // ==========================================
-    // 10. Base64 / URL Encoder & Decoder
+    // Base64 / URL Encoder & Decoder
     // ==========================================
     let currentCodec = 'b64-encode';
     document.querySelectorAll('[data-codec]').forEach(b => {
@@ -2417,7 +2844,7 @@
     document.getElementById('codec-copy-btn').onclick = () => copyToClipboard(document.getElementById('codec-output').value);
 
     // ==========================================
-    // 11. Lorem Ipsum Generator
+    // Lorem Ipsum Generator
     // ==========================================
     const loremWords = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
     document.getElementById('lorem-count-slider').oninput = (e) => document.getElementById('lorem-count-val').textContent = e.target.value;
@@ -2435,7 +2862,7 @@
     document.getElementById('lorem-copy-btn').onclick = () => copyToClipboard(document.getElementById('lorem-output').value);
 
     // ==========================================
-    // 12. To-Do List & Notes
+    // To-Do List & Notes
     // ==========================================
     let todos = JSON.parse(localStorage.getItem('nd_todos') || '[]');
     function saveTodos() { localStorage.setItem('nd_todos', JSON.stringify(todos)); renderTodos(); }
@@ -2470,7 +2897,7 @@
     renderTodos();
 
     // ==========================================
-    // 13. Pomodoro Focus Timer
+    // Pomodoro Focus Timer
     // ==========================================
     let timerTotal = 25 * 60, timeLeft = timerTotal, timerInterval = null, pomoCount = 0;
     const ring = document.getElementById('timer-progress-ring');
